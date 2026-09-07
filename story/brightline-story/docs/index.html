@@ -4206,12 +4206,12 @@ body.mode-prep #prepbar{display:flex}
  var BOOKX = {
   brightline:{since:{1:'March 6',2:'March 9',3:'March 12',4:'March 20',5:'May 14',6:'May 14'}, health:'good', lead:'Dana Iverson, VP of Partnerships', dgn:['sonia','marcus','theo','ana']},
   northbank: {since:'January 8',  health:'good',  lead:'Tom Achebe, Head of Network',        dgn:['marcus'], days:3,  act:'Start review',   plan:[4,3,3,4,2], live:'February 19'},
-  halcyon:   {since:'April 2',    health:'watch', lead:'Grace Lindqvist, COO',               dgn:['marcus','ana'], days:1, act:'Book a window', plan:[4,3,3,2,0]},
-  marlow:    {since:'March 27',   health:'risk',  lead:'Devin Marlow, Founder',              dgn:['marcus','sonia'], days:6, plan:[4,3,1,0,0]},
+  halcyon:   {since:'April 2',    health:'watch', lead:'Grace Lindqvist, COO',               dgn:['marcus','ana'], days:1, act:'Book a window', plan:[4,3,3,4,0]},
+  marlow:    {since:'March 27',   health:'risk',  lead:'Devin Marlow, Founder',              dgn:['marcus','sonia'], days:6, plan:[4,3,0,0,0]},
   ostrand:   {since:'May 5',      health:'good',  lead:'Ines Ostrand, Product',              dgn:['marcus','theo'], days:0, act:'Review the request', plan:[4,3,3,4,2], live:'November 3, 2025'},
   cedarline: {since:'August 2025',health:'good',  lead:'Ray Chen, Network operations',       dgn:['marcus'], plan:[4,3,3,4,2], live:'August 14, 2025'},
   verrill:   {since:'October 2025',health:'good', lead:'Ana Verrill, CEO',                   dgn:['marcus'], plan:[4,3,3,4,2], live:'October 30, 2025'},
-  tallgrass: {since:'April 20',   health:'good',  lead:'Kofi Mensah, CTO',                   dgn:['marcus','ana','theo'], days:2, plan:[4,3,3,4,1]}
+  tallgrass: {since:'April 20',   health:'good',  lead:'Kofi Mensah, CTO',                   dgn:['marcus','ana','theo'], days:2, plan:[4,3,3,4,0]}
  };
  /* what the network is watching on his book before anything goes wrong */
  var AG_ALERTS = [
@@ -4234,6 +4234,36 @@ body.mode-prep #prepbar{display:flex}
   {at:2, day:'March 9', t:'9:40 AM', title:'Deal confirmed', d:'Dana Iverson. Confidentiality agreement executed.'},
   {at:1, day:'March 6', t:'4:15 PM', title:'Deal sent', d:'Sonia Vega, DGN-2026-0311.'}
  ];
+
+ /* the network's part of each step of the shared plan, one sentence each, and
+    who owns the step. The partner's part is the step's own line (short). */
+ var NET_PART = {
+  nda:   {own:'network', d:'Executes with the deal. Third parties the partner names are covered by matching agreements.'},
+  rules: {own:'partner', d:'Publishes the current rules and records each acknowledgement by version.'},
+  risk:  {own:'network', d:'Reviews six areas from the three documents and clears or holds. Clearing issues the agreement the same day.'},
+  agr:   {own:'network', d:'Issues the agreement from the deal and countersigns after the partner’s two signatures.'},
+  team:  {own:'partner', d:'Grants portal access by role as each name lands, and opens the sandbox to the engineer.'},
+  scope: {own:'partner', d:'Reads the scope into the project plan and the certification cases.'},
+  plan:  {own:'network', d:'Drafts the plan from the scope and the target date. The partner confirms it.'},
+  bank:  {own:'partner', d:'Verifies the bank letter and sets the account for daily settlement.'},
+  ids:   {own:'network', d:'Issues the acquirer identifier and the BIN range from the agreement.'},
+  keys:  {own:'partner', d:'Reads the certificate chain off the first handshake and flags its expiry.'},
+  term:  {own:'partner', d:'Confirms terminal and e-commerce readiness against the configuration.'},
+  report:{own:'partner', d:'Sets the report schedule and recipients from the partner’s choices.'},
+  disp:  {own:'partner', d:'Sets dispute routing and the response window.'},
+  bal:   {own:'partner', d:'Confirms daily balancing against the first settlement file.'},
+  cert:  {own:'both', d:'Books the window, watches the cases arrive and validates end to end.'},
+  live:  {own:'network', d:'Activates at 6:00 AM ET, watches the first hour, clears live operation and hands off to operations.'}
+ };
+ /* releases and mandates across the book, and who has acknowledged each */
+ var RELEASES = [
+  {k:'v9',   kind:'Mandate', t:'Participation rules v9.0', eff:'January 1, 2027', by:'December 31, 2026', acked:['northbank','cedarline','verrill']},
+  {k:'ids8', kind:'Mandate', t:'Eight-digit institution identifiers', eff:'April 1, 2027', by:'April 1, 2027', acked:['cedarline']},
+  {k:'r262', kind:'Release', t:'Release 26.2, dispute response window 20 days', eff:'September 1, 2026', by:'August 15, 2026', acked:['northbank','ostrand','cedarline','verrill']},
+  {k:'r261', kind:'Release', t:'Release 26.1, round_trip_ms on every response', eff:'March 2, 2026', by:'', acked:['brightline','northbank','ostrand','cedarline','verrill','halcyon','tallgrass','marlow']}
+ ];
+ /* when each live partner was handed from the implementation team to operations */
+ var HANDOFF = {brightline:{6:'May 21'}, northbank:'February 26', ostrand:'November 10, 2025', cedarline:'August 21, 2025', verrill:'November 6, 2025'};
 
  /* ══ the mature developer portal ═══════════════════════════════════════ */
  var SPEC_TOPICS = [
@@ -5483,7 +5513,9 @@ window.GNChart=(function(){
              ['support','Support','']];
    }
    var ag=AG_ALERTS.filter(function(a){ return STAGE>=a.from && STAGE<=a.until && a.kind==='action' }).length+(STAGE>=6?1:0);
-   return [['turn','Your turn',ct(turnRows().filter(function(r){return r.mine}).length),'Work'],['alerts','Alerts',ct(ag),'Work'],['book','Partners','','Book'],['partner','Brightline','','Book'],['bookrep','Book report','','Book'],['certs','Certification','','Schedule'],['golives','Go-lives','','Schedule']];
+   var open_=BOOK.filter(function(b){return b.k===(SCENE.bk||'brightline')})[0]||BOOK[0];
+   var mand=RELEASES.filter(function(r){ return r.kind==='Mandate' && BOOK.some(function(b){ return !relAcked(r,b) }) }).length;
+   return [['turn','Your turn',ct(turnRows().filter(function(r){return r.mine}).length),'Work'],['alerts','Alerts',ct(ag),'Work'],['book','Partners','','Book'],['partner',open_.n,'','Book'],['certs','Windows','','Schedule'],['golives','Go-lives','','Schedule'],['releases','Releases',ct(mand),'Network'],['bookrep','Book report','','Network']];
  }
  var ICON={ /* one icon, one meaning: a navigation item never shares its mark with another */
   overview:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
@@ -5523,6 +5555,7 @@ window.GNChart=(function(){
   book:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/><path d="M3 13h18"/>',
   partner:'<path d="M12 21v-6"/><path d="M8 15l1-5V4h6v6l1 5z"/>',
   bookrep:'<path d="M3 17l5-6 4 3 5-7 4 4"/><path d="M3 21h18"/>',
+  releases:'<path d="M20 13l-7 7-9-9V4h7l9 9z"/><circle cx="8" cy="8" r="1.5"/>',
   certs:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M9 15l2 2 4-4"/>',
   golives:'<path d="M12 3c3 2 5 6 5 10l-2 2h-6l-2-2c0-4 2-8 5-10z"/><path d="M9 13l-3 3v3l3-1"/><path d="M15 13l3 3v3l-3-1"/><path d="M12 18v3"/>'
  };
@@ -5574,6 +5607,7 @@ window.GNChart=(function(){
    } else if(P==='agent'){
      BOOK.forEach(function(b){ add('Partners', b.n, b.kind+(typeof b.stage==='string'?' · '+b.stage:''), 'agPartner', b.k) });
      AG_ALERTS.forEach(function(a){ add('Alerts', a.t, a.p, 'go:alerts', '') });
+     RELEASES.forEach(function(r){ add('Releases', r.t, r.kind+' · effective '+r.eff, 'go:releases', '') });
    }
    return R;
  }
@@ -7054,50 +7088,86 @@ window.GNChart=(function(){
      {t:'May 14', title:'Brightline go-live', d:'Activation 6:00 AM. First settlement May 15.', r:STAGE>=5?word('Live'):sw('Target',''), act:'agPartner', k:'brightline'}]}]);
    return head+yours+f+wait+week;
  };
+ /* every step of the shared plan, with its state, for any partner in the book:
+    Brightline's from live state, the others' from the plan counts */
+ function bookSteps(b){
+   if(b.k==='brightline'){ var S=stepState(); return STEPS.map(function(x){ return {x:x, st:S.st[x.k]} }) }
+   var pl=BOOKX[b.k].plan, out=[], firstOpen=-1;
+   GROUPS.forEach(function(g,i){ var xs=STEPS.filter(function(x){return x.g===g.k}); xs.forEach(function(x,j){ out.push({x:x, st:j<pl[i]?'done':'wait'}) }); if(firstOpen<0 && pl[i]<xs.length) firstOpen=i });
+   if(firstOpen>=0){ var cur=out.filter(function(r){ return r.x.g===GROUPS[firstOpen].k && r.st!=='done' })[0]; if(cur) cur.st='now' }
+   return out;
+ }
+ function stepOwner(x){ var o=(NET_PART[x.k]||{}).own; return o==='network'?'The network':o==='both'?'Both sides':'Partner' }
+ function stepStatus(r, b){ if(r.st==='done') return word('Done'); if(r.st==='now'){ var o=stepOwner(r.x); return o==='The network'?sw('Your turn','wa'):o==='Both sides'?sw('In progress','wa'):sw('Waiting on '+b.n,'') } if(r.st==='dgn') return sw('In review','wa'); if(r.st==='eng') return sw('With their engineer',''); return sw('Later',''); }
+ function relAcked(r, b){ if(r.acked.indexOf(b.k)>=0) return true; if(b.k==='brightline' && r.k==='v9' && (SCENE.ntAck||{}).v9) return true; if((SCENE.acks||{})[r.k+'|'+b.k]) return true; return false }
+ function daysIn(b){ var x=BOOKX[b.k]; return x.days!==undefined ? waited(x.days) : 0 }
  AGENT.book=function(){
-   var head=ph('Partners', BOOK.length+' in your book. '+BOOK.filter(function(b){return bookStage(b)==='Live'}).length+' live, '+BOOK.filter(function(b){return bookStage(b)!=='Live'}).length+' onboarding.');
-   var S=stepState(), bq=(SCENE.bookQ||'').toLowerCase();
-   var found=bq?BOOK.filter(function(b){ return b.n.toLowerCase().indexOf(bq)>-1 }):BOOK;
+   var live_=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
+   var head=ph('Partners', BOOK.length+' in your book. '+live_+' live, '+(BOOK.length-live_)+' onboarding.');
+   var bq=(SCENE.bookQ||'').toLowerCase(), seg=tab('bookSeg','all');
+   var found=BOOK.filter(function(b){ var st=bookStage(b); return (!bq || b.n.toLowerCase().indexOf(bq)>-1) && (seg==='all' || (seg==='live'?st==='Live':seg==='cert'?st==='Certifying':st!=='Live'&&st!=='Certifying')) });
+   var segs=tabs('bookSeg',[['all','All',String(BOOK.length)],['onb','Onboarding',ct(BOOK.filter(function(b){var s=bookStage(b); return s!=='Live'&&s!=='Certifying'}).length)],['cert','Certifying',ct(BOOK.filter(function(b){return bookStage(b)==='Certifying'}).length)],['live','Live',String(live_)]],'all');
    var chip=bq?toolbar('<span class="chip">Search '+esc(SCENE.bookQ)+' <span class="gn-link" data-act="bookClear" style="color:inherit">Clear</span></span>', found.length+' of '+BOOK.length):'';
-   if(bq&&!found.length) return head+chip+'<div class="emp"><b>No partners match '+esc(SCENE.bookQ)+'.</b><span>Check the name, or clear the search.</span></div>';
-   var byStage={}, byHealth={good:0,watch:0,'at risk':0}; BOOK.forEach(function(b){ var st=bookStage(b); byStage[st]=(byStage[st]||0)+1; var h=BOOKX[b.k].health; byHealth[h==='good'?'good':h==='watch'?'watch':'at risk']++ });
-   var bc=bq?'':'<div class="gn-chartcards">'
-     +card('By stage', String(BOOK.length), chart('donut',{items:Object.keys(byStage).map(function(k){ return {name:k, value:byStage[k]} }), center:String(BOOK.length), centerLabel:'partners', h:150}), '')
-     +card('By health', byHealth.good+' good', chart('donut',{items:[{name:'Good',value:byHealth.good,tone:'good'},{name:'Watch',value:byHealth.watch,tone:'warn'},{name:'At risk',value:byHealth['at risk'],tone:'bad'}], center:String(BOOK.length), centerLabel:'partners', h:150}), '', goLink('Book report','data-go2="bookrep"'))+'</div>';
-   /* the partners are the page; the composition follows them and links to the Book report */
-   return head+chip+'<div class="ptn-grid">'+found.slice(0, 24+((SCENE.more||{}).book||0)).map(function(b){ var x=BOOKX[b.k];
-     var st=bookStage(b), nx=typeof b.next==='string'?b.next:b.next[STAGE];
-     var turn=b.k==='brightline'?(turnRows()[0]||{}).turn||'—':b.turn||'—';
-     var done = b.k==='brightline' ? S.done : x.plan.reduce(function(a,v){return a+v},0), pct=Math.round(100*done/16);
-     var dis = x.days!==undefined && st!=='Live' ? ', '+daysWord(waited(x.days))+' waiting' : '';
-     return '<article class="ptn is-link" data-act="agPartner" data-k="'+b.k+'"><div class="ptn-h"><div><h2>'+esc(b.n)+'</h2><span>'+esc(b.kind)+', '+esc(st)+' since '+esc(bookSince(b))+esc(dis)+'</span></div>'+healthWord(x.health)+'</div>'
-      +'<div class="ptn-bar"><i style="--w:'+pct+'%"></i></div>'
-      +'<div class="ptn-f"><span>'+(nx&&nx!=='—'?'Next: '+esc(nx):'Nothing open')+'</span><span>'+(turn==='You'?'<b class="mine">Your turn</b>':turn==='—'?'':'Waiting on '+esc(turn))+'</span></div></article>' }).join('')+'</div>'+(found.length>24+((SCENE.more||{}).book||0)?'<div class="gn-table-foot"><span class="gn-link" data-act="more" data-k="book">Show '+Math.min(24,found.length-24-((SCENE.more||{}).book||0))+' more</span><span>'+Math.min(found.length,24+((SCENE.more||{}).book||0))+' of '+found.length+'</span></div>':'')+bc;
+   if(bq&&!found.length) return head+segs+chip+'<div class="emp"><b>No partners match '+esc(SCENE.bookQ)+'.</b><span>Check the name, or clear the search.</span></div>';
+   /* longest waiting first, then live partners by name */
+   found=found.slice().sort(function(a,b){ var da=daysIn(a), db=daysIn(b); if(bookStage(a)==='Live'!==(bookStage(b)==='Live')) return bookStage(a)==='Live'?1:-1; if(db!==da) return db-da; return a.n.localeCompare(b.n) });
+   var rowsT=tbl2([['Partner'],['Kind'],['Stage'],['Waiting',1],['Next'],['Turn'],['Health']], found.map(function(b){ var x=BOOKX[b.k], st=bookStage(b), nx=typeof b.next==='string'?b.next:b.next[STAGE];
+     var turn=b.k==='brightline'?(turnRows()[0]||{}).turn||'—':b.turn||'—', d=daysIn(b);
+     return {c:[esc(b.n), esc(b.kind), esc(st), st==='Live'||!d?'—':daysWord(d), esc(nx&&nx!=='—'?nx:'—'), turn==='You'?'<b class="mine">You</b>':turn==='—'?'—':esc(turn), healthWord(x.health)], act:'agPartner', k:b.k} }));
+   return head+segs+chip+rowsT+'<div class="gn-table-foot"><span></span><span>'+goLink('Book report','data-go2="bookrep"')+'</span></div>';
  };
  /* ── one partner, from the network's side ── */
  AGENT.partner=function(sk,c){
    var k=SCENE.bk||'brightline', b=BOOK.filter(function(x){return x.k===k})[0]||BOOK[0], x=BOOKX[b.k], bl=b.k==='brightline';
-   var st=bookStage(b), S=stepState();
-   var stageLine = st==='Live' ? 'Live since '+esc(x.live||bookSince(b))+'.' : st.indexOf('Deal')===0 ? esc(st)+' '+esc(bookSince(b))+'.' : esc(st)+' since '+esc(bookSince(b))+'.';
-   var head=(k==='brightline'&&!SCENE.bk?'':backTo('Partners','data-go2="book"'))+ph(esc(b.n), esc(b.kind)+'. '+stageLine, healthWord(x.health));
-   var env = bl ? secH('Environments')+envTiles({agent:true}) : secH('Environments')+envTiles({agent:true, plan:x.plan});
-   var onb = bl && !live() ? secH('Onboarding', 'Your actions')+agOnboarding() : bl ? '' : secH('Onboarding')+'<p class="para">'+esc(x.lead.split(', ')[0])+' is the partner lead. Stage: '+esc(st)+'.</p>';
-   var plan=secH('The five parts', bl?S.done+' of '+STEPS.length+' steps done':'')+(bl?partsBars(S,false):partsBars(null,false,x.plan));
-   var docs = bl ? secH('Documents received')+doc([
+   var st=bookStage(b), S=stepState(), steps=bookSteps(b), isLive=st==='Live';
+   var d=daysIn(b), stageLine = isLive ? 'Live since '+esc(x.live||bookSince(b))+'.' : st.indexOf('Deal')===0 ? esc(st)+' '+esc(bookSince(b))+'.' : esc(st)+' since '+esc(bookSince(b))+(d?', '+daysWord(d)+' waiting.':'.');
+   var head=(bl&&!SCENE.bk?'':backTo('Partners','data-go2="book"'))+ph(esc(b.n), esc(b.kind)+'. '+stageLine, healthWord(x.health));
+   /* 2. next: one card, whose turn, the network's action if it is the network's */
+   var cur=steps.filter(function(r){return r.st==='now'})[0], next='';
+   if(bl && !live()) next=secH('Next', 'Your actions')+agOnboarding();
+   else if(cur){ var mine=stepOwner(cur.x)==='The network', g=GROUPS.filter(function(gg){return gg.k===cur.x.g})[0];
+     var act = x.act==='Book a window' ? '<span class="gn-link" data-go2="certs">Book a window</span>' : x.act==='Start review' ? '<span class="gn-link" data-go2="review">Start the review</span>' : x.act==='Review the request' ? '<span class="gn-link" data-go2="request">Review the request</span>' : mine ? '' : '<span class="gn-link" data-act="agRemind" data-k="'+b.k+'">Send a reminder</span>';
+     next=secH('Next')+'<article class="gn-notice"><div class="gn-notice-h">'+stepStatus(cur,b)+'<span>'+esc(g?g.t:'')+'</span></div><h3>'+esc(cur.x.t)+'</h3><p>'+esc((NET_PART[cur.x.k]||{}).d||'')+'</p><div class="gn-notice-f"><span>'+(d?'Waiting '+daysWord(d):'Open today')+'</span>'+act+'</div></article>'; }
+   /* 3. the plan both sides see: five bars, then one phase as its steps */
+   var firstOpen=GROUPS.filter(function(g){ return steps.some(function(r){ return r.x.g===g.k && r.st!=='done' }) })[0]||GROUPS[GROUPS.length-1];
+   var ph_=tab('agPhase_'+b.k, firstOpen.k), gsel=GROUPS.filter(function(g){return g.k===ph_})[0]||firstOpen;
+   var segs=tabs('agPhase_'+b.k, GROUPS.map(function(g,i){ var xs=steps.filter(function(r){return r.x.g===g.k}); return [g.k, g.t, xs.filter(function(r){return r.st==='done'}).length+' of '+xs.length] }), firstOpen.k);
+   var stepsT=tbl2([['Step'],['The partner’s part'],['The network’s part'],['Owner'],['Status']], steps.filter(function(r){return r.x.g===gsel.k}).map(function(r){ return {c:[esc(r.x.t), esc(r.x.short), esc((NET_PART[r.x.k]||{}).d||''), stepOwner(r.x), stepStatus(r,b)], act:'noopRow'} }));
+   var plan=secH('The plan', (bl?S.done:steps.filter(function(r){return r.st==='done'}).length)+' of '+STEPS.length+' steps done')+(bl?partsBars(S,false):partsBars(null,false,x.plan))+segs+stepsT;
+   /* 4. environments and identifiers */
+   var env=secH('Environments')+(bl?envTiles({agent:true}):envTiles({agent:true, plan:x.plan}));
+   /* 5. documents received and issued */
+   var pl=x.plan||[], docsRows = bl ? [
        ['Confidentiality agreement','Executed March 9','With the deal'],
        ['Rules acknowledged', (STAGE>=3?'2 of 6':((SCENE.acked&&SCENE.acked.part?1:0)+(SCENE.acked&&SCENE.acked.data?1:0))+' of 6'), 'Two required before risk review'],
        ['Risk review', STAGE>=3?'Cleared March 12':(SCENE.up&&SCENE.up.fin&&SCENE.up.pci&&SCENE.up.ctl)?'Three documents received, in review':'<span class="gn-doc-x">Awaiting three documents</span>', 'Six areas'],
-       ['Participation agreement', STAGE>=4?'Signed March 20':STAGE>=3?'Issued March 12':'<span class="gn-doc-x">Issued when risk review clears</span>', AGREEMENT.ref]]) : '';
+       ['Participation agreement', STAGE>=4?'Signed March 20':STAGE>=3?'Issued March 12':'<span class="gn-doc-x">Issued when risk review clears</span>', AGREEMENT.ref]]
+     : [['Confidentiality agreement', pl[0]>=1?'Executed':'<span class="gn-doc-x">Not yet</span>', 'With the deal'],
+        ['Risk review', pl[0]>=3?'Cleared':pl[0]>=2?'<span class="gn-doc-x">Documents in review</span>':'<span class="gn-doc-x">Awaiting documents</span>', 'Six areas'],
+        ['Participation agreement', pl[0]>=4?'Signed':pl[0]>=3?'Issued':'<span class="gn-doc-x">Issued when risk review clears</span>', ''],
+        ['Settlement account letter', pl[2]>=1?'Verified':'<span class="gn-doc-x">Not received</span>', 'From the partner’s bank']];
+   var docs=secH('Documents')+doc(docsRows);
+   /* 6. requests and reviews */
+   var reqRows=[]; if(bl && SCENE.sent) reqRows.push({c:['Wallets','Product request', 'Dana Iverson', SCENE.reqBl==='approved'?word('Approved'):SCENE.reqBl==='declined'?sw('Declined','no'):sw('Needs your decision','wa')], act:'noop', go:'request'});
+   if(b.k==='ostrand') reqRows.push({c:[esc(REQUEST_OSTRAND.product),'Product request', esc(REQUEST_OSTRAND.by), SCENE.reqSt==='approved'?word('Approved'):SCENE.reqSt==='declined'?sw('Declined','no'):sw('Needs your decision','wa')], act:'noop', go:'request'});
+   if(b.k==='northbank') reqRows.push({c:['Quarterly review','Review','You', SCENE.reviewDone?word('Done'):sw('Due','wa')], act:'noop', go:'review'});
+   var reqs=reqRows.length?secH('Requests and reviews')+tbl2([['Item'],['Kind'],['From'],['Status']], reqRows.map(function(r){ return {c:r.c, act:'go2', k:r.go} })):'';
+   /* 7. people on both sides */
    var team=secH('People')+'<div class="pp-grid">'+(bl
      ? TEAM.filter(function(t){ return t.at<=STAGE && (t.k!=='priya' || STAGE>2 || SCENE.submitted) }).map(function(t){ var w=PEOPLE[t.k]||t; return person(t.k, esc(t.access), sw(t.role,''), {n:t.n, r:t.r, org:'Brightline'}) }).join('')
      : person('lead', '', sw('Partner lead',''), {n:x.lead.split(', ')[0], r:x.lead.split(', ')[1], org:b.n}))
-     +x.dgn.map(function(d){ return person(d, '', sw('Discover','')) }).join('')+'</div>';
+     +x.dgn.map(function(dk){ return person(dk, '', sw('Discover','')) }).join('')+'</div>';
+   /* 8. activity */
    var acts = bl ? AG_ACT.filter(function(a){ return a.at<=STAGE || (STAGE===2 && a.at<=2.2 && SCENE.submitted) || (STAGE===2 && a.at<=2.5 && SCENE.sandbox) })
-                 : [{day:bookSince(b), t:'', title:'Stage: '+st, d:'Next: '+(typeof b.next==='string'?b.next:'')+'. '+(b.turn&&b.turn!=='—'?'Turn: '+b.turn+'.':'')}];
+                 : [{day:bookSince(b), t:'', title:'Stage: '+st, d:(typeof b.next==='string'&&b.next!=='—'?'Next: '+b.next+'.':'')+(b.turn&&b.turn!=='—'?' Turn: '+b.turn+'.':'')}];
    var days={}; acts.forEach(function(a){ (days[a.day]=days[a.day]||[]).push({t:a.t, title:esc(a.title), d:esc(a.d)}) });
-   var act=secH('Activity', 'Newest first')+timeline(Object.keys(days).map(function(d){ return {day:d, items:days[d]} }));
-   var note=secH('Notes')+'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="agNote" rows="2" placeholder="A note on '+esc(b.n)+'. Your team sees it; the partner does not."></textarea><div class="gn-form-act"><button class="gn-btn" data-act="agNote">Save</button></div></form>'+(SCENE.agNote?msg('marcus','Just now',SCENE.agNote):'');
-   return head+onb+env+plan+docs+team+act+note;
+   var act=secH('Activity', 'Newest first')+timeline(Object.keys(days).map(function(dd){ return {day:dd, items:days[dd]} }));
+   /* 9. notes, the network's own */
+   var note=secH('Notes', 'Not shown to the partner')+(SCENE.agNote&&bl?'<p class="para">'+esc(SCENE.agNote)+'</p>':'')+'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="agNote" rows="2" aria-label="A note on '+esc(b.n)+'"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="agNote">Save</button></div></form>';
+   /* 10. handoff, once live */
+   var ho=HANDOFF[b.k], hoDate=ho&&typeof ho==='object'?ho[STAGE]:ho;
+   var handoff = isLive ? secH('Operations')+doc([['Handed to operations', hoDate||'<span class="gn-doc-x">Not yet</span>', hoDate?'Implementation closed':'Within a week of go-live'],['Runs steady state','Operations support','Alerts, releases and access'],['Review cadence','Quarterly', b.k==='northbank'?'Due now':'']]) : '';
+   return head+next+plan+env+docs+reqs+team+act+note+handoff;
  };
  function agOnboarding(){
    var docsIn = STAGE>=3 || !!(SCENE.up&&SCENE.up.fin&&SCENE.up.pci&&SCENE.up.ctl);
@@ -7147,7 +7217,7 @@ window.GNChart=(function(){
    return head+f+st+ttl+ap+live_+sla;
  };
  AGENT.certs=function(){
-   var head=ph('Certification', 'Who is certifying, and when.');
+   var head=ph('Windows', 'Certification windows: who is certifying, and when.');
    var f=figs([['Windows in May','2',''],['Cases in May',String(certTotal()+31),''],['Not yet booked','1','Halcyon Acquiring'],['Passing today', STAGE>=4?(certTotal()-1)+' of '+certTotal():'28 of 31', STAGE>=4?'Brightline':'Tallgrass']], 'gn-figs--compact');
    var tl=timeline([{day:'May', items:[
      {t:'May 4 to 8', title:'Brightline', d:certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':STAGE>=4?(certTotal()-1)+' of '+certTotal()+' seen and passing.':'Window booked when configuration is confirmed.'), r:word(STAGE>=5?'Done':STAGE>=4?'Now':'soon')},
@@ -7161,6 +7231,17 @@ window.GNChart=(function(){
    var reqs=CERT_CAL.requests.filter(function(r){ return !(SCENE.winOk||[]).some(function(x){return x[0]===r[0]}) && !(SCENE.winNo||{})[r[0]] });
    var rq=secH('Window requests', reqs.length?nn(reqs.length,'request'):'None open')+(reqs.length?tbl2([['Partner'],['Wants'],['Requested by'],['Why'],['']], reqs.map(function(r){ return [esc(r[0]), esc(r[1]), esc(r[2]), esc(r[3]), '<button class="gn-btn gn-btn--sm" data-act="winOk" data-k="'+esc(r[0]+'|'+r[1])+'">Confirm</button> <span class="gn-link" data-act="winNo" data-k="'+esc(r[0])+'">Decline</span>'] })):'<p class="para">Requests from partners’ Certification pages appear here.</p>');
    return head+f+rq+cal+tl;
+ };
+ AGENT.releases=function(){
+   var head=ph('Releases', 'Releases and mandates, and who has acknowledged each.');
+   var cur=tab('agRel', RELEASES[0].k), r=RELEASES.filter(function(x){return x.k===cur})[0]||RELEASES[0];
+   var open_=BOOK.filter(function(b){ return !relAcked(r,b) });
+   var mand=RELEASES.filter(function(x){ return x.kind==='Mandate' && BOOK.some(function(b){ return !relAcked(x,b) }) }).length;
+   var f=figs([['Mandates open', String(mand), 'need acknowledgement'],['Acknowledged', (BOOK.length-open_.length)+' of '+BOOK.length, r.t],['Effective', r.eff, r.by?'acknowledge by '+r.by:'no acknowledgement needed']], 'gn-figs--compact');
+   var segs=tabs('agRel', RELEASES.map(function(x){ var n=BOOK.filter(function(b){return !relAcked(x,b)}).length; return [x.k, x.t.split(',')[0], ct(n)] }), RELEASES[0].k);
+   var rowsT=tbl2([['Partner'],['Stage'],['Acknowledged'],['']], BOOK.map(function(b){ var ok=relAcked(r,b);
+     return {c:[esc(b.n), esc(bookStage(b)), ok?word('Done'):r.by?sw('Not yet','wa'):sw('Not yet',''), ok||!r.by?'':'<span class="gn-link" data-act="agRemind" data-k="'+b.k+'" data-rel="'+r.k+'">Remind</span>'], act:'agPartner', k:b.k} }));
+   return head+f+segs+secH(esc(r.t), esc(r.kind)+', effective '+esc(r.eff))+rowsT;
  };
  AGENT.golives=function(){
    var st=function(g){ return g[2]==='{live}'?(STAGE>=5?'Live':'Scheduled'):g[2]==='scheduled'?'Scheduled':g[2] };
@@ -7420,9 +7501,11 @@ window.GNChart=(function(){
    upload:function(b){ SCENE.up=SCENE.up||{}; SCENE.up[b.dataset.k]=true; drawApp(VIEW); },
    thirdSend:function(){ var t=$('#tpOrg'); SCENE.third=(t&&t.value.trim())||'Meridian Processing'; go('agreement'); toast('Agreement sent'); },
    alert:function(b){ SCENE.ak=b.dataset.k; go('alert') },
-   agPartner:function(b){ SCENE.bk=b.dataset.k; go('partner') },
+   agPartner:function(b){ SCENE.bk=b.dataset.k; paintShell(); go('partner') },
    agAlert:function(){ go('alerts') },
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); toast('Window booked') },
+   agRemind:function(b){ var bk=BOOK.filter(function(x){return x.k===b.dataset.k})[0]; var lead=(BOOKX[b.dataset.k]||{}).lead||''; if(b.dataset.rel){ SCENE.reminded=SCENE.reminded||{}; SCENE.reminded[b.dataset.rel+'|'+b.dataset.k]=true } toast('Reminder sent to '+(lead.split(', ')[0]||(bk&&bk.n)||'the partner')); },
+   go2:function(b){ go(b.dataset.k) },
    agNote:function(){ var t=$('#agNote'); SCENE.agNote=(t&&t.value.trim())||'Dana wants the go-live on a Thursday. Keep May 14.'; drawApp(VIEW); },
    cycle:function(b){ if(!CYCLES[b.dataset.k]) return; SCENE.ck=b.dataset.k; go('cycle') },
    ack:function(){ SCENE.alAck=true; drawApp(VIEW); },
