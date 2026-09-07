@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certify and go live · Developers · Discover Global Network</title>
+<link rel="stylesheet" href="../../design-system/tokens/colors.css">
+<link rel="stylesheet" href="../../design-system/tokens/typography.css">
+<link rel="stylesheet" href="../../design-system/tokens/spacing.css">
+<link rel="stylesheet" href="../../design-system/gn.css">
+<link rel="stylesheet" href="../shared/site.css">
+<script src="../../design-system/shared/icons.js"></script>
+<script src="../../design-system/gn-charts.js"></script>
+<script src="../shared/data.js"></script>
+</head>
+<body class="dv">
+<div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
+<div class="dv-h"><div class="gn-eyebrow">Launch</div><h1>Certify and go live</h1><p>What certification is, what your host sends, what the network sends, and what activation does. The record of what the network saw is in the Developer Portal, after an agreement.</p></div>
+<div class="dv-pre"><b>Before you start</b><span>A signed participation agreement. Your configuration confirmed in the Developer Portal. A host that can reach <span class="gn-mono">cert.api.dgn.com</span> over mutual TLS.</span></div>
+<h2 id="what">What certification is</h2>
+<p>A script your host produces and a record of what the network saw. The cases come from your configuration: the products you chose, the entry modes you accept, the stand-in rules you set. Typically 20 to 30. Nothing runs from the portal. Your host sends each case to the certification environment, and a case passes when the network sees it arrive with the expected answer.</p>
+<div class="gn-figs gn-figs--3" style="max-width:640px"><div class="gn-fig"><b>21</b><span>cases for a typical acquirer</span><small>14 sent by your host, 7 by the network</small></div><div class="gn-fig"><b>8 days</b><span>median from first case seen to submission</span></div><div class="gn-fig"><b>1 week</b><span>the booked window</span></div></div>
+<h2 id="who">Who sends what</h2>
+<div class="gn-doc gn-doc--2" style="max-width:820px">
+  <div class="gn-doc-r"><span class="gn-doc-l">Your host sends</span><span class="gn-doc-v">Authorizations on the test cards, reversals, evidence on a dispute, a token and a charge on it, the totals for a cycle, any request from your allowlisted range.</span></div>
+  <div class="gn-doc-r"><span class="gn-doc-l">The network sends</span><span class="gn-doc-v">Only the cases that are the network's to send: event deliveries to your endpoint, the daily settlement file, a retrieval request, an arbitration decision, a token reissue.</span></div>
+  <div class="gn-doc-r"><span class="gn-doc-l">A case passes when</span><span class="gn-doc-v">The network sees it, and what it saw matches the case: the response code, the amount, the delivery answered with a 2xx.</span></div>
+</div>
+<h2 id="groups">The case groups</h2>
+<p>Every case says what to send, what to expect, when the network saw it, and the result.</p>
+<div class="gn-rows" style="margin-top:16px">
+  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Authorization</b><span>Approve card present and not present, partial, soft and hard decline, stand-in, reversal in full and in part. Your host sends all eight.</span></div><div class="gn-row-r"><span class="gn-num">8 cases</span></div></div>
+  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Connectivity</b><span>Mutual TLS on the production chain and the staging chain, which the network checks, and any request from your allowlisted range.</span></div><div class="gn-row-r"><span class="gn-num">3 cases</span></div></div>
+  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Disputes</b><span>A retrieval request and an arbitration decision the network delivers; evidence your host submits in time and, once, after the window.</span></div><div class="gn-row-r"><span class="gn-num">4 cases</span></div></div>
+  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Settlement</b><span>The daily file and its adjustments, which the network sends; the totals for that cycle, which your host reports to the cent.</span></div><div class="gn-row-r"><span class="gn-num">3 cases</span></div></div>
+  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Tokens</b><span>Provision a token and charge on it from your host; the network reissues the card and the token keeps working.</span></div><div class="gn-row-r"><span class="gn-num">3 cases</span></div></div>
+</div>
+<h2 id="submit">Submit for validation</h2>
+<p>When every case is seen and passing, the Developer Portal offers one button, Submit for validation. Submission books the network's validation in your window: a Discover certification engineer validates end to end across every layer, and the result is written to the same record. Until then the page has no button; there is nothing to run.</p>
+<h2 id="upload">What you upload</h2>
+<div class="gn-doc gn-doc--2" style="max-width:820px">
+  <div class="gn-doc-r"><span class="gn-doc-l">Staging certificate chain</span><span class="gn-doc-v">Leaf, intermediate, root. The network requires the full chain; most clients accept a short one, which is the usual first failure. The network checks the chain on request.</span></div>
+  <div class="gn-doc-r"><span class="gn-doc-l">Configuration</span><span class="gn-doc-v">Pre-filled from the agreement: BIN range, settlement account, dispute routing. You add the callback endpoint and the stand-in ceiling.</span></div>
+  <div class="gn-doc-r"><span class="gn-doc-l">Production certificate chain</span><span class="gn-doc-v">Before activation. Expiry is read on the first handshake and flagged at 30 days.</span></div>
+  <div class="gn-doc-r"><span class="gn-doc-l">A production endpoint</span><span class="gn-doc-v">Production events go to a production URL with its own secret.</span></div>
+</div>
+<h2 id="activation">Activation</h2>
+<p>Scheduled by Discover, 6:00 AM ET on the agreed day. The same credentials open production; nothing on your side changes but the host. Production traffic appears in Logs from the first authorization, and the first settlement cycle posts the next morning.</p>
+<div class="gn-strip" style="margin-top:32px"><b>Certification needs an account and an agreement.</b><span>The reference, the test cards and the sandbox do not. <a class="gn-link" href="../support.html#signup">Create a free account</a> to start in the sandbox today.</span></div>
+<div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="testing.html"><h3 style="font-size:15px">Test cards</h3><p style="color:var(--gn-text-secondary);margin-top:8px">The same numbers the authorization cases use.</p></a><a class="gn-card is-link" href="webhooks.html"><h3 style="font-size:15px">Receive events</h3><p style="color:var(--gn-text-secondary);margin-top:8px">The endpoint the network's cases are delivered to.</p></a><a class="gn-card is-link" href="../status.html"><h3 style="font-size:15px">Status</h3><p style="color:var(--gn-text-secondary);margin-top:8px">The certification environment, now and for 90 days.</p></a></div></div>
+
+</main><nav class="dv-toc"></nav></div>
+<script src="../shared/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test cards and sandbox · Developers · Discover Global Network</title>
+<link rel="stylesheet" href="../../design-system/tokens/colors.css">
+<link rel="stylesheet" href="../../design-system/tokens/typography.css">
+<link rel="stylesheet" href="../../design-system/tokens/spacing.css">
+<link rel="stylesheet" href="../../design-system/gn.css">
+<link rel="stylesheet" href="../shared/site.css">
+<script src="../../design-system/shared/icons.js"></script>
+<script src="../../design-system/gn-charts.js"></script>
+<script src="../shared/data.js"></script>
+</head>
+<body class="dv">
+<div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
+<div class="dv-h"><div class="gn-eyebrow">Start</div><h1>Test cards and sandbox</h1><p>The sandbox answers with test responses keyed to what you send. Eight cards, each built to come back a different way. No live cards, no charges.</p></div>
+<div class="dv-pre"><b>Before you start</b><span>Nothing. The cards and the demo console work without an account. Your own sandbox, with logs of what you sent, comes with a <a href="../support.html#signup">free account</a>.</span></div>
+<h2 id="cards">Test cards</h2>
+<p>Any expiry in the future, any CVC. The number picks the outcome.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense dv-cards"><thead><tr><th scope="col">Number</th><th scope="col">Outcome</th><th scope="col">Code</th><th scope="col">Details</th><th scope="col"><span class="dv-sr">Try it</span></th></tr></thead><tbody id="tcBody"></tbody></table></div>
+<script>document.getElementById('tcBody').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]); return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td><span class="gn-status '+tone+'">'+c[2]+'</span></td><td>'+c[3]+'</td><td class="is-num"><button class="gn-link" type="button" onclick="pick('+i+')">Try it</button></td></tr>' }).join('');</script>
+<h2 id="declines">Declines</h2>
+<p>A decline is a 200 with <span class="gn-mono">decision: declined</span> and the issuer's response code. A soft decline, 51, may be retried on your own schedule. A hard decline, 05 or 54, must not be retried with the same message. The <a href="errors.html#codes">codes</a> say which is which.</p>
+<h2 id="disputes">Disputes</h2>
+<p><span class="gn-mono">6011 3300 0000 2027</span> approves, then opens a dispute four minutes later: <span class="gn-mono">dispute.opened</span> arrives with reason 4837 and a response deadline, and the case appears on the Disputes endpoint. Submit evidence to it and the sandbox decides within a minute.</p>
+<h2 id="tokens">Tokens and reissue</h2>
+<p><span class="gn-mono">6011 3300 0000 3504</span> approves on a token whose card is reissued overnight. In the sandbox the reissue happens after two minutes: <span class="gn-mono">token.updated</span> arrives and the token keeps working.</p>
+<h2 id="console">The demo console</h2>
+<p>Runs on the shared demo sandbox with the demo credentials. One request at a time, rotated daily. Your own sandbox, with logs of what you sent, comes with a free account.</p>
+<div class="dv-console">
+  <div><span class="gn-label" style="display:block;margin-bottom:8px">Card</span><div class="gn-testcards" style="margin-top:0" id="tcPick"></div><div class="gn-inline" style="margin-top:24px"><label class="gn-field" style="margin:0"><span class="gn-field-l">Amount</span><input class="gn-in gn-in--mono" id="tcAmt" value="58.20" style="width:140px"></label><button class="gn-btn gn-btn--primary" style="align-self:flex-end" onclick="send()">Send</button></div></div>
+  <div><span class="gn-label" style="display:block;margin-bottom:8px">Request</span><div class="gn-console" style="margin-top:0"><div class="gn-console-bar"><span class="gn-mono">POST /acceptance/v1/authorizations</span><span class="gn-rs" id="tcRs"></span></div><pre id="tcOut" aria-live="polite"><span class="gn-console-wait">Pick a card and press Send.</span></pre></div></div>
+</div>
+<script>
+var cur=0; function pick(i){ cur=i; document.querySelectorAll('.gn-testcard').forEach(function(t,j){ t.classList.toggle('is-sel',j===i) }); document.getElementById('console').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}) }
+document.getElementById('tcPick').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]); return '<button class="gn-testcard'+(i===0?' is-sel':'')+'" onclick="cur='+i+';document.querySelectorAll(\'.gn-testcard\').forEach(function(t,j){t.classList.toggle(\'is-sel\',j==='+i+')})"><span class="gn-mono">'+c[0]+'</span><span class="gn-status '+tone+'">'+c[2]+'</span><em>'+c[1]+'.</em></button>' }).join('');
+function send(){ var a=document.getElementById('tcAmt'), n=parseFloat(a.value); if(!dvErr(a, !a.value.trim()?'Enter an amount in dollars, like 58.20.':!(n>0)||!/^\d+(\.\d{1,2})?$/.test(a.value.trim())?'Enter an amount in dollars, like 58.20.':'')){ a.focus(); return } if(dvOffline()){ document.getElementById('tcRs').innerHTML=''; document.getElementById('tcOut').textContent='You\'re offline. The request was not sent; the sandbox needs a connection.'; return } var c=DV.cards[cur], amt=Math.round(parseFloat(document.getElementById('tcAmt').value||'0')*100), ok=c[2]==='00'||c[2]==='10', ms=38+Math.round(Math.random()*12); var body={amount:amt,currency:'USD',merchant_id:'mch_demo',pan:c[0].replace(/ /g,''),entry_mode:'contactless'}; var res={id:'auth_'+Math.random().toString(16).slice(2,8),decision:c[2]==='10'?'partial':ok?'approved':'declined',response_code:c[2]}; if(c[2]==='10') res.approved_amount=Math.round(amt/2); if(c[2]==='00') res.avs={street:'Y',postal:'Y'}; if(c[0].indexOf('1010')>-1) res.answered_by='network'; res.issuer_ms=ms; document.getElementById('tcRs').innerHTML='<b'+(ok?'':' class="is-slow"')+'>'+(ok?'200':'200')+'</b> · '+ms+' ms'; document.getElementById('tcOut').textContent=JSON.stringify(body,null,2)+'\n\n// response\n'+JSON.stringify(res,null,2); }
+</script>
+<h2 id="live">Sandbox and live</h2>
+<p>The base URL sets the environment: sandbox, certification, production. One set of credentials is promoted through them by the network; nothing on your side changes but the host. Live never takes test data, and a test card sent to production is declined with 14.</p>
+<div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="../api/index.html#authorize"><h3 style="font-size:15px">The Authorize endpoint</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field the console just sent, and what comes back.</p></a><a class="gn-card is-link" href="authorization.html"><h3 style="font-size:15px">Accept a payment</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Capture, reverse and refund what you just authorized.</p></a><a class="gn-card is-link" href="errors.html#codes"><h3 style="font-size:15px">Response codes</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What each code in the table means, and what to do.</p></a></div></div>
+
+</main></div>
+<script src="../shared/site.js"></script>
+</body>
+</html>

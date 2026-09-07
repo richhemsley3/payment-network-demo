@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accept a payment · Developers · Discover Global Network</title>
+<link rel="stylesheet" href="../../design-system/tokens/colors.css">
+<link rel="stylesheet" href="../../design-system/tokens/typography.css">
+<link rel="stylesheet" href="../../design-system/tokens/spacing.css">
+<link rel="stylesheet" href="../../design-system/gn.css">
+<link rel="stylesheet" href="../shared/site.css">
+<script src="../../design-system/shared/icons.js"></script>
+<script src="../../design-system/gn-charts.js"></script>
+<script src="../shared/data.js"></script>
+</head>
+<body class="dv">
+<div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
+<div class="dv-h"><div class="gn-eyebrow">Build</div><h1>Accept a payment</h1><p>Authorize, capture, reverse, refund. Partial approvals, stand-in when the issuer is slow, and the score that rides on every answer.</p></div>
+<div class="dv-pre"><b>Before you start</b><span>A sandbox token from the <a href="quickstart.html">quickstart</a>. The Authorization object in the <a href="../api/index.html#authorization">reference</a>.</span></div>
+<h2 id="authorize">Authorize</h2>
+<p>An authorization asks the issuer to hold an amount. The answer is a decision, the issuer's code, and how long the issuer took. Answered within 500 ms, or by stand-in rules you set.</p>
+<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
+  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan_token": "tok_9d1b4e", "entry_mode": "ecommerce", "avs": { "street": "12 Ash St", "postal": "80202" } }'</pre><pre class="gn-code" data-lang="node" data-name="Node">const auth = await dgn.authorizations.create({ amount: 5820, currency: "USD", merchantId: "mch_demo", panToken: "tok_9d1b4e", entryMode: "ecommerce", avs: { street: "12 Ash St", postal: "80202" } });</pre><pre class="gn-code" data-lang="python" data-name="Python">auth = client.authorizations.create(amount=5820, currency="USD", merchant_id="mch_demo", pan_token="tok_9d1b4e", entry_mode="ecommerce", avs={"street": "12 Ash St", "postal": "80202"})</pre></div></div>
+<h3 id="partial">Partial approval</h3>
+<p>A prepaid or limited card may approve less than requested: <span class="gn-mono">decision: partial</span>, code 10, and <span class="gn-mono">approved_amount</span>. Capture that amount, or reverse and ask for another card.</p>
+<h3 id="standin">Stand-in</h3>
+<p>When the issuer does not answer in time, the network answers on your stand-in rules: a ceiling per transaction and per card per day, set in Configuration. The response carries <span class="gn-mono">answered_by: network</span>. Stand-in approvals clear like any other.</p>
+<h2 id="capture">Capture</h2>
+<p>Move an approved hold into the day's clearing file. Within 7 days, in full or in part. A batch takes up to 5,000 ids on one call.</p>
+<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/captures \
+  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{ "authorization_id": "auth_71ab3c", "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.captures.create({ authorizationId: "auth_71ab3c", amount: 5820 });
+// end of day
+await dgn.captures.createBatch({ authorizationIds: ids });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.captures.create(authorization_id="auth_71ab3c", amount=5820)
+client.captures.create_batch(authorization_ids=ids)</pre></div></div>
+<h2 id="reverse">Reverse</h2>
+<p>Release a hold you no longer need, in full or in part. The issuer sees it immediately. A reversal after capture is a refund.</p>
+<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations/auth_71ab3c/reverse \
+  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{ "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.authorizations.reverse("auth_71ab3c", { amount: 5820 });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.authorizations.reverse("auth_71ab3c", amount=5820)</pre></div></div>
+<h2 id="refund">Refund</h2>
+<p>Return captured money to the cardholder. Full or partial. Reaches the cardholder in 3 to 5 days and appears in that night's cycle as an adjustment.</p>
+<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/refunds \
+  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{ "authorization_id": "auth_71ab3c", "amount": 2000, "reason": "requested_by_customer" }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.refunds.create({ authorizationId: "auth_71ab3c", amount: 2000, reason: "requested_by_customer" });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.refunds.create(authorization_id="auth_71ab3c", amount=2000, reason="requested_by_customer")</pre></div></div>
+<h2 id="score">The score</h2>
+<p>Every authorization response carries <span class="gn-mono">score</span>, 0 to 100, and <span class="gn-mono">score_reasons</span>: network-side signal the issuer does not hold, such as whether this device has paid this merchant before. Read it or ignore it. Rules on it live in Fraud in the Partner Portal.</p>
+<h2 id="iso">If your platform speaks ISO 8583</h2>
+<p>The mapping is direct. DE 4 is <span class="gn-mono">amount</span>, DE 49 is <span class="gn-mono">currency</span>, DE 22 is <span class="gn-mono">entry_mode</span>, DE 39 comes back as <span class="gn-mono">response_code</span>. The <a href="../sdks.html#samples">ISO 8583 bridge sample</a> maps a 1987-variant message field by field.</p>
+<div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="webhooks.html"><h3 style="font-size:15px">Receive events</h3><p style="color:var(--gn-text-secondary);margin-top:8px">authorization.decisioned, within a second.</p></a><a class="gn-card is-link" href="errors.html"><h3 style="font-size:15px">Errors and idempotency</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What to retry, and with which key.</p></a><a class="gn-card is-link" href="../api/index.html#authorization"><h3 style="font-size:15px">The Authorization object</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field.</p></a></div></div>
+
+</main><nav class="dv-toc"></nav></div>
+<script src="../shared/site.js"></script>
+</body>
+</html>

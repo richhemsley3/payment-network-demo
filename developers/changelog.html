@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changelog · Developers · Discover Global Network</title>
+<link rel="stylesheet" href="../design-system/tokens/colors.css">
+<link rel="stylesheet" href="../design-system/tokens/typography.css">
+<link rel="stylesheet" href="../design-system/tokens/spacing.css">
+<link rel="stylesheet" href="../design-system/gn.css">
+<link rel="stylesheet" href="shared/site.css">
+<script src="../design-system/shared/icons.js"></script>
+<script src="../design-system/gn-charts.js"></script>
+<script src="shared/data.js"></script>
+</head>
+<body class="dv">
+<div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
+<div class="dv-h"><div class="gn-eyebrow">Reference</div><h1>Changelog</h1><p>Every change to the API and the events, dated, with what changes for you. Additive changes arrive without a version change.</p></div>
+<div class="gn-toolbar" style="margin-top:0"><div class="gn-toolbar-l"><div class="gn-seg gn-seg--sm" id="clSeg" role="group" aria-label="Kind of change"><button aria-pressed="true" data-k="all">All</button><button aria-pressed="false" data-k="Added">Added</button><button aria-pressed="false" data-k="Changed">Changed</button><button aria-pressed="false" data-k="Deprecated">Deprecated</button></div></div><div class="gn-toolbar-r"><a class="gn-link" href="#subscribe">Subscribe by email</a></div></div>
+<div class="gn-timeline" id="cl"></div>
+<script>
+var clFilter='all', clShown=12;
+/* twelve newest entries, then Show 12 more; the foot says how many of how many */
+function paintCl(f,more){ if(f!==clFilter){ clFilter=f; clShown=12 } if(more) clShown+=12; var all=DV.changelog.filter(function(c){ return f==='all'||c[2]===f }), list=all.slice(0,clShown), g={}; list.forEach(function(c){ (g[c[0]]=g[c[0]]||[]).push(c) }); document.getElementById('cl').innerHTML=(all.length?'':'<div class="gn-empty"><b>No '+f.toLowerCase()+' entries.</b><span>Every change since v4.0 is under All.</span></div>')+Object.keys(g).map(function(d){ var day=DV.date(d); return '<div class="gn-tl-day"><div class="gn-eyebrow gn-tl-h">'+day+'</div>'+g[d].map(function(c){ return '<div class="gn-tl-i"><span class="gn-tl-t">'+c[1]+'</span><div class="gn-tl-b"><b>'+c[3]+'</b><p><span class="gn-label" style="display:block;margin-bottom:2px">What changes for you</span>'+c[4]+(c[5]?' <a href="'+c[5]+'">'+c[6]+'</a>':'')+'</p></div><div class="gn-tl-r"><span class="gn-status'+(c[2]==='Deprecated'?' is-warn':c[2]==='Changed'?'':' is-good')+'">'+c[2]+'</span></div></div>' }).join('')+'</div>' }).join('')+(all.length>list.length?'<div class="gn-pager"><span>'+list.length+' of '+all.length+'</span><button class="gn-link" type="button" onclick="paintCl(clFilter,true)">Show '+Math.min(12,all.length-list.length)+' more</button></div>':all.length>12?'<div class="gn-pager"><span>'+all.length+' of '+all.length+'</span></div>':'') }
+paintCl('all'); document.getElementById('clSeg').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; paintCl(b.getAttribute('data-k')) });
+</script>
+<h2 id="versioning">Versioning</h2>
+<p>The version is in the path. A version is supported for at least 24 months after its successor ships. Additive changes, such as a new optional field, arrive without a version change and are announced here. A breaking change ships as a new version with a migration note, and the old version keeps answering until its retirement date.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense" style="max-width:720px"><thead><tr><th scope="col">Version</th><th scope="col">Status</th><th scope="col">Shipped</th><th scope="col">Retires</th></tr></thead><tbody>
+<tr><td class="gn-mono">v4</td><td><span class="gn-status is-good">Current</span></td><td>February 20, 2026</td><td>—</td></tr>
+<tr><td class="gn-mono">v3</td><td><span class="gn-status is-warn">Retiring</span></td><td>June 2, 2023</td><td>February 28, 2028</td></tr>
+<tr><td class="gn-mono">v2</td><td><span class="gn-status is-quiet">Retired</span></td><td>March 1, 2022</td><td>June 30, 2025</td></tr>
+</tbody></table></div>
+<h2 id="subscribe">Subscribe</h2>
+<p>Every entry above, by email, the day it is published.</p>
+<div class="gn-inline" style="margin-top:16px;align-items:flex-start"><label class="gn-field" style="width:320px"><span class="gn-field-l dv-sr">Email</span><input class="gn-in" id="clEmail" placeholder="you@acquirer.example" autocomplete="email"></label><button class="gn-btn" type="button" onclick="clSub()">Subscribe</button></div>
+<script>function clSub(){ var e=document.getElementById('clEmail'); if(dvOffline(e)) return; if(dvErr(e, !e.value.trim()?'Enter your email.':!dvEmail(e.value)?'Enter an email address, like you@acquirer.example.':'')) { dvToast('Subscribed. Changes go to '+e.value.trim()+'.'); dvDrop('clEmail'); e.value='' } else e.focus() }</script>
+
+</main></div>
+<script src="shared/site.js"></script>
+</body>
+</html>
