@@ -72,6 +72,7 @@ window.GN_ICONS={
   shield:'<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M12 8v4"/><path d="M12 15v.5"/>',
   webhook:'<circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="6" r="2"/><path d="M12 8v4l-6 4"/><path d="M12 12l6 4"/>',
   tag:'<path d="M20 13l-7 7-9-9V4h7l9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+  chat:'<path d="M4 5h16v11H9l-5 4z"/>',
   terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3"/><path d="M12 15h5"/>',
   history:'<path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/>',
   help:'<circle cx="12" cy="12" r="8"/><path d="M12 16v.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/>',
