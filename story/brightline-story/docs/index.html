@@ -1439,6 +1439,19 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 /* the rail already reserves its own height on the body */
 .mn{flex:1; min-width:0; padding:0 48px 40px}
 
+/* the agent's plan rows are the phase picker: a button per row, the open one on the selected ground */
+.p5-pick{width:calc(100% + 24px); text-align:left; font:inherit; color:inherit; background:none; border:0; border-bottom:1px solid var(--g200); border-radius:0; cursor:pointer; padding:16px 12px; margin:0 -12px}
+.p5-pick:hover{background:var(--g050)}
+.p5-pick.is-on{background:var(--blue100); border-radius:var(--r-part); border-bottom-color:transparent}
+.p5-pick.is-on .p5-t{color:var(--navy)}
+.p5-pick:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
+/* a timeline entry with no clock time has no time column */
+.tl-i.no-t{grid-template-columns:minmax(0,1fr) auto}
+/* a number never wraps in a table */
+.gn-table td.is-num{white-space:nowrap}
+/* the caught card carries its own action */
+.al-a{margin-top:20px}
+
 /* ---- the first thing: a marked 025 surface ---- */
 
 /* ---- section with tabs as words ---- */
@@ -3206,6 +3219,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
   .hdr,.sb,#rail,.skip,.gn-toast,#dlg,#scrim,.hdr-res,.gn-menu-panel,.back,.gn-page-head-act,.sc-a,.gn-form-act,.gn-table-foot,.tb2{display:none!important}
   /* printed, a record is the record: no segments, buttons, forms or search chips, which only work on screen */
   .gn-seg,.gn-btn,form.gn-ask,.gn-thread-f,.gn-actions,.gn-chip,.chip{display:none!important}
+  .p5-pick{display:grid!important; background:none!important} /* the plan's rows are the record, not a control, on paper */
   /* a wide table shows every column on Letter: heads wrap, cells sit tighter */
   .gn-table th{white-space:normal} .gn-table td,.gn-table th{padding-left:12px; padding-right:12px}
   .gn-cal{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -5756,9 +5770,9 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function msg(k, when, text){ var w=PEOPLE[k]; return '<div class="msg">'+av(k,'a36')+'<div><div class="msg-h"><b>'+esc(w.n)+'</b><span>'+esc(w.r)+', '+esc(when)+'</span></div><p>'+esc(text)+'</p></div></div>' }
  /* a timeline: entries under a day, a rule down the left, the newest first */
  function timeline(days){
-   return '<div class="tl">'+days.map(function(d){ return '<div class="tl-d"><span class="tl-m">'+esc(d.day)+'</span>'+d.items.map(function(it){
+   return '<div class="tl">'+days.map(function(d){ var noT=!d.items.some(function(it){ return it.t }); return '<div class="tl-d"><span class="tl-m">'+esc(d.day)+'</span>'+d.items.map(function(it){
      var lk = it.go2 ? ' data-go2="'+it.go2+'"' : it.act ? ' data-act="'+it.act+'" data-k="'+esc(it.k||'')+'"' : '';
-     return '<div class="tl-i'+(it.cls?' '+it.cls:'')+(lk?' is-link':'')+'"'+lk+'><span class="tl-t">'+esc(it.t||'')+'</span><div class="tl-b"><b>'+it.title+'</b>'+(it.d?'<p>'+it.d+'</p>':'')+(it.more||'')+'</div>'+(it.r?'<div class="tl-r">'+it.r+'</div>':'')+'</div>' }).join('')+'</div>' }).join('')+'</div>';
+     return '<div class="tl-i'+(it.cls?' '+it.cls:'')+(lk?' is-link':'')+(noT?' no-t':'')+'"'+lk+'>'+(noT?'':'<span class="tl-t">'+esc(it.t||'')+'</span>')+'<div class="tl-b"><b>'+it.title+'</b>'+(it.d?'<p>'+it.d+'</p>':'')+(it.more||'')+'</div>'+(it.r?'<div class="tl-r">'+it.r+'</div>':'')+'</div>' }).join('')+'</div>' }).join('')+'</div>';
  }
  /* a table: columns, right-aligned numbers, one hairline per row. The workhorse
     the design language names, which the product had been avoiding for rows. */
@@ -5896,7 +5910,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    $$('.gn-menu', root).forEach(function(m){ var pnl=m.querySelector('.gn-menu-panel'), op=m.querySelector('[data-act="menu"]'); if(!op) return; var id=op.dataset.k; var back=function(){ var o=$('[data-act="menu"][data-k="'+id+'"]'); if(o) o.focus(); else focusMain() };
      if(pnl){ wireMenu(pnl, function(){ SCENE.menu=null; drawApp(VIEW); back() }, back); op.addEventListener('keydown', function(e){ if(e.key==='Tab'){ SCENE.menu=null; drawApp(VIEW); back() } }) } });
    /* segments: Left and Right move between them and select as they go; the story rail does not hear those keys */
-   $$('.gn-seg', root).forEach(function(seg){ var bs=$$('button[data-tab]', seg).filter(function(b){ return !b.disabled }); bs.forEach(function(b,i){ b.addEventListener('keydown', function(e){ if(e.key!=='ArrowRight' && e.key!=='ArrowLeft' && e.key!=='Home' && e.key!=='End') return; e.preventDefault(); e.stopPropagation();
+   $$('.gn-seg, [role="tablist"]:not(.gn-seg)', root).forEach(function(seg){ var bs=$$('button[data-tab]', seg).filter(function(b){ return !b.disabled }); bs.forEach(function(b,i){ b.addEventListener('keydown', function(e){ if(e.key!=='ArrowRight' && e.key!=='ArrowLeft' && e.key!=='Home' && e.key!=='End') return; e.preventDefault(); e.stopPropagation();
      var n=e.key==='Home'?0:e.key==='End'?bs.length-1:e.key==='ArrowRight'?(i+1)%bs.length:(i-1+bs.length)%bs.length; var k=bs[n].dataset.tab; bs[n].click(); var nb=$('[data-tab="'+k+'"]'); if(nb) nb.focus() }) }) });
    $$('svg', root).forEach(function(s){ if(s.closest('.gn-chart')) return; if(!s.getAttribute('role') && !s.getAttribute('aria-label')) s.setAttribute('aria-hidden','true') });
    $$('.gn-chart svg', root).forEach(function(s){ var c=s.closest('.gn-chartcard, .card, .gn-kpi, section, #mn'); var t=c && c.querySelector('.gn-chart-h, .card-t, .gn-kpi-l, h2, h3, b'); s.setAttribute('role','img'); s.setAttribute('aria-label', (t?t.textContent.trim():'')+' chart') });
@@ -6700,7 +6714,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    return '<article class="al"><div class="al-h"><div><b>'+esc(e.t)+'</b><span>'+esc(e.when)+', '+esc(e.took)+'</span></div>'+word(e.k==='cnp'?'In hand':'Fixed')+'</div>'
     +'<p>'+esc(e.p)+'</p>'
     +'<div class="al-s">'+e.steps.map(function(s){ return '<div><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div>'
-    +'<div class="al-f">'+esc(e.close)+'</div></article>';
+    +(e.close?'<div class="al-f">'+esc(e.close)+'</div>':'')+'</article>';
  }
 
  /* ══ DEVELOPER PORTAL, Priya ════════════════════════════════════ */
@@ -7154,12 +7168,13 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var f=figs([['Waiting on you',String(mine.length),mine.length?'oldest '+daysWord(mine.reduce(function(a,x){return Math.max(a,x.d)},0)):''],['Waiting on a partner',String(theirs.length),'oldest '+daysWord(theirs[0]?theirs[0].d:0)],['Go-lives in May',String(month),STAGE>=5?'1 done':''],['Windows in May',String(wins.length),SCENE.agBooked?'':'1 not yet booked']], 'gn-figs--compact');
    var yours = mine.length ? secH('Yours')+tbl2([['Partner'],['What'],['Since',1],['']], mine.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(cap(x.since)), x.act||''], act:'agPartner', k:x.k} })) : secH('Yours')+'<p class="para">Nothing waiting on you.</p>';
    var mx=Math.max(1, theirs.reduce(function(a,x){return Math.max(a,x.d)},0)), shown=theirs.slice(0,10); /* the ten longest; the book holds the rest */
-   var wait = secH('Waiting on a partner', 'Longest first')+'<div class="gn-rank">'+shown.map(function(x){ return '<div class="gn-rank-r is-link" data-act="agPartner" data-k="'+x.k+'"><span><b>'+esc(x.p)+'</b><em>'+esc(x.t)+'</em></span><div class="gn-bar gn-bar--thin"><i style="--w:'+Math.round(100*x.d/mx)+'%"></i></div><b class="gn-num">'+(x.d?daysWord(x.d):esc(cap(x.since)))+'</b><span class="gn-num"></span></div>' }).join('')+'</div>'+(theirs.length>10?'<div class="gn-table-foot"><span></span><span>'+goLink('All '+theirs.length+' in Partners','data-go2="book"')+'</span></div>':'');
-   var week=secH('This week')+timeline([{day:'May', items:[
+   var wait = secH('Waiting on a partner', 'Longest first')+tbl2([['Partner'],['On'],['Waiting',1],['']], shown.map(function(x){ var lead=((BOOKX[x.k]||{}).lead||'').split(', ')[0];
+     return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'agPartner', k:x.k} }))+(theirs.length>10?'<div class="gn-table-foot"><span></span><span>'+goLink('All '+theirs.length+' in Partners','data-go2="book"')+'</span></div>':'');
+   var week=secH('This week', (wins.length?nn(wins.length,'window'):'')+(SCENE.agBooked?'':', 1 not yet booked')+', '+nn(month,'go-live'))+timeline([{day:'May', items:[
      {t:'May 4', title:'Brightline certification window opens', d:certTotal()+' cases from configuration.', r:sw(STAGE>=4?'Booked':'After configuration',''), act:'agPartner', k:'brightline'},
      {t:'May 11', title:'Tallgrass Payments certification window', d:'31 cases, three fare-capping cases to clear first.', r:sw('Booked',''), act:'agPartner', k:'tallgrass'},
      {t:'May 14', title:'Brightline go-live', d:'Activation at 6:00 AM, first settlement May 15.', r:STAGE>=5?word('Live'):sw('Target',''), act:'agPartner', k:'brightline'}]}]);
-   return head+yours+f+wait+week;
+   return head+yours+wait+week;
  };
  /* every step of the shared plan, with its state, for any partner in the book:
     Brightline's from live state, the others' from the plan counts */
@@ -7253,9 +7268,11 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    /* 3. the plan both sides see: five bars, then one phase as its steps */
    var firstOpen=GROUPS.filter(function(g){ return steps.some(function(r){ return r.x.g===g.k && r.st!=='done' }) })[0]||GROUPS[GROUPS.length-1];
    var ph_=tab('agPhase_'+b.k, firstOpen.k), gsel=GROUPS.filter(function(g){return g.k===ph_})[0]||firstOpen;
-   var segs=tabs('agPhase_'+b.k, GROUPS.map(function(g,i){ var xs=steps.filter(function(r){return r.x.g===g.k}); return [g.k, g.t, xs.filter(function(r){return r.st==='done'}).length+' of '+xs.length] }), firstOpen.k);
+   /* the five parts as rows: the bar, the count, the status, and the row opens to its steps (a tablist without a second row of tabs) */
+   var segs='<div class="p5" role="tablist">'+GROUPS.map(function(g,i){ var xs=steps.filter(function(r){return r.x.g===g.k}), dn=xs.filter(function(r){return r.st==='done'}).length, on=g.k===gsel.k, complete=dn===xs.length, now=g.k===firstOpen.k;
+     return '<button class="p5-r p5-pick'+(on?' is-on':'')+'" role="tab" aria-selected="'+on+'" data-tab="agPhase_'+b.k+':'+g.k+'"><span class="p5-t">'+(i+1)+'. '+esc(g.t)+'</span><div class="p5-bar"><i style="--w:'+Math.round(100*dn/xs.length)+'%"></i></div><span class="gn-num">'+dn+' of '+xs.length+'</span>'+(complete?word('Done'):now?sw('Now',''):dn?sw('Open',''):sw('Later',''))+'</button>' }).join('')+'</div>';
    var stepsT=tbl2([['Step'],['The partner’s part'],['The network’s part'],['Owner'],['Status']], steps.filter(function(r){return r.x.g===gsel.k}).map(function(r){ return {c:[esc(r.x.t), esc(r.x.short), esc((NET_PART[r.x.k]||{}).d||''), stepOwner(r.x), stepStatus(r,b)], act:'noopRow'} }));
-   var plan=secH('The plan', (bl?S.done:steps.filter(function(r){return r.st==='done'}).length)+' of '+STEPS.length+' steps done')+(bl?partsBars(S,false):partsBars(null,false,x.plan))+segs+stepsT;
+   var plan=secH('The plan', (bl?S.done:steps.filter(function(r){return r.st==='done'}).length)+' of '+STEPS.length+' steps done')+segs+stepsT;
    /* 4. environments and identifiers */
    /* 4. environments, then what the network issued and what it read off the handshake; the production chain reads the clock */
    var ids=[]; if(bl){ if(STAGE>=4) ids.push(['Acquirer identifier','44-0917','Issued March 20'],['Institution range','601186 0000 to 601186 9999','Schedule A']);
@@ -7295,7 +7312,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    /* notes are kept by partner and read by every seat on the network's side; a partner never sees them */
    var notes=(SCENE.agNotes||{})[b.k]||[], noteErr=SCENE.agNoteErr===b.k;
    var note=secH('Notes', 'Not shown to the partner')+(notes.length?doc(notes.map(function(n){ return [dayName(n.at), esc(n.t), n.by] })):'')
-     +'<form class="gn-ask gn-thread-f" onsubmit="return false"><textarea class="gn-in'+(noteErr?' is-err':'')+'" id="agNote-'+b.k+'" rows="2" aria-label="A note on '+esc(b.n)+'"></textarea>'+(noteErr?'<span class="gn-help is-err">Write the note before saving it.</span>':'<span class="gn-help">Every seat on the network’s side reads these.</span>')+'<div class="gn-form-act"><button class="gn-btn" data-act="agNote" data-k="'+b.k+'">Save</button></div></form>';
+     +'<form class="gn-ask gn-thread-f" onsubmit="return false"><textarea class="gn-in'+(noteErr?' is-err':'')+'" id="agNote-'+b.k+'" rows="2" aria-label="A note on '+esc(b.n)+'"></textarea>'+(noteErr?'<span class="gn-help is-err">Write the note before saving it.</span>':'')+'<div class="gn-form-act"><button class="gn-btn" data-act="agNote" data-k="'+b.k+'">Save</button></div></form>';
    /* 10. handoff, once live */
    var ho=HANDOFF[b.k], hoDate=ho&&typeof ho==='object'?ho[STAGE]:ho;
    if(isLive && !hoDate && (SCENE.handoff||{})[b.k]) hoDate=SCENE.handoff[b.k];
@@ -7357,11 +7374,12 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    /* validation is the network's action once the partner's host has submitted; while it is on screen it is the one solid button */
    var val = STAGE===4 && SCENE.certSubmitted && !SCENE.validated;
    var bookBtn = SCENE.agBooked ? '<span id="booked">'+sw('Booked May 11 to 15','')+'</span>' : '<button class="gn-btn gn-btn--sm'+(val?'':' gn-btn--primary')+'" data-act="agBook">Book May 11 to 15</button>';
-   var tl=timeline([{day:'May', items:[
-     {t:'May 4 to 8', title:'Brightline', d:certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&PANEL===7&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.'), r:val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')},
-     {t:'May 11 to 15', title:'Tallgrass Payments', d:'31 cases. Three fare-capping cases fail on one rounding rule. The rule has been sent.', r:word('soon')},
-     {t:SCENE.agBooked?'May 11 to 15':'Not booked', title:'Halcyon Acquiring', d:'Configuration confirmed April 30. Target May 21 needs a window by May 11.', r:bookBtn, cls:SCENE.agBooked?'':'is-now'}
-   ]}]);
+   var blLine = certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&PANEL===7&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.');
+   var tl=secH('Windows', 'By week')+tbl2([['Partner'],['Week'],['Cases',1],['What the network sees'],['']], [
+     {c:['Brightline', 'May 4 to 8', String(certTotal()), esc(blLine), val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')], act:'agPartner', k:'brightline'},
+     {c:['Tallgrass Payments', 'May 11 to 15', '31', 'Three fare-capping cases fail on one rounding rule. The rule has been sent.', word('soon')], act:'agPartner', k:'tallgrass'},
+     {c:['Halcyon Acquiring', SCENE.agBooked?'May 11 to 15':'<span class="gn-doc-x">Not booked</span>', '19', 'Configuration confirmed April 30. Target May 21 needs a window by May 11.', bookBtn], act:'agPartner', k:'halcyon', cls:SCENE.agBooked?'':'is-now'},
+     {c:['Verrill Commerce', 'May 25 to 29', '12', 'Re-certification for the new terminal line.', word('soon')], act:'agPartner', k:'verrill'}]);
    var weeks=calWeeks();
    var cal=secH('May', CERT_CAL.capacity+' windows a week')+'<div class="gn-cal">'+weeks.map(function(w){ var free=CERT_CAL.capacity-w[1].length;
      return '<div class="gn-cal-w"><div class="gn-cal-h"><b>'+esc(w[0])+'</b>'+(free>0?sw(free+' open',''):sw('Full','wa'))+'</div>'+w[1].map(function(it){ return '<div class="gn-cal-i"><span>'+esc(it[0])+'</span><span class="gn-num">'+it[1]+' cases</span></div>' }).join('')+(free>0?'<div class="gn-cal-e">'+free+' window'+(free>1?'s':'')+' free</div>':'')+'</div>' }).join('')+'</div>';
@@ -7426,8 +7444,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var head=ph('Alerts', 'Issues across your book.');
    var cnpDone=(SCENE.resolved||{}).cnp;
    /* the Caught cards are written to the partner ("your staging certificate"); the network reads its own side of each */
-   var netCard=function(c){ return alertCard(Object.assign({}, c, c.ag||{})) };
-   var caught = STAGE>=6 ? secH('Caught', cnpDone?'Resolved':'In hand')+netCard(CAUGHT[1])+'<div class="sc-a inset">'+(cnpDone?sw('Resolved','ok'):'<button class="gn-btn gn-btn--primary" data-act="agResolve" data-k="cnp">Resolve</button>')+'</div>' : STAGE>=4 ? secH('Caught', 'Fixed')+netCard(CAUGHT[0]) : '';
+   var netCard=function(c){ return alertCard(Object.assign({}, c, c.ag||{}, {close:''})) };
+   var caught = STAGE>=6 ? secH('Caught', cnpDone?'Resolved':'In hand')+netCard(CAUGHT[1]).replace('</article>', '<div class="al-a">'+(cnpDone?sw('Resolved','ok'):'<button class="gn-btn gn-btn--primary" data-act="agResolve" data-k="cnp">Resolve</button>')+'</div></article>') : STAGE>=4 ? secH('Caught', 'Fixed')+netCard(CAUGHT[0]) : '';
    var watch = open.length ? secH('Watching', nn(open.length,'alert'))+'<div class="nt-grid">'+open.map(agAlertCard).join('')+'</div>' : secH('Watching')+'<p class="para">No open alerts.</p>';
    return head+caught+watch;
  };
