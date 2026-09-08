@@ -4284,12 +4284,12 @@ body.mode-prep #prepbar{display:flex}
  /* the six seats on the network's side. Marcus is the demo seat and sees
     everything; a seat's acts are what it may change (agCanDo). */
  var AG_SEATS = [
-  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','agHandshake','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
-  {k:'rel',  t:'Relationship',          who:'sonia',  d:'Issues the agreement, runs the quarterly review and decides product requests.', acts:['issueAgr','agStep:agr','agRemind','agNote','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','agRoleView','agRoleBack']},
+  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','agHandshake','agMessage','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
+  {k:'rel',  t:'Relationship',          who:'sonia',  d:'Issues the agreement, runs the quarterly review, decides product requests and messages the partner.', acts:['issueAgr','agMessage','agStep:agr','agRemind','agNote','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','agRoleView','agRoleBack']},
   {k:'risk', t:'Risk and compliance',   who:'lena',   d:'Clears or holds each of the six areas and decides the risk review.', acts:['riskArea','riskClear','agRemind','agNote','agRoleView','agRoleBack']},
   {k:'cert', t:'Certification engineer',who:'ana',    d:'Books windows, confirms or declines window requests and validates certification.', acts:['agBook','agValidate','winOk','winNo','agRemind','agNote','agRoleView','agRoleBack']},
   {k:'sol',  t:'Solutions engineer',    who:'theo',   d:'Opens the sandbox to the partner’s engineer and reads the production handshake.', acts:['openSandbox','agHandshake','agRemind','agNote','agRoleView','agRoleBack']},
-  {k:'ops',  t:'Operations support',    who:'jae',    d:'Takes alerts or hands them to an engineer, resolves them and reminds partners of mandates.', acts:['agTake','agHand','agResolve','agRemind','agNote','agRoleView','agRoleBack']}
+  {k:'ops',  t:'Operations support',    who:'jae',    d:'Takes alerts or hands them to an engineer, resolves them, reminds partners of mandates and messages them.', acts:['agTake','agMessage','agHand','agResolve','agRemind','agNote','agRoleView','agRoleBack']}
  ];
  /* the six areas as the network reads them: the partner's own lines say "you", these say whose */
  var RISK_AREAS_NET = ['Three years of audited statements, liquidity and concentration.','Licenses and registrations in each market the partner operates in.','Who touches the message path and how they are governed.','The PCI DSS attestation, how keys are held and any incidents.','How the partner watches traffic and handles declines.','How the partner fails over, how fast and when it was last tested.'];
@@ -5787,7 +5787,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  }
  function fmtK(v){ return v>=1000?(v/1000).toFixed(v>=10000?0:1)+'k':String(Math.round(v)) }
  function envTiles(o){
-   o=o||{}; var sb=SCENE.sandbox||STAGE>=3, cert=STAGE>=4, prod=STAGE>=5;
+   o=o||{}; var sb=SCENE.sandbox||STAGE>=3, cert=STAGE>=4&&!pre(), prod=STAGE>=5;
    if(o.plan){ var pl=o.plan; sb=pl[1]>=1; cert=pl[4]>=1||pl[3]===4; prod=pl[4]===2; }
    var canOpen = o.agent && STAGE===2 && SCENE.submitted && !SCENE.sandbox && !o.plan;
    var t=[['Sandbox','sandbox.api.dgn.com', sb?['Open','ok']:canOpen?['Ready to open','wa']:['Waiting on the network','wa'], sb&&!o.plan?'Opened by Marcus Bell, March 9, 2:06 PM':'', canOpen?'<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="openSandbox">Open sandbox</button>':''],
@@ -6250,7 +6250,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var spec=secH('Specification', 'v4.2')+doc([['Version','v4.2, March 2026','Current'],['Endpoints','Seven','Authorize, capture, refund, reverse, settle, dispute, token'],['Reviewed by', SCENE.feasible||STAGE>=3?'Priya Raghavan, feasible':'<span class="gn-doc-x">Priya Raghavan is reviewing</span>', SCENE.feasible||STAGE>=3?'March 18':'']]);
    var ids=secH('Identifiers and ranges')+setup('ids');
    var keys=secH('Keys and certificates')+setup('keys');
-   return head+env+cred+cert+spec+ids+keys;
+   var perf = live() ? secH('API performance', 'Production, 24 hours')+figs([['Requests','48,211',''],['Errors','3.2%','1,543 requests'],['Issuer answer, median','44 ms','p99 210 ms'],['Availability','99.98%','30 days']], 'gn-figs--compact') : '';
+   return head+env+perf+cred+cert+spec+ids+keys;
  };
  PARTNER.reporting=function(){
    var head=ph('Reporting', live()?'Live since May 14. Fourteen days shown; the network keeps thirteen months.':'Starts with your first transaction.');
@@ -7141,7 +7142,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function cap(t){ t=String(t||''); return t.charAt(0).toUpperCase()+t.slice(1) }
  function daysWord(d){ return d===1?'1 day':d+' days' }
  function bookStage(b){ return typeof b.stage==='string'?b.stage:b.stage[STAGE] }
- function bookSince(b){ var x=BOOKX[b.k]; return typeof x.since==='string'?x.since:x.since[STAGE] }
+ function bookSince(b){ var x=BOOKX[b.k]; return typeof x.since==='string'?x.since:x.since[b.k==='brightline'&&pre()&&STAGE===4?3:STAGE] }
  AGENT.turn=function(sk,c){
    var r=turnRows(), mine=r.filter(function(x){return x.mine}), theirs=r.filter(function(x){return !x.mine}).sort(function(a,b){return b.d-a.d});
    if(c){
@@ -7194,7 +7195,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    if(STAGE<4 && SCENE.riskCleared && !SCENE.issued) return {x:by('agr').x, st:'now'};
    return S.cur ? by(S.cur.k) : null }
  function stepOwner(x){ var o=(NET_PART[x.k]||{}).own; return o==='network'?'The network':o==='both'?'Both sides':'Partner' }
- function stepStatus(r, b){ if(r.st==='done') return word('Done'); if(r.st==='now'){ var o=stepOwner(r.x), a=stepAction(b, r), mine=a.indexOf('agRemind')<0 && a.indexOf('gn-status')<0; /* whose move it is follows the action on the step, not only who owns it: an issued agreement waits on the partner's signature */ return o==='Both sides'?sw('In progress','wa'):mine?sw('Your turn','wa'):sw('Waiting on '+b.n,'') } if(r.st==='dgn') return sw('In review','wa'); if(r.st==='eng') return sw('With their engineer',''); return sw('Later',''); }
+ function stepStatus(r, b){ if(r.x.k==='agr' && b.k==='brightline' && r.st==='now' && (SCENE.issued||STAGE>=3)) return sw('Waiting on Brightline',''); if(r.st==='done') return word('Done'); if(r.st==='now'){ var o=stepOwner(r.x), a=stepAction(b, r), mine=a.indexOf('agRemind')<0 && a.indexOf('gn-status')<0; /* whose move it is follows the action on the step, not only who owns it: an issued agreement waits on the partner's signature */ return o==='Both sides'?sw('In progress','wa'):mine?sw('Your turn','wa'):sw('Waiting on '+b.n,'') } if(r.st==='dgn') return sw('In review','wa'); if(r.st==='eng') return sw('With their engineer',''); return sw('Later',''); }
  function relAcked(r, b){ if(r.acked.indexOf(b.k)>=0) return true; if(b.k==='brightline' && r.k==='v9' && (SCENE.ntAck||{}).v9) return true; if((SCENE.acks||{})[r.k+'|'+b.k]) return true; return false }
  /* after an act redraws the page, focus goes to what the act became (the row, the card, the next control), else to the page title */
  /* a decision on a request asks first; a decline carries a note to the partner */
@@ -7268,7 +7269,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
        ['Confidentiality agreement','Executed March 9','With the deal'],
        ['Rules acknowledged', (STAGE>=3?RULES.length:((SCENE.acked&&SCENE.acked.part?1:0)+(SCENE.acked&&SCENE.acked.data?1:0)))+' of '+RULES.length, STAGE>=3?'All six':'Two required before risk review'],
        ['Risk review', '<span class="gn-link" data-go2="risk">'+(STAGE>=4||SCENE.riskCleared?'Cleared'+(STAGE>=4?' March 12':''):STAGE>=3||(SCENE.up&&SCENE.up.fin&&SCENE.up.pci&&SCENE.up.ctl)?'Three documents received, in review':'Awaiting three documents')+'</span>', 'Six areas'],
-       ['Participation agreement', STAGE>=4?'Signed March 20':SCENE.issued?'Issued today':'<span class="gn-doc-x">Issued when risk review clears</span>', AGREEMENT.ref]]
+       ['Participation agreement', STAGE>=4&&!pre()?'Signed March 20':STAGE>=3?'Issued March 12, awaiting two signatures':SCENE.issued?'Issued today, awaiting two signatures':'<span class="gn-doc-x">Issued when risk review clears</span>', AGREEMENT.ref]]
      : [['Confidentiality agreement', pl[0]>=1?'Executed':'<span class="gn-doc-x">Not yet</span>', 'With the deal'],
         ['Risk review', '<span class="gn-link" data-go2="risk">'+(pl[0]>=3?'Cleared':pl[0]>=2?'Documents in review':'Awaiting documents')+'</span>', 'Six areas'],
         ['Participation agreement', pl[0]>=4?'Signed':pl[0]>=3?'Issued':'<span class="gn-doc-x">Issued when risk review clears</span>', ''],
@@ -7285,8 +7286,9 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
      : person('lead', '', sw('Partner lead',''), {n:x.lead.split(', ')[0], r:x.lead.split(', ')[1], org:b.n}))
      +x.dgn.map(function(dk){ return person(dk, '', sw('Discover','')) }).join('')+'</div>';
    /* 8. activity */
-   var acts = bl ? AG_ACT.filter(function(a){ return a.at<=STAGE || (STAGE===2 && a.at<=2.2 && SCENE.submitted) || (STAGE===2 && a.at<=2.5 && SCENE.sandbox) })
+   var acts = bl ? AG_ACT.filter(function(a){ return (a.at<=STAGE && !(pre() && a.at>=4)) || (STAGE===2 && a.at<=2.2 && SCENE.submitted) || (STAGE===2 && a.at<=2.5 && SCENE.sandbox) })
                  : (x.log||[{day:bookSince(b), t:'', title:'Stage: '+st, d:(typeof b.next==='string'&&b.next!=='—'?'Next: '+b.next+'.':'')+(b.turn&&b.turn!=='—'?' Turn: '+b.turn+'.':'')}]);
+   ((SCENE.agMsgs||{})[b.k]||[]).forEach(function(m){ acts=[{day:dayName(m.at), t:'', title:'Message sent', d:'To '+(x.lead||'').split(', ')[0]+': '+m.t}].concat(acts) });
    var days={}; acts.forEach(function(a){ (days[a.day]=days[a.day]||[]).push({t:a.t, title:esc(a.title), d:esc(a.d)}) });
    var act=secH('Activity', 'Newest first')+timeline(Object.keys(days).map(function(dd){ return {day:dd, items:days[dd]} }));
    /* 9. notes, the network's own */
@@ -7301,10 +7303,15 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var checklist = '<div class="gn-checklist gn-checklist--1">'+hoItems.map(function(it){ return '<div class="gn-check-i'+(it[2]?' is-done':' is-now')+'"><i>'+(it[2]?'<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>':'')+'</i><span>'+esc(it[0])+'<em>'+esc(it[1])+'</em></span><span class="gn-check-r">'+(it[2]?word('Done'):!agCanDo('hoTick')?sw('Open',''):it[3]==='live'?'<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="hoTick" data-k="live" data-p="'+b.k+'">Clear live operation</button>':it[3]?'<span class="gn-link" data-act="hoTick" data-p="'+b.k+'" data-k="'+it[3]+'">Mark done</span>':'')+'</span></div>' }).join('')+'</div>';
    var allDone=hoItems.every(function(it){return it[2]});
    if(!allDone && !agCanDo('hoTick')) checklist+='<p class="gn-empty">'+esc(agWho('hoTick'))+'</p>';
+   var lr=BOOK_REPORT.live.filter(function(x){return x[0]===b.n})[0];
+   var running = !isLive ? '' : secH('Running', bl?'Yesterday':'This quarter')+figs(bl
+     ? [['Authorizations yesterday','48,211',''],['Approved','96.8%',''],['Open disputes','23','2 need a response'],['Issuer answer, median','44 ms','']]
+     : lr ? [['Annual volume',lr[2],''],['Approved',lr[3],''],['Disputes per 10k',lr[4],''],['Fraud rate',lr[5],'']] : [], 'gn-figs--compact')
+     +'<div class="gn-actions inset">'+(agCanDo('agMessage')?'<span class="gn-link" data-act="agMessage" data-k="'+b.k+'">Send a message to '+esc((x.lead||'').split(', ')[0]||b.n)+'</span>':'')+goLink('Book report','data-go2="bookrep"')+'</div>';
    var handoff = !isLive ? '' : hoDate
      ? secH('Operations')+doc([['Handed to operations', hoDate, 'Implementation closed'],['Runs steady state','Operations support','Alerts, releases and access'],['Review cadence','Quarterly', b.k==='northbank'?'Due now':'']])
      : secH('Handoff to operations', allDone?'Ready':(hoItems.filter(function(it){return it[2]}).length+' of 4'))+checklist+(allDone?'<div class="sc-a inset">'+agGate('<button class="gn-btn gn-btn--primary" data-act="handoff" data-k="'+b.k+'">Hand off to operations</button>')+'</div>':'');
-   return head+next+plan+env+docs+reqs+team+act+note+handoff;
+   return head+next+running+plan+env+docs+reqs+team+act+note+handoff;
  };
  /* ── a quarterly review, run from the queue ── */
  AGENT.review=function(){
@@ -7677,6 +7684,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    agAlert:function(){ go('alerts') },
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); keep('#booked'); toast('Window booked'); taskDone('A3') },
    /* a reminder leaves the portal, so the dialog says who gets it and what it carries before it goes */
+   agMessage:function(b){ var k=b.dataset.k, bk=BOOK.filter(function(x){return x.k===k})[0], lead=((BOOKX[k]||{}).lead||'').split(', ')[0]||(bk&&bk.n);
+     askDialog({t:'Message '+lead+'?', p:'Sent to their portal and their email. Their reply comes to Your turn.', ok:'Send', body:'<label class="gn-field"><span class="gn-field-l">Message</span><textarea class="gn-in" id="dlgMsg" rows="3"></textarea></label>', go:function(){ var f=$('#dlgMsg'), v=(f&&f.value.trim())||'Checking in ahead of the quarterly review.'; SCENE.agMsgs=SCENE.agMsgs||{}; (SCENE.agMsgs[k]=SCENE.agMsgs[k]||[]).unshift({t:v, at:NOW}); drawApp(VIEW); focusMain(); toast('Message sent to '+lead) }}) },
    agRemind:function(b){ var k=b.dataset.k, bk=BOOK.filter(function(x){return x.k===k})[0], lead=((BOOKX[k]||{}).lead||'').split(', ')[0]||(bk&&bk.n)||'the partner';
      var rel=b.dataset.rel?RELEASES.filter(function(r){return r.k===b.dataset.rel})[0]:null, cur=bk&&!rel?bookSteps(bk).filter(function(r){return r.st==='now'})[0]:null, d=bk?daysIn(bk):0;
      var what = rel ? 'It names '+rel.t+' and the acknowledgement date, '+rel.by+'. Nothing else from the record goes with it.' : 'It says '+(cur?cur.x.t:'the open step')+' '+(d?'has waited '+daysWord(d):'is waiting today')+' and carries nothing else from the record.';
