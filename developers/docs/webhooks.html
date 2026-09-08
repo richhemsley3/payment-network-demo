@@ -9,30 +9,63 @@
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
 <link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/guides.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
+<script src="../shared/guides.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Build</div><h1>Receive events</h1><p>Events are sent to an endpoint you register, over mutual TLS, signed on every delivery, and retried for three days. Nothing here is a poll.</p></div>
-<div class="dv-pre"><b>Before you start</b><span>An HTTPS URL that accepts POST and returns 2xx within 10 seconds, or the CLI forwarding to your machine. Registering a URL needs an account; reading this page does not.</span></div>
+<div class="dv-pre"><b>Before you start</b><span>An HTTPS URL that accepts POST and returns 2xx within 10 seconds, or the CLI forwarding to your machine. Registering a URL needs an account. Reading this page does not.</span></div>
+
 <h2 id="events">The events</h2>
-<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Event</th><th scope="col">When</th></tr></thead><tbody id="evBody"></tbody></table></div>
-<script>document.getElementById('evBody').innerHTML=DV.events.map(function(e){ return '<tr><td class="gn-mono">'+e[0]+'</td><td>'+e[1]+'</td></tr>' }).join('');</script>
+<p>Six events. Each carries the object as it stood when the event was made, under <span class="gn-mono">data</span>.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Event</th><th scope="col">When</th><th scope="col">What data carries</th></tr></thead><tbody id="evBody"></tbody></table></div>
+<script>(function(){ var D={'authorization.decisioned':'The Authorization object: decision, response_code, round_trip_ms','dispute.opened':'The Case object: reason_code, respond_by, amount','settlement.posted':'The Settlement object: net, wire','token.updated':'The Token object after the change: reason, last4','merchant.risk_changed':'merchant_id, from, to, signal','certificate.expiring':'subject, expires, days_left'}; document.getElementById('evBody').innerHTML=DV.events.map(function(e){ return '<tr><td class="gn-mono">'+e[0]+'</td><td>'+e[1]+'</td><td>'+(D[e[0]]||'')+'</td></tr>' }).join('') })();</script>
+
+<h2 id="delivery">How a delivery happens</h2>
+<p>The network posts, you answer, the portal keeps every attempt. Your answer decides whether there is another.</p>
+<div id="gdDeliver"></div>
+<script>GD.seq('gdDeliver',{label:'The network posts a signed event to your endpoint. A 2xx within 10 seconds ends it. Anything else is retried on a schedule of eight attempts over three days, each attempt listed in the Developer Portal, where Retry now sends it again.', lanes:[{k:'net',n:'Discover Global Network'},{k:'ep',n:'Your endpoint'},{k:'dp',n:'Developer Portal'}], steps:[
+ {from:'net',to:'ep',l:'POST, signed with DGN-Signature',t:'mutual TLS, a fresh t and v1 each time',kind:'event'},
+ {from:'ep',to:'net',l:'2xx within 10 seconds',t:'then do the work',kind:'return'},
+ {from:'net',to:'dp',l:'Delivered, one attempt',kind:'event'},
+ {from:'ep',to:'net',l:'Anything else, or no answer',kind:'return'},
+ {from:'net',to:'ep',l:'The same event again,\non the schedule',t:'8 attempts over three days',kind:'event'},
+ {from:'net',to:'dp',l:'Every attempt, with your response',kind:'event'},
+ {from:'net',to:'net',l:'After the eighth:\nmarked failing, an alert raised'},
+ {from:'dp',to:'net',l:'Retry now, from the delivery'}]});</script>
+
 <h2 id="register">Register an endpoint</h2>
 <p>In the Developer Portal, Webhooks, Add endpoint: a URL, the events it takes, per environment. Each endpoint has its own signing secret, shown once. Or forward to your machine first.</p>
 <pre class="gn-code">dgn events listen --forward-to localhost:4000/dgn/events
 # prints the signing secret for this session</pre>
-<h2 id="shape">What a delivery looks like</h2>
-<pre class="gn-code gn-code--ink">POST https://api.acquirer.example/dgn/events
-Content-Type: application/json
-DGN-Signature: t=1717315452,v1=c17172315351a1c5e9…
 
-{ "id": "evt_8a1f83", "type": "authorization.decisioned", "created": "2026-06-02T06:04:12Z",
-  "data": { "id": "auth_71ab3c", "decision": "approved", "response_code": "00", "issuer_ms": 41 } }</pre>
+<h2 id="shape">What arrives, and what you answer</h2>
+<p>A POST with two headers you read and a JSON body you keep raw until the signature is checked. The answer is a status line.</p>
+<div class="gd-pair">
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">The delivery</span></div><pre class="gn-code gn-code--ink">POST https://api.acquirer.example/dgn/events
+Content-Type: application/json
+DGN-Signature: t=1717315452,v1=08cd6055779db610b280514ca39e8fce10e3a52820212edfa7425c8ba0392d10
+
+{"id":"evt_8a1f83","type":"authorization.decisioned","created":"2026-06-02T06:04:12Z","data":{"id":"auth_71ab3c","decision":"approved","response_code":"00","issuer_ms":41}}</pre></div>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">Your answer</span><span class="gn-status is-good">within 10 s</span></div><pre class="gn-code gn-code--ink">HTTP/1.1 200 OK
+Content-Length: 0
+
+<span class="gn-dim"># the body is ignored. Answer first, then handle the event.
+# the same event id can arrive twice: de-duplicate on evt_8a1f83.</span></pre></div>
+</div>
+
 <h2 id="verify">Verify the signature</h2>
-<p>Compute an HMAC-SHA256 over the timestamp, a period, and the raw body, with the endpoint's secret. Compare in constant time. Reject anything older than five minutes. Answer 2xx first, then do the work.</p>
+<p>Four steps, in constant time, before anything is trusted.</p>
+<ol class="gn-stepper gn-stepper--v" style="--n:4">
+<li><i>1</i><div><b>Split the header</b><span><code class="gn-mono">t</code> is the timestamp the network signed at. <code class="gn-mono">v1</code> is the signature. Ignore any other scheme.</span></div></li>
+<li><i>2</i><div><b>Build the signed payload</b><span>The timestamp, a period, the raw body. The raw bytes, before any framework parses them.</span></div></li>
+<li><i>3</i><div><b>Compute HMAC-SHA256</b><span>Key: the endpoint's secret. Message: the signed payload. Hex encoded.</span></div></li>
+<li><i>4</i><div><b>Compare, then check the clock</b><span>A constant-time comparison against <code class="gn-mono">v1</code>. Reject anything whose <code class="gn-mono">t</code> is older than five minutes.</span></div></li>
+</ol>
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="node" data-name="Node">import crypto from "node:crypto";
 app.post("/dgn/events", express.raw({ type: "*/*" }), (req, res) => {
   const [t, v1] = req.get("DGN-Signature").split(",").map(p => p.split("=")[1]);
@@ -47,11 +80,45 @@ def verify(sig, body, secret):
     return hmac.compare_digest(mac, v1) and time.time() - int(t) < 300</pre><pre class="gn-code" data-lang="java" data-name="Java">Mac mac = Mac.getInstance("HmacSHA256");
 mac.init(new SecretKeySpec(secret.getBytes(UTF_8), "HmacSHA256"));
 String expected = hex(mac.doFinal((t + "." + rawBody).getBytes(UTF_8)));
-boolean ok = MessageDigest.isEqual(expected.getBytes(UTF_8), v1.getBytes(UTF_8)) && now - t < 300;</pre></div></div>
+boolean ok = MessageDigest.isEqual(expected.getBytes(UTF_8), v1.getBytes(UTF_8)) &amp;&amp; now - t < 300;</pre></div></div>
+<h3 id="worked">Check your implementation</h3>
+<p>The delivery above was signed with this secret. Your code should produce the same <span class="gn-mono">v1</span> from the same body, byte for byte.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Input</th><th scope="col">Value</th></tr></thead><tbody>
+<tr><td>Secret</td><td class="gn-mono">whs_demo_5f2a9c1e4b7d</td></tr>
+<tr><td>t</td><td class="gn-mono">1717315452</td></tr>
+<tr><td>Body</td><td>The 172-byte JSON above, no whitespace, no trailing newline</td></tr>
+<tr><td>Expected v1</td><td class="gn-mono" style="overflow-wrap:anywhere">08cd6055779db610b280514ca39e8fce10e3a52820212edfa7425c8ba0392d10</td></tr>
+</tbody></table></div>
+
 <h2 id="retries">Retries</h2>
-<p>Anything but a 2xx within 10 seconds is retried, backing off from one minute to one hour, for three days. Deliveries are at least once: handle the same event id twice. After three days the endpoint is marked failing and an alert says so. Retry now from the delivery in the portal.</p>
+<p>Anything but a 2xx within 10 seconds is sent again. Eight attempts over three days, each with a fresh signature, each listed in the portal with your response.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Attempt</th><th scope="col">After the last</th><th scope="col">Since the first</th></tr></thead><tbody>
+<tr><td>1</td><td>At once</td><td>0</td></tr>
+<tr><td>2</td><td>4 minutes</td><td>4 minutes</td></tr>
+<tr><td>3</td><td>12 minutes</td><td>16 minutes</td></tr>
+<tr><td>4</td><td>30 minutes</td><td>46 minutes</td></tr>
+<tr><td>5</td><td>1 hour</td><td>1 hour 46 minutes</td></tr>
+<tr><td>6</td><td>6 hours</td><td>7 hours 46 minutes</td></tr>
+<tr><td>7</td><td>24 hours</td><td>1 day 8 hours</td></tr>
+<tr><td>8</td><td>40 hours</td><td>3 days</td></tr>
+</tbody></table></div>
+<h3 id="answers">What your answer does</h3>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Your answer</th><th scope="col">The network</th><th scope="col">In the portal</th></tr></thead><tbody>
+<tr><td>2xx within 10 seconds</td><td>Done. No further attempt.</td><td><span class="gn-status is-good">Delivered</span></td></tr>
+<tr><td>3xx</td><td>Treated as a failure. Redirects are never followed. Register the final URL.</td><td><span class="gn-status is-warn">Retrying</span></td></tr>
+<tr><td>4xx, including your own 400 on a bad signature</td><td>Sent again on the schedule.</td><td><span class="gn-status is-warn">Retrying</span></td></tr>
+<tr><td>5xx</td><td>Sent again on the schedule.</td><td><span class="gn-status is-warn">Retrying</span></td></tr>
+<tr><td>Nothing within 10 seconds</td><td>Sent again on the schedule. Answer first, work after.</td><td><span class="gn-status is-warn">Retrying</span></td></tr>
+<tr><td>A handshake the network could not complete</td><td>Sent again on the schedule. The chain it saw is on the delivery.</td><td><span class="gn-status is-warn">Retrying</span></td></tr>
+<tr><td>Eight failures</td><td>The endpoint is marked failing and an alert is raised. Retry now from any delivery resumes it.</td><td><span class="gn-status is-bad">Failing</span></td></tr>
+</tbody></table></div>
+<p>Deliveries are at least once and in no promised order. De-duplicate on the event id, and read <span class="gn-mono">created</span> when order matters.</p>
+
 <h2 id="secrets">Rolling a secret</h2>
-<p>Roll it if it leaks or when someone with access leaves. The previous secret stays valid for 24 hours, and every delivery in that window carries a signature for each.</p>
+<p>Roll it if it leaks or when someone with access leaves. For 24 hours both secrets are valid and every delivery carries a signature for each, so you can switch your verifier at any point in the window.</p>
+<div id="gdRoll"></div>
+<script>GD.spans('gdRoll',{label:'After a roll the previous secret stays valid for 24 hours while the new one is valid from the roll onward', max:36, rows:[{n:'Previous secret',from:0,to:24,l:'valid for 24 hours more',tone:'is-quiet'},{n:'New secret',from:0,to:36,l:'valid from the roll'}], ticks:[{v:0,l:'Roll'},{v:24,l:'+24 h'},{v:36,l:'later'}]});</script>
+
 <div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="../api/index.html#events"><h3 style="font-size:15px">Event reference</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field each event carries.</p></a><a class="gn-card is-link" href="testing.html#disputes"><h3 style="font-size:15px">Trigger a dispute</h3><p style="color:var(--gn-text-secondary);margin-top:8px">One test card opens one four minutes later.</p></a><a class="gn-card is-link" href="errors.html"><h3 style="font-size:15px">Errors</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What a 409 on retry means.</p></a></div></div>
 
 </main><nav class="dv-toc"></nav></div>

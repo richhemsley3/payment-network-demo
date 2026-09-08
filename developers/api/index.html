@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
 <link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/reference.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
@@ -19,117 +20,85 @@
 <div class="gn-toolbar" style="margin-top:0"><div class="gn-toolbar-l"><div class="gn-seg gn-seg--sm" id="envSeg" role="group" aria-label="Environment"><button aria-pressed="true" data-env="sandbox">Sandbox</button><button aria-pressed="false" data-env="cert">Certification</button><button class="is-live" aria-pressed="false" data-env="prod">Production</button></div><span class="gn-mono" id="baseUrl">https://sandbox.api.dgn.com</span></div><div class="gn-toolbar-r"><a class="gn-link" href="../sdks.html#openapi">OpenAPI</a><a class="gn-link" href="../sdks.html#openapi">Postman</a></div></div>
 <script>function setEnv(env){ try{ localStorage.setItem('dv-env',env) }catch(x){} document.querySelectorAll('#envSeg button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-env')===env) }); document.getElementById('baseUrl').textContent=DV.base[env]; document.querySelectorAll('.dv-body pre').forEach(function(p){ p.innerHTML=p.innerHTML.replace(/https:\/\/(sandbox\.|cert\.)?api\.dgn\.com/g, DV.base[env]) }) }
 document.getElementById('envSeg').addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) setEnv(b.getAttribute('data-env')) }); document.addEventListener('DOMContentLoaded',function(){ var e='sandbox'; try{ e=localStorage.getItem('dv-env')||e }catch(x){} setEnv(e) });</script>
-<div class="dv-ref">
+<nav class="rf-map" aria-label="Endpoints and events"><div><span class="gn-label">Endpoints</span>
+<a href="#authorize"><span class="gn-method">POST</span><span class="gn-path">/acceptance/v1/authorizations</span><span class="rf-map-t">Authorize a transaction</span></a>
+<a href="#reverse"><span class="gn-method">POST</span><span class="gn-path">/acceptance/v1/authorizations/{id}/reverse</span><span class="rf-map-t">Reverse an authorization</span></a>
+<a href="#capture"><span class="gn-method">POST</span><span class="gn-path">/acceptance/v1/captures</span><span class="rf-map-t">Capture</span></a>
+<a href="#refund"><span class="gn-method">POST</span><span class="gn-path">/acceptance/v1/refunds</span><span class="rf-map-t">Refund</span></a>
+<a href="#token-create"><span class="gn-method">POST</span><span class="gn-path">/tokens/v1/tokens</span><span class="rf-map-t">Create a token</span></a>
+<a href="#evidence"><span class="gn-method">POST</span><span class="gn-path">/disputes/v1/cases/{id}/evidence</span><span class="rf-map-t">Submit evidence</span></a>
+<a href="#settlement-get"><span class="gn-method">GET</span><span class="gn-path">/money/v1/settlements/{date}</span><span class="rf-map-t">A day's cycle</span></a>
+<a href="#decision-get"><span class="gn-method">GET</span><span class="gn-path">/decisioning/v1/decisions/{id}</span><span class="rf-map-t">Explain a decision</span></a>
+</div><div><span class="gn-label">Events</span>
+<a href="#ev-authorization-decisioned" data-ev="authorization.decisioned"><span class="gn-path">authorization.decisioned</span><span class="rf-map-t">Within a second of the issuer's answer, or of stand-in.</span></a>
+<a href="#ev-dispute-opened" data-ev="dispute.opened"><span class="gn-path">dispute.opened</span><span class="rf-map-t">When a cardholder's bank opens a retrieval or chargeback.</span></a>
+<a href="#ev-settlement-posted" data-ev="settlement.posted"><span class="gn-path">settlement.posted</span><span class="rf-map-t">When the day's cycle is final, by 5:00 AM local.</span></a>
+<a href="#ev-token-updated" data-ev="token.updated"><span class="gn-path">token.updated</span><span class="rf-map-t">When the issuer changes the card behind a token, usually a reissue.</span></a>
+<a href="#ev-merchant-risk_changed" data-ev="merchant.risk_changed"><span class="gn-path">merchant.risk_changed</span><span class="rf-map-t">When a merchant's behaviour moves outside its own fourteen-day baseline.</span></a>
+<a href="#ev-certificate-expiring" data-ev="certificate.expiring"><span class="gn-path">certificate.expiring</span><span class="rf-map-t">30 days before a certificate the network reads on your handshake expires, and again at 7.</span></a>
+</div></nav>
+<div class="dv-ref rf">
 <section class="dv-ref-obj" id="basics"><h2 style="margin-top:0">Basics</h2>
-<h3 id="authentication">Authentication</h3><p>Every call carries a bearer token from your client id and secret, valid for one hour. Mutual TLS is required in certification and production. One set of credentials is promoted through the environments by the network.</p>
+<div class="dv-ep rf-basic"><div><h3 id="authentication">Authentication</h3><p>Every call carries a bearer token from your client id and secret, valid for one hour. Mutual TLS is required in certification and production. One set of credentials is promoted through the environments by the network.</p></div>
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/oauth/token -u "$DGN_ID:$DGN_SECRET" -d grant_type=client_credentials
-# { "access_token": "…", "token_type": "bearer", "expires_in": 3600 }</pre><pre class="gn-code" data-lang="node" data-name="Node">const dgn = new Network({ clientId, clientSecret, env: "sandbox" }); // refreshes for you</pre><pre class="gn-code" data-lang="python" data-name="Python">client = dgn.Network(client_id=..., client_secret=..., env="sandbox")</pre></div></div>
-<h3 id="envelope">The envelope</h3><p>JSON over HTTPS. Amounts are integers in minor units. Times are RFC 3339 in UTC. Ids are prefixed by object: <span class="gn-mono">auth_</span>, <span class="gn-mono">cap_</span>, <span class="gn-mono">tok_</span>, <span class="gn-mono">dsp_</span>, <span class="gn-mono">stl_</span>, <span class="gn-mono">evt_</span>. Every response carries <span class="gn-mono">request_id</span> and <span class="gn-mono">round_trip_ms</span>.</p>
-<h3 id="idempotency">Idempotency</h3><p>Send <span class="gn-mono">Idempotency-Key</span> on any POST. The same key within 24 hours returns the original response. A key in flight returns 409. See <a href="../docs/errors.html#idempotency">Errors and idempotency</a>.</p>
-<h3 id="errors">Errors</h3><p>A decline is a 200 with a <span class="gn-mono">response_code</span>. A request that could not be processed is a 4xx or 5xx with <span class="gn-mono">type</span>, <span class="gn-mono">message</span> and <span class="gn-mono">request_id</span>. <a href="../docs/errors.html">Every code and type.</a></p>
-<h3 id="versioning">Versioning</h3><p>The version is in the path. Supported for 24 months after its successor ships. Additive changes are announced in the <a href="../changelog.html">changelog</a> without a version change.</p>
-<h3 id="pagination">Pagination</h3><p>Lists return up to 100 objects and a <span class="gn-mono">next_cursor</span>. Pass it as <span class="gn-mono">cursor</span> to continue. Lists are newest first.</p>
+# { "access_token": "…", "token_type": "bearer", "expires_in": 3600 }</pre><pre class="gn-code" data-lang="node" data-name="Node">const dgn = new Network({ clientId, clientSecret, env: "sandbox" }); // refreshes for you</pre><pre class="gn-code" data-lang="python" data-name="Python">client = dgn.Network(client_id=..., client_secret=..., env="sandbox")</pre></div></div></div>
+<div class="dv-ep rf-basic"><div><h3 id="envelope">The envelope</h3><p>JSON over HTTPS. Amounts are integers in minor units. Times are RFC 3339 in UTC. Every response carries <span class="gn-mono">request_id</span> and <span class="gn-mono">round_trip_ms</span>. Ids are prefixed by object.</p>
+<div class="gn-table-wrap rf-fields"><table class="gn-table"><thead><tr><th scope="col">Prefix</th><th scope="col">Object</th><th scope="col">Example</th></tr></thead><tbody>
+<tr><td><span class="gn-mono">auth_</span></td><td><a href="#authorization">Authorization</a></td><td><span class="gn-mono">auth_71ab3c</span></td></tr>
+<tr><td><span class="gn-mono">cap_</span></td><td><a href="#capture">Capture</a></td><td><span class="gn-mono">cap_5c10</span></td></tr>
+<tr><td><span class="gn-mono">rev_</span></td><td><a href="#reverse">Reversal</a></td><td><span class="gn-mono">rev_88f2</span></td></tr>
+<tr><td><span class="gn-mono">rfd_</span></td><td><a href="#refund">Refund</a></td><td><span class="gn-mono">rfd_2c41</span></td></tr>
+<tr><td><span class="gn-mono">tok_</span></td><td><a href="#tokens">Token</a></td><td><span class="gn-mono">tok_9d1b4e</span></td></tr>
+<tr><td><span class="gn-mono">dsp_</span></td><td><a href="#disputes">Case</a></td><td><span class="gn-mono">dsp_41e</span></td></tr>
+<tr><td><span class="gn-mono">stl_</span></td><td><a href="#settlements">Settlement</a></td><td><span class="gn-mono">stl_0602</span></td></tr>
+<tr><td><span class="gn-mono">evt_</span></td><td><a href="#events">Event</a></td><td><span class="gn-mono">evt_8a1e77</span></td></tr>
+<tr><td><span class="gn-mono">req_</span></td><td>Request id, on every response</td><td><span class="gn-mono">req_71ab00</span></td></tr>
+</tbody></table></div></div>
+<div class="gn-ref-c"><span class="gn-label">Every response</span><pre class="gn-code gn-code--ink">{
+  "id": "auth_71ab3c",
+  "object": "authorization",
+  "created": "2026-06-02T06:04:12Z",
+  "request_id": "req_71ab00",
+  "round_trip_ms": 44,
+  …
+}</pre></div></div>
+<div class="dv-ep rf-basic"><div><h3 id="idempotency">Idempotency</h3><p>Send <span class="gn-mono">Idempotency-Key</span> on any POST. The same key within 24 hours returns the original response. A key in flight returns 409. One key per attempt on your side. <a href="../docs/errors.html#idempotency">Errors and idempotency.</a></p></div>
+<div class="gn-ref-c"><span class="gn-label">The header</span><pre class="gn-code gn-code--ink">POST /acceptance/v1/authorizations
+Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7
+
+# the same key again within 24 hours
+HTTP/1.1 200 OK
+Idempotent-Replayed: true</pre></div></div>
+<h3 id="errors">Errors</h3><p>Two kinds of answer. A decline is a 200 with a <span class="gn-mono">response_code</span>. A request that could not be processed is a 4xx or 5xx with <span class="gn-mono">type</span>, <span class="gn-mono">message</span> and <span class="gn-mono">request_id</span>. Look a code up here, or read <a href="../docs/errors.html">when to retry</a>.</p>
+<div id="rfErrors"></div>
+<div class="dv-ep rf-basic"><div><h3 id="versioning">Versioning</h3><p>The version is in the path. Supported for 24 months after its successor ships. Additive changes are announced in the <a href="../changelog.html">changelog</a> without a version change. Calls to a retired version return 410.</p></div>
+<div class="gn-ref-c"><span class="gn-label">The path</span><pre class="gn-code gn-code--ink">/acceptance/v1/…   v4, current
+/acceptance/v3/…   retires February 28, 2028, then 410</pre></div></div>
+<div class="dv-ep rf-basic"><div><h3 id="pagination">Pagination</h3><p>Lists return up to 100 objects and a <span class="gn-mono">next_cursor</span>. Pass it as <span class="gn-mono">cursor</span> to continue. Lists are newest first. An empty <span class="gn-mono">next_cursor</span> is the last page.</p></div>
+<div class="gn-ref-c"><span class="gn-label">A page</span><pre class="gn-code gn-code--ink">GET /disputes/v1/cases?limit=100&amp;cursor=dsp_41e
+
+{ "data": [ { "id": "dsp_41d", … }, … ],
+  "next_cursor": "dsp_3f7",
+  "request_id": "req_71ab0c" }</pre></div></div>
 </section>
 
-<section class="dv-ref-obj" id="authorization"><h2 style="margin-top:0">Acceptance</h2>
-<h3>The Authorization object</h3><p>The issuer's response to an authorization request. Carries the decision, the response code, the score, and timing.</p>
-<div class="gn-params">
-  <div class="gn-param"><div><span class="gn-mono">id</span><span class="gn-param-t">string</span></div><p>auth_ followed by six hex characters.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">decision</span><span class="gn-param-t">enum</span></div><p>approved, partial, declined, stand_in.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">response_code</span><span class="gn-param-t">string</span></div><p>The issuer's code. 00 is approved. <a href="../docs/errors.html#codes">Every code.</a></p></div>
-  <div class="gn-param"><div><span class="gn-mono">approved_amount</span><span class="gn-param-t">integer</span></div><p>Minor units. Less than amount on a partial approval.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">avs</span><span class="gn-param-t">object</span></div><p>street and postal, each Y, N or U.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">score</span><span class="gn-param-t">integer</span></div><p>0 to 100. Network risk signal. score_reasons lists what moved it.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">answered_by</span><span class="gn-param-t">enum</span></div><p>issuer, or network on a stand-in.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">issuer_ms</span><span class="gn-param-t">integer</span></div><p>How long the issuer took.</p></div>
-</div>
-<div class="dv-ep" id="authorize"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/acceptance/v1/authorizations</span></div><h3>Authorize a transaction</h3><p>Request authorization from the issuer. Answered within 500 ms, or by stand-in rules you set.</p>
-  <div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params">
-  <div class="gn-param"><div><span class="gn-mono">amount</span><span class="gn-param-t">integer</span><span class="gn-status is-warn">Required</span></div><p>Minor units. 5820 is $58.20.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">currency</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>ISO 4217. Settlement currency is set on your account.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">merchant_id</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>Your merchant identifier, as registered.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">pan_token</span><span class="gn-param-t">string</span><span class="gn-status is-quiet">Optional</span></div><p>A network token, or pan if you hold the data yourself. One of the two.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">entry_mode</span><span class="gn-param-t">enum</span><span class="gn-status is-quiet">Optional</span></div><p>contactless, chip, magstripe, ecommerce, keyed.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">avs</span><span class="gn-param-t">object</span><span class="gn-status is-quiet">Optional</span></div><p>street and postal to verify.</p></div>
-  </div><div class="gn-section gn-section--h3"><h3>What comes back</h3></div><p>An Authorization object. 200 for any decision. 4xx when the request could not be processed.</p></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Idempotency-Key: 7c9e6679-…" \
-  -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan_token": "tok_9d1b4e", "entry_mode": "contactless" }'</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">const auth = await dgn.authorizations.create({
-  amount: 5820, currency: "USD", merchantId: "mch_demo",
-  panToken: "tok_9d1b4e", entryMode: "contactless"
-});</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">auth = client.authorizations.create(
-  amount=5820, currency="USD", merchant_id="mch_demo",
-  pan_token="tok_9d1b4e", entry_mode="contactless")</pre></div><span class="gn-label" style="display:block;margin-top:16px">Response</span><pre class="gn-code gn-code--ink" style="margin-top:8px">{ "id": "auth_71ab3c", "decision": "approved", "response_code": "00",
-  "approved_amount": 5820, "avs": { "street": "Y", "postal": "Y" },
-  "score": 22, "answered_by": "issuer", "issuer_ms": 41,
-  "request_id": "req_71ab00", "round_trip_ms": 44 }</pre><div class="gn-actions" style="margin-top:12px"><a class="gn-link gn-link--go" href="../docs/testing.html#console">Try it <i data-icon="go" class="gn-icon--sm"></i></a></div></div></div>
-<div class="dv-ep" id="reverse"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/acceptance/v1/authorizations/{id}/reverse</span></div><h3>Reverse an authorization</h3><p>Release a hold you no longer need, in full or in part. The issuer sees it immediately.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">amount</span><span class="gn-param-t">integer</span><span class="gn-status is-quiet">Optional</span></div><p>Minor units. Omit to reverse the full hold.</p></div></div></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations/auth_71ab3c/reverse \
-  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: …" -d '{ "amount": 5820 }'</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">await dgn.authorizations.reverse("auth_71ab3c", { amount: 5820 });</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">client.authorizations.reverse("auth_71ab3c", amount=5820)</pre></div></div></div>
-<div class="dv-ep" id="capture"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/acceptance/v1/captures</span></div><h3>Capture</h3><p>Move an approved hold into the day's clearing file. Within 7 days. Accepts a batch of up to 5,000 ids.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">authorization_id</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>Or authorization_ids, an array, for a batch.</p></div><div class="gn-param"><div><span class="gn-mono">amount</span><span class="gn-param-t">integer</span><span class="gn-status is-quiet">Optional</span></div><p>Minor units. Up to approved_amount. Omit for the full hold.</p></div></div></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/captures \
-  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: …" \
-  -d '{ "authorization_id": "auth_71ab3c", "amount": 5820 }'</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">await dgn.captures.create({ authorizationId: "auth_71ab3c", amount: 5820 });</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">client.captures.create(authorization_id="auth_71ab3c", amount=5820)</pre></div></div></div>
-<div class="dv-ep" id="refund"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/acceptance/v1/refunds</span></div><h3>Refund</h3><p>Return captured money to the cardholder. Full or partial. Reaches the cardholder in 3 to 5 days.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">authorization_id</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>The captured authorization.</p></div><div class="gn-param"><div><span class="gn-mono">amount</span><span class="gn-param-t">integer</span><span class="gn-status is-quiet">Optional</span></div><p>Minor units. Omit for the full capture.</p></div><div class="gn-param"><div><span class="gn-mono">reason</span><span class="gn-param-t">enum</span><span class="gn-status is-quiet">Optional</span></div><p>requested_by_customer, duplicate, fraudulent.</p></div></div></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/refunds \
-  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: …" \
-  -d '{ "authorization_id": "auth_71ab3c", "amount": 2000, "reason": "requested_by_customer" }'</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">await dgn.refunds.create({ authorizationId: "auth_71ab3c", amount: 2000, reason: "requested_by_customer" });</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">client.refunds.create(authorization_id="auth_71ab3c", amount=2000, reason="requested_by_customer")</pre></div></div></div>
-</section>
-
-<section class="dv-ref-obj" id="tokens"><h2 style="margin-top:0">Tokens</h2>
-<h3>The Token object</h3><p>A card number replaced with a token scoped to one merchant. Kept current when the card is reissued; token.updated says so.</p>
-<div class="dv-ep" id="token-create"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/tokens/v1/tokens</span></div><h3>Create a token</h3><p>Replace a card number with a merchant-scoped token. A token stolen from one merchant is useless at another.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">pan</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>The card number. Never stored by the network beyond tokenization.</p></div><div class="gn-param"><div><span class="gn-mono">merchant_id</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>Scopes the token.</p></div><div class="gn-param"><div><span class="gn-mono">expiry</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>YYYY-MM.</p></div></div></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/tokens/v1/tokens \
-  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: …" \
-  -d '{ "pan": "6011330000000005", "expiry": "2028-04", "merchant_id": "mch_demo" }'</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">const tok = await dgn.tokens.create({ pan, expiry: "2028-04", merchantId: "mch_demo" });</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">tok = client.tokens.create(pan=pan, expiry="2028-04", merchant_id="mch_demo")</pre></div><span class="gn-label" style="display:block;margin-top:16px">Response</span><pre class="gn-code gn-code--ink" style="margin-top:8px">{ "id": "tok_9d1b4e", "merchant_id": "mch_demo", "last4": "0005", "expiry": "2028-04", "status": "active" }</pre></div></div>
-</section>
-
-<section class="dv-ref-obj" id="disputes"><h2 style="margin-top:0">Disputes</h2>
-<h3>The Case object</h3><p>A retrieval, chargeback or arbitration against one authorization. Carries the reason code and the response deadline.</p>
-<div class="gn-params">
-  <div class="gn-param"><div><span class="gn-mono">id</span><span class="gn-param-t">string</span></div><p>dsp_ followed by three hex characters.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">stage</span><span class="gn-param-t">enum</span></div><p>retrieval, chargeback, arbitration.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">reason_code</span><span class="gn-param-t">string</span></div><p>4837 not authorized, 4853 not as described, 4855 not received, 4860 credit not processed.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">respond_by</span><span class="gn-param-t">datetime</span></div><p>Missing it loses the case.</p></div>
-  <div class="gn-param"><div><span class="gn-mono">status</span><span class="gn-param-t">enum</span></div><p>needs_response, under_review, won, lost, accepted.</p></div>
-</div>
-<div class="dv-ep" id="evidence"><div><div class="gn-endpoint"><span class="gn-method">POST</span><span class="gn-mono">/disputes/v1/cases/{id}/evidence</span></div><h3>Submit evidence</h3><p>Upload the merchant's evidence. The network formats it for the issuer and tracks the clock. One file per evidence type; links and media are not reviewed.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">product_type</span><span class="gn-param-t">enum</span><span class="gn-status is-warn">Required</span></div><p>physical, digital, subscription. Sets which evidence is asked for.</p></div><div class="gn-param"><div><span class="gn-mono">files</span><span class="gn-param-t">array</span><span class="gn-status is-warn">Required</span></div><p>Each with type (proof_of_delivery, order_page, correspondence, terms) and a PDF or image up to 10 MB.</p></div><div class="gn-param"><div><span class="gn-mono">note</span><span class="gn-param-t">string</span><span class="gn-status is-quiet">Optional</span></div><p>Shown to the issuer, not the cardholder.</p></div></div></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/disputes/v1/cases/dsp_41e/evidence \
-  -H "Authorization: Bearer $TOKEN" \
-  -F product_type=physical -F "files[]=@delivery.pdf;type=proof_of_delivery"</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">await dgn.disputes.submitEvidence("dsp_41e", { productType: "physical", files: [{ type: "proof_of_delivery", path: "delivery.pdf" }] });</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">client.disputes.submit_evidence("dsp_41e", product_type="physical", files=[("proof_of_delivery", open("delivery.pdf","rb"))])</pre></div></div></div>
-</section>
-
-<section class="dv-ref-obj" id="settlements"><h2 style="margin-top:0">Settlement reports</h2>
-<div class="dv-ep" id="settlement-get"><div><div class="gn-endpoint"><span class="gn-method">GET</span><span class="gn-mono">/money/v1/settlements/{date}</span></div><h3>A day's cycle</h3><p>Gross, fees, adjustments, net, and the wire that carried it. Published by 5:00 AM local. Minor units, settled before fees.</p></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl https://sandbox.api.dgn.com/money/v1/settlements/2026-06-02 -H "Authorization: Bearer $TOKEN"</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">const cycle = await dgn.settlements.retrieve("2026-06-02");</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">cycle = client.settlements.retrieve("2026-06-02")</pre></div><span class="gn-label" style="display:block;margin-top:16px">Response</span><pre class="gn-code gn-code--ink" style="margin-top:8px">{ "id": "stl_0602", "date": "2026-06-02", "gross": 16421000, "fees": 180600,
-  "adjustments": -129000, "net": 15890400, "wire": "FW-2026-0602-4471", "status": "posted" }</pre></div></div>
-</section>
-
-<section class="dv-ref-obj" id="decisioning"><h2 style="margin-top:0">Decisioning</h2>
-<h3>The Decision object</h3><p>The network's risk score on one authorization and the factors that moved it. The score and its reasons also ride on the Authorization object; this is the long form.</p>
-<div class="dv-ep" id="decision-get"><div><div class="gn-endpoint"><span class="gn-method">GET</span><span class="gn-mono">/decisioning/v1/decisions/{id}</span></div><h3>Explain a decision</h3><p>Every factor behind the score on one authorization, with its effect. Read it or ignore it; nothing you send changes.</p><div class="gn-section gn-section--h3"><h3>What you send</h3></div><div class="gn-params"><div class="gn-param"><div><span class="gn-mono">id</span><span class="gn-param-t">string</span><span class="gn-status is-warn">Required</span></div><p>An authorization id, in the path.</p></div></div><div class="gn-section gn-section--h3"><h3>What comes back</h3></div><p>A Decision object. score is 0 to 100; band is low, elevated or high; each factor carries its effect on the score.</p></div>
-  <div class="gn-ref-c"><span class="gn-label">Request</span><div class="dv-code" style="margin-top:8px"><pre class="gn-code gn-code--ink" data-lang="curl" data-name="cURL">curl https://sandbox.api.dgn.com/decisioning/v1/decisions/auth_71ab3c -H "Authorization: Bearer $TOKEN"</pre><pre class="gn-code gn-code--ink" data-lang="node" data-name="Node">const decision = await dgn.decisions.retrieve("auth_71ab3c");</pre><pre class="gn-code gn-code--ink" data-lang="python" data-name="Python">decision = client.decisions.retrieve("auth_71ab3c")</pre></div><span class="gn-label" style="display:block;margin-top:16px">Response</span><pre class="gn-code gn-code--ink" style="margin-top:8px">{ "authorization": "auth_71ab3c", "score": 22, "band": "low",
-  "factors": [ { "name": "token_scope_match", "effect": -9 }, { "name": "merchant_history_180d", "effect": -6 }, { "name": "cross_border", "effect": 3 } ],
-  "model": "dgn-risk-4" }</pre></div></div>
-</section>
+<section class="dv-ref-obj" id="authorization"><h2 style="margin-top:0">Acceptance</h2><p>Authorize, then reverse, capture or refund. Every decision comes back as an Authorization object, and captures take a batch of up to 5,000 ids.</p><div id="rf-authorization"></div></section>
+<section class="dv-ref-obj" id="tokens"><h2 style="margin-top:0">Tokens</h2><div id="rf-tokens"></div></section>
+<section class="dv-ref-obj" id="disputes"><h2 style="margin-top:0">Disputes</h2><div id="rf-disputes"></div></section>
+<section class="dv-ref-obj" id="settlements"><h2 style="margin-top:0">Settlement reports</h2><div id="rf-settlements"></div></section>
+<section class="dv-ref-obj" id="decisioning"><h2 style="margin-top:0">Decisioning</h2><div id="rf-decisioning"></div></section>
 
 <section class="dv-ref-obj" id="events"><h2 style="margin-top:0">Events</h2>
-<p>Sent to an endpoint you register, signed on every delivery, retried for three days. <a href="../docs/webhooks.html">How to receive them.</a></p>
-<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Event</th><th scope="col">When</th><th scope="col">Carries</th></tr></thead><tbody>
-<tr><td class="gn-mono">authorization.decisioned</td><td>Within a second of every decision</td><td>The Authorization object</td></tr>
-<tr><td class="gn-mono">dispute.opened</td><td>When a cardholder disputes a transaction</td><td>The Case object, with respond_by</td></tr>
-<tr><td class="gn-mono">settlement.posted</td><td>When a cycle is final, by 5:00 AM local</td><td>The Settlement object, with the wire reference</td></tr>
-<tr><td class="gn-mono">token.updated</td><td>When the issuer reissues a tokenized card</td><td>The Token object; the id does not change</td></tr>
-<tr><td class="gn-mono">merchant.risk_changed</td><td>When a merchant moves outside its own baseline</td><td>merchant_id, the metric, the baseline and the value</td></tr>
-<tr><td class="gn-mono">certificate.expiring</td><td>30 days before a certificate the network reads on your handshake expires, and again at 7</td><td>The certificate's subject, environment and expiry</td></tr>
-</tbody></table></div>
-<pre class="gn-code gn-code--ink" style="margin-top:16px">{ "id": "evt_8a1f83", "type": "authorization.decisioned", "created": "2026-06-02T06:04:12Z", "api_version": "v4",
-  "data": { "id": "auth_71ab3c", "decision": "approved", "response_code": "00", "issuer_ms": 41 } }</pre>
+<p>Sent to an endpoint you register, over mutual TLS, signed on every delivery, and retried for three days. Answer 2xx within 10 seconds, then do the work. Deliveries are at least once, so handle the same event id twice. <a href="../docs/webhooks.html">How to receive them.</a></p>
+<div class="gn-section gn-section--h3"><h3>How a delivery goes</h3></div>
+<div class="rf-seq" id="rfSeq"></div>
+<div class="gn-section gn-section--h3"><h3>Each event, what it carries</h3></div>
+<div id="rfEvents"></div>
 </section>
 </div>
 
 </main></div>
+<script src="../shared/reference.js"></script>
 <script src="../shared/site.js"></script>
 </body>
 </html>

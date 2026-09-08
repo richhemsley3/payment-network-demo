@@ -61,14 +61,39 @@
 .dv-code pre{display:none; margin:0} .dv-code pre.is-on{display:block}
 .dv-code-h{display:flex; align-items:center; gap:16px; margin-top:16px}
 .dv-code-h .gn-link{margin-left:auto; font-size:var(--gn-type-label)}
-/* the three doors on the home page */
-.dv-doors{margin-top:32px}
-.dv-door{display:block} .dv-door:hover h2{color:var(--gn-interactive)}
-.dv-door h2{font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead)}
-.dv-door p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:8px; line-height:1.5}
-.dv-door .gn-mono{display:block; margin-top:16px; color:var(--gn-text-caption)}
+/* the home page: one live request and its answer, side by side */
+.dv-live{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin-top:16px; align-items:start}
+.dv-live .dv-code,.dv-live .gn-console{margin-top:0}
+.dv-live .gn-console pre{min-height:200px}
+/* the builder's controls: a card, an amount, an entry mode, Send */
+.dv-build-bar{display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:16px}
+.dv-build-bar .gn-field{margin:0; max-width:100%} .dv-build-bar .gn-in{max-width:100%} .dv-build-bar .gn-in--mono{width:120px} .dv-build-bar .gn-field-l{font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-bottom:4px}
+/* one transaction end to end: what you send and what arrives, in order */
+.dv-flow{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:24px; margin-top:24px}
+.dv-flow > div{padding-top:12px; border-top:1px solid var(--gn-rule-strong); position:relative; min-width:0}
+.dv-flow > div + div::before{content:"\2192"; position:absolute; left:-20px; top:12px; color:var(--gn-text-quiet); font-size:var(--gn-type-label)}
+.dv-flow b{display:block; font-family:var(--gn-font-mono); font-weight:400; font-size:var(--gn-type-label); margin-top:8px; overflow-wrap:anywhere}
+.dv-flow p{font-size:var(--gn-type-label); color:var(--gn-text-secondary); margin-top:8px; line-height:1.5}
+/* the products as a table: what you call, what arrives, the guide */
+.dv-products td:nth-child(2),.dv-products td:nth-child(3){white-space:nowrap} .dv-products td em{max-width:32ch} .dv-call{display:block}
+.dv-yes{width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:-3px}
 .dv-band{padding:56px 0; border-top:1px solid var(--gn-rule-strong); margin-top:56px}
 .dv-band--tone{background:var(--gn-bg-tone); border:0; margin-top:64px; border-radius:var(--gn-radius-surface); padding:40px}
+.dv-band-g{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:32px; align-items:center}
+/* the docs home: a path per goal, each a vertical stepper of links */
+.dv-paths{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:40px; margin-top:24px}
+.dv-path h3{margin-top:0} .dv-path .gn-stepper--v{margin-top:16px} .dv-path .gn-stepper--v li{padding-bottom:20px}
+.dv-path .gn-stepper--v li b{font-weight:400} .dv-path .gn-stepper--v li em{margin-top:2px}
+/* the sandbox page: the builder on the left, the request sample under it, the console on the right */
+.dv-build{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:32px; margin-top:16px; align-items:start}
+.dv-build .gn-testcards{margin-top:8px; grid-template-columns:1fr; gap:8px} .dv-build .gn-testcard{padding:8px 16px} .dv-build .gn-testcard .gn-mono{white-space:nowrap}
+.dv-build .dv-code{margin-top:0} .dv-build .gn-console{margin-top:0} .dv-build .gn-console pre{min-height:280px}
+.dv-build > div > .gn-label{display:block; margin-bottom:8px}
+/* the quickstart's progress: the system's stepper, kept in localStorage */
+.dv-qs{margin-top:32px} .dv-qs .gn-stepper{margin-top:0}
+.dv-qs-n{display:flex; gap:16px; align-items:baseline; margin-top:16px; font-size:var(--gn-type-label); color:var(--gn-text-caption)}
+.dv-done{display:inline-flex; align-items:center; gap:8px; margin-top:16px; font-size:var(--gn-type-body); cursor:pointer}
+.dv-body .gn-cred{max-width:none}
 /* the reference */
 .dv-ref .gn-endpoint{margin-top:24px}
 .dv-ref-obj{margin-top:56px; padding-top:32px; border-top:1px solid var(--gn-rule-strong); scroll-margin-top:96px}
@@ -81,27 +106,28 @@
 .dv-hist{display:flex; gap:2px; margin-top:8px} .dv-hist i{flex:1; height:24px; background:var(--gn-good); border-radius:2px; opacity:.85} .dv-hist i.w{background:var(--gn-warn)} .dv-hist i.b{background:var(--gn-bad)}
 .dv-foot{margin-top:auto; border-top:1px solid var(--gn-rule-strong); padding:32px 40px; font-size:var(--gn-type-label); color:var(--gn-text-caption); display:flex; gap:24px; flex-wrap:wrap; max-width:1240px; margin-left:auto; margin-right:auto; width:100%}
 .dv-foot span:last-child{margin-left:auto}
-@media (max-width:1100px){ .dv-shell{grid-template-columns:240px minmax(0,1fr)} .dv-toc{display:none} .dv-doors{grid-template-columns:1fr} .dv-ep{grid-template-columns:1fr} .dv-ep .gn-ref-c{position:static} }
+@media (max-width:1100px){ .dv-shell{grid-template-columns:240px minmax(0,1fr)} .dv-toc{display:none} .dv-ep{grid-template-columns:1fr} .dv-ep .gn-ref-c{position:static} .dv-build,.dv-paths{grid-template-columns:1fr} }
+@media (max-width:900px){ .dv-live,.dv-flow{grid-template-columns:1fr} .dv-flow > div + div::before{display:none} }
+@media (max-width:760px){ .dv-band-g{grid-template-columns:1fr} .dv-band--tone{padding:24px} }
+@media (max-width:560px){ .dv-build-bar .gn-field:first-child{flex:1 1 100%} .dv-build-bar .gn-field:first-child .gn-in{width:100%} }
 @media (max-width:1180px){ .dv-top .gn-header-q{display:none} .dv-top .gn-topnav{flex-wrap:wrap; row-gap:12px} .dv-top .gn-topnav-l{order:3; flex-basis:100%; flex-wrap:wrap} .dv-top .gn-topnav-r{margin-left:auto; display:flex} }
 @media (max-width:760px){ .dv-shell{grid-template-columns:1fr; padding:0 20px} .dv-side{display:none} }
 
-/* the test-card table and console inside the docs column */
-.dv-cards td:first-child,.dv-cards td:nth-child(2),.dv-cards td:last-child{white-space:nowrap} .dv-cards td:nth-child(4){min-width:240px}
-.dv-console{display:grid; gap:24px; margin-top:16px}
-.dv-console .gn-testcards{grid-template-columns:repeat(2,minmax(0,1fr))}
-.dv-console .gn-testcard .gn-mono{white-space:nowrap}
+/* the decision table: number and Try it never wrap, the two sentence columns share the rest */
+.dv-cards td:first-child,.dv-cards td:last-child{white-space:nowrap} .dv-cards td:nth-child(4),.dv-cards td:nth-child(5){min-width:160px}
 
-.dv-sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap} th .dv-sr{position:static; display:inline-block}
+.dv-sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap} th .dv-sr,td .dv-sr{position:static; display:inline-block}   /* inside a table an absolute span escapes the scroll wrap and widens the page */
 .skip{position:absolute; left:8px; top:-48px; z-index:100; background:var(--gn-bg-page); color:var(--gn-interactive); padding:8px 12px; border-radius:var(--gn-radius-small); box-shadow:var(--gn-shadow-float)}
 .skip:focus{top:8px}
 
 /* print: the guide, not the site. No top bar, side tree, contents column, footer or buttons; code keeps its tone. */
 @media print{
-  .dv-top,.dv-side,.dv-toc,.dv-foot,.skip,.gn-btn,.gn-seg,.dv-code-bar,.dv-code-h .gn-link,.gn-toolbar,.gn-search,.gn-inline,.gn-form-act,.gn-field,.dv-console,.gn-banner,.gn-toast,.dv-cards th:last-child,.dv-cards td:last-child{display:none!important}
+  .dv-top,.dv-side,.dv-toc,.dv-foot,.skip,.gn-btn,.gn-seg,.dv-code-bar,.dv-code-h .gn-link,.gn-toolbar,.gn-search,.gn-inline,.gn-form-act,.gn-field,.gn-console,.dv-build-bar,.dv-done,.dv-qs,.gn-banner,.gn-toast,.dv-cards th:last-child,.dv-cards td:last-child{display:none!important}
   .dv-body a:not(.gn-btn):not(.gn-link):not(.gn-tag){color:inherit}
   .gn-code{white-space:pre-wrap; word-break:break-word}
   .dv-code pre.is-on::before{content:attr(data-name); display:block; font-family:inherit; font-size:11px; color:#696A75; margin-bottom:6px}
-  .dv-cards td:nth-child(4){min-width:0} .dv-cards td{white-space:normal}
+  .dv-cards td:nth-child(4),.dv-cards td:nth-child(5){min-width:0} .dv-body td,.dv-body th{white-space:normal; overflow-wrap:anywhere}
+  .dv-live,.dv-build,.dv-flow,.dv-paths,.dv-band-g{grid-template-columns:1fr} .dv-flow > div + div::before{display:none} .gn-table-wrap{overflow:visible}
   .dv-shell{display:block; padding:0; max-width:none}
   .dv-body{padding:0}
   .dv-body p,.dv-body li{max-width:none}

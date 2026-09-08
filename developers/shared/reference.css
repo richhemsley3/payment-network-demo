@@ -1,0 +1,119 @@
+/* The reference pages: the three-pane reference, field tables, the try-it form, the events picker and
+   delivery sequence, the error lookup, the changelog diff and version lifecycle, the SDK panels,
+   the status history and incident sequences. Built on gn.css and site.css; adds nothing to either. */
+
+/* the map: every endpoint and event on one screen, method and path in the reference-navigation grid */
+.rf-map{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 40px; margin:24px 0 8px; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface)}
+.rf-map .gn-label{display:block; margin-bottom:8px}
+.rf-map a{display:grid; grid-template-columns:44px minmax(0,1fr); gap:0 8px; padding:4px 8px; margin:0 -8px; border-radius:var(--gn-radius-small); font-size:var(--gn-type-label); color:var(--gn-text-secondary)}
+.rf-map a:hover{background:var(--gn-bg-page)}
+.rf-map .gn-method{font-family:var(--gn-font-mono); font-weight:600; color:var(--gn-interactive)}
+.rf-map .gn-path{font-family:var(--gn-font-mono); overflow-wrap:anywhere; color:var(--gn-text)}
+.rf-map a[data-ev]{grid-template-columns:minmax(0,1fr)}
+.rf-map-t{grid-column:2; color:var(--gn-text-caption)} .rf-map a[data-ev] .rf-map-t{grid-column:1}
+
+/* the three panes: the tree is the site's, the object and its endpoints in the middle, the code beside each */
+.rf .dv-ep{grid-template-columns:minmax(0,1fr) minmax(0,372px); gap:32px}
+.rf .rf-ep + .rf-ep{margin-top:40px; padding-top:32px; border-top:1px solid var(--gn-rule)}
+.rf .rf-obj{margin-top:16px}
+.rf .gn-endpoint{flex-wrap:wrap; margin-top:0} .rf .gn-endpoint .gn-mono{min-width:0; overflow-wrap:anywhere}
+.rf .rf-obj h3{margin-top:0}
+.rf .gn-ref-c.is-trying{position:static}
+.rf .rf-basic{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,372px); gap:32px; align-items:start; margin-top:12px}
+.rf .rf-basic h3{margin-top:0}
+.rf .rf-basic .gn-code{margin-top:0}
+.rf .gn-ref-c .gn-code{margin-top:8px}
+
+/* field tables: name over its line, the type, required as a word, an example in mono. No inset: the table is the column. */
+.rf-fields{margin-top:12px}
+.rf-fields .gn-table{min-width:0}
+.rf-fields .gn-table th{padding:8px 16px 8px 0}
+.rf-fields .gn-table td{padding:12px 16px 12px 0; height:auto; vertical-align:top; line-height:1.5}
+.rf-fields .gn-table th:last-child,.rf-fields .gn-table td:last-child{padding-right:0}
+.rf-fields .gn-table td em{margin-top:4px; white-space:normal; color:var(--gn-text-secondary)}
+.rf-fields .gn-table td .gn-mono{overflow-wrap:anywhere}
+.rf-fields .rf-type{color:var(--gn-text-caption); font-size:var(--gn-type-label); white-space:nowrap}
+.rf-fields tr[hidden]{display:none}
+
+/* try it: the fields fill the request, the console shows it, Send answers */
+.rf-try{margin-top:16px; padding:20px}
+.rf-try-f{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px}
+.rf-try-f .gn-field{margin-top:16px}
+.rf-try-f .gn-field-l{font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-bottom:4px}
+.rf-try-f .gn-field-l small{margin-left:4px}
+.rf-try .gn-console{margin-top:20px}
+.rf-try .gn-console pre{min-height:80px}
+.rf-try .gn-help.is-err{margin-top:4px}
+
+/* the events: a picker across the six, the sequence drawn once above them */
+.rf-seq{margin-top:16px} .rf-seq svg{display:block; width:100%; height:auto; max-width:800px}
+.rf-seq text{font-size:13px; fill:var(--gn-text-caption)} .rf-seq text.t{fill:var(--gn-text)}
+.rf-seq .lane{stroke:var(--gn-rule-strong); stroke-width:1}
+.rf-seq .arr{stroke:var(--gn-interactive); stroke-width:1.5; fill:none} .rf-seq marker path{fill:var(--gn-interactive)}
+.rf-seq .arr.ok{stroke:var(--gn-good)} .rf-seq text.ok{fill:var(--gn-good)} .rf-seq .arr.no{stroke:var(--gn-bad)} .rf-seq text.no{fill:var(--gn-bad)}
+.rf-evtabs{margin-top:24px; flex-wrap:wrap; overflow:visible; gap:0 24px}
+.rf-evtabs button{font-family:var(--gn-font-mono); font-size:var(--gn-type-label)}
+.rf-evpanel{margin-top:24px}
+.rf-evwhen{padding:0 0 4px}
+
+/* the error catalogue: a lookup over the table, the two answer shapes beside */
+.rf-lookup{margin-top:12px} .rf-lookup .gn-in{width:100%}
+.rf-err .gn-empty{margin-top:12px}
+
+/* the changelog: a diff under an entry that changed a payload, before beside after */
+.rf-diff{grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:8px}
+.rf-diff .gn-label{display:block; margin-bottom:8px}
+.dv-body .rf-diff .gn-code{margin-top:0; padding:12px 16px}
+.rf-del{color:var(--gn-bad)} .rf-add{color:var(--gn-good)}
+/* the version lifecycle: spans on a year axis, today as a line */
+.rf-life{margin-top:16px; max-width:760px}
+.rf-life svg{display:block; width:100%; height:auto; overflow:visible}
+.rf-life .g{stroke:var(--gn-outline); stroke-width:1; stroke-dasharray:2 4} .rf-life .hl{stroke:var(--gn-text); stroke-width:1; stroke-dasharray:3 3}
+.rf-life .xl{font-size:13px; fill:var(--gn-text-caption)} .rf-life .xl.v{fill:var(--gn-text); font-family:var(--gn-font-mono)} .rf-life .xl.s{fill:var(--gn-text-caption)}
+.rf-life .cur{fill:var(--gn-interactive)} .rf-life .ret{fill:var(--gn-chart-2)} .rf-life .old{fill:var(--gn-outline)}
+.rf-life-key i.f0{border:0; height:10px; width:10px; background:var(--gn-outline); border-radius:2px}
+
+/* SDKs: a tab per language, the facts as a document, install and first call as one sample */
+.rf-sdk .gn-doc{grid-template-columns:repeat(3,minmax(0,1fr)); padding-top:24px}
+.rf-code{margin-top:8px}
+.rf-code pre{display:none} .rf-code pre.is-on{display:block}
+.rf-cli .gn-stepper--v li .gn-key{display:inline-block; margin-top:4px; white-space:normal; overflow-wrap:anywhere}
+.rf-cli .gn-stepper--v li em{margin-top:4px}
+.rf-matrix{margin-top:16px}
+.rf-matrix .gn-matrix-r{grid-template-columns:minmax(0,1fr) repeat(var(--cols,4),88px)}
+.rf-matrix .rf-cell{display:flex; justify-content:center; color:var(--gn-good)}
+.rf-matrix .rf-cell .gn-mute{color:var(--gn-text-quiet)}
+.rf-matrix .gn-matrix-r.is-head span:not(:first-child){text-align:center}
+
+/* status: a product, its surface, 90 days as a bar, the day under the pointer named */
+.rf-prod{padding:16px 0; border-bottom:1px solid var(--gn-rule)}
+.rf-now{border-top:1px solid var(--gn-rule-strong); margin-top:16px}
+.rf-prod-h{display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:4px 24px; align-items:baseline}
+.rf-prod-h b{font-weight:400; display:block} .rf-prod-h .gn-mono{color:var(--gn-text-caption); display:block; margin-top:2px}
+.rf-prod-h .gn-status{text-align:right}
+.rf-hist{gap:4px; margin-top:12px}
+.rf-hist i{min-width:0; opacity:.8} .rf-hist i:hover{opacity:1}
+/* the day under the pointer is named on hover only, so a hidden tooltip never widens the page; the first and last days keep theirs inside */
+.rf-hist i.gn-tip::after{content:none} .rf-hist i.gn-tip:hover::after,.rf-hist i.gn-tip:focus-visible::after{content:attr(data-tip)}
+.rf-hist i:nth-child(-n+12)::after{left:0; transform:none} .rf-hist i:nth-last-child(-n+12)::after{left:auto; right:0; transform:none}
+.rf-key{display:inline-flex; margin:0; vertical-align:middle; margin-right:8px} .rf-key i{width:10px; height:10px; flex:none; opacity:1}
+.rf-hist-ax{padding-top:12px} .rf-30{display:none}
+.rf-inc{margin-top:16px} .rf-inc + .rf-inc{margin-top:16px}
+.rf-inc .gn-alert-s > div{grid-template-columns:112px minmax(0,1fr)}
+.rf-inc .gn-alert-s span{line-height:1.5}
+.rf-inc .gn-alert-s .gn-status{font-size:var(--gn-type-body); margin-right:4px}
+
+@media (max-width:1100px){ .rf .dv-ep,.rf .rf-basic{grid-template-columns:1fr} .rf .gn-ref-c{position:static} .rf-map{grid-template-columns:1fr} .rf-sdk .gn-doc{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:900px){ .rf-diff{grid-template-columns:1fr} .rf-matrix .gn-matrix-r{grid-template-columns:minmax(0,1fr) repeat(var(--cols,4),56px)} }
+@media (max-width:700px){ .rf-try-f{grid-template-columns:1fr} #cl .gn-tl-i{grid-template-columns:minmax(0,1fr) auto} #cl .gn-tl-t{grid-column:1 / -1; padding-top:0} .rf-prod-h{grid-template-columns:minmax(0,1fr) auto} .rf-prod-h .gn-num{grid-column:1 / -1} .rf-prod-h .gn-status{grid-column:2; grid-row:1; text-align:right} .rf-inc .gn-alert-s > div{grid-template-columns:1fr; gap:4px} }
+@media (max-width:560px){ .rf-hist i:nth-child(-n+60){display:none} .rf-90{display:none} .rf-30{display:inline} .rf-sdk .gn-doc{grid-template-columns:1fr} .rf-matrix .gn-matrix-r{grid-template-columns:minmax(0,1fr) repeat(var(--cols,4),48px)} }
+
+/* print: the reference, not its controls. The event panels all print; the try-it form and the lookup do not. */
+@media print{
+  .rf-try-host,.rf-lookup,.gn-tabs,.rf-map{display:none!important}
+  .rf-fields .gn-table-wrap{overflow:visible}
+  .rf-evpanel[hidden],.rf-sdk[hidden]{display:grid!important}
+  .rf-code pre{display:block!important}
+  .rf .dv-ep,.rf .rf-basic{grid-template-columns:1fr}
+  .rf .gn-ref-c{position:static}
+}

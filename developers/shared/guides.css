@@ -1,0 +1,79 @@
+/* The guides' own parts, on top of gn.css and site.css: a request beside its response, a figure box for a drawn diagram
+   and the paint for what guides.js draws, the certification matrix, the readiness checklist, the three ways to get help.
+   Prefixed gd-. Nothing here restyles a system part. */
+
+/* a request beside the answer it gets: the tabbed sample left, the ink response right, stacked on a narrow screen */
+.gd-pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; align-items:start}
+.gd-pair .dv-code-wrap{min-width:0}
+.gd-resp{min-width:0}
+.gd-resp .gn-code-h{margin:16px 0 8px; min-height:32px; align-items:center}
+.gd-resp .gn-code{margin-top:0}
+.gd-resp .gn-status{font-size:var(--gn-type-label); margin-left:auto}
+@media (max-width:900px){ .gd-pair{grid-template-columns:1fr} }
+
+/* a drawn figure: scrolls inside its own box on a narrow screen, never the page */
+.gd-fig{margin-top:16px; overflow-x:auto; scrollbar-width:thin}
+.gd-fig svg{display:block; width:100%; height:auto}
+.gd-svg text{font-family:inherit; font-size:var(--gn-type-label); fill:var(--gn-text)}
+.gd-svg .gd-lane{fill:var(--gn-bg-tone)}
+.gd-svg .gd-lane-t{font-weight:600}
+.gd-svg .gd-life{stroke:var(--gn-rule-strong); stroke-width:1; stroke-dasharray:3 4}
+.gd-svg .gd-msg,.gd-svg .gd-edge{stroke:var(--gn-text); stroke-width:1.2; fill:none}
+.gd-svg .gd-msg.is-return{stroke-dasharray:5 4}
+.gd-svg .gd-msg.is-event,.gd-svg .gd-edge.is-event{stroke-dasharray:2 3}
+.gd-svg .gd-head{fill:var(--gn-text)}
+.gd-svg .gd-msg-s,.gd-svg .gd-edge-t,.gd-svg .gd-tick-t{fill:var(--gn-text-caption)}
+.gd-svg .gd-note{fill:var(--gn-bg-page); stroke:var(--gn-outline); stroke-width:1}
+.gd-svg .gd-note-t{fill:var(--gn-text-secondary)}
+.gd-svg .gd-state{fill:var(--gn-bg-tone)}
+.gd-svg .gd-state.is-good{fill:var(--gn-good-tint)} .gd-svg .gd-state.is-warn{fill:var(--gn-warn-tint)} .gd-svg .gd-state.is-bad{fill:#F9E6E3}
+.gd-svg .gd-state-t.is-good,.gd-svg .gd-leaf-t.is-good{fill:var(--gn-good)} .gd-svg .gd-state-t.is-warn,.gd-svg .gd-leaf-t.is-warn{fill:var(--gn-warn)} .gd-svg .gd-state-t.is-bad,.gd-svg .gd-leaf-t.is-bad{fill:var(--gn-bad)}
+.gd-svg .gd-q{fill:var(--gn-bg-page); stroke:var(--gn-rule-strong); stroke-width:1}
+.gd-svg .gd-leaf{fill:var(--gn-bg-tone)}
+.gd-svg .gd-leaf.is-good{fill:var(--gn-good-tint)} .gd-svg .gd-leaf.is-warn{fill:var(--gn-warn-tint)} .gd-svg .gd-leaf.is-bad{fill:#F9E6E3}
+.gd-svg .gd-branch{stroke:var(--gn-outline); stroke-width:1.2; fill:none}
+.gd-svg .gd-branch-t{fill:var(--gn-text-secondary)}
+.gd-svg .gd-tick{stroke:var(--gn-rule); stroke-width:1}
+.gd-svg .gd-span{fill:var(--gn-bg-selected)} .gd-svg .gd-span.is-quiet{fill:var(--gn-gray-100)}
+.gd-svg .gd-span-l{fill:var(--gn-interactive-text)}
+/* what a figure says in words, under it, for a reader who cannot see it or a screen too narrow for it */
+.gd-fig-l{margin-top:8px; font-size:var(--gn-type-label); color:var(--gn-text-caption); max-width:var(--gn-measure-caption)}
+
+/* the certification matrix: one head row per group, then its cases */
+.gd-mx-h{margin-top:24px}
+.gd-mx-h .gn-row{padding-left:0; padding-right:0}
+.gd-mx{margin-top:0}
+.gd-mx tbody tr:last-child td{border-bottom:0}   /* the next group's head row carries the rule, so no divider hangs between groups */
+.gd-mx td:first-child{min-width:160px}
+.gd-mx td:nth-child(2),.gd-mx td:nth-child(3){min-width:150px}
+/* a dense table whose first cell carries a line under its value: the meaning under a code, the title under a case id */
+.gd-mx td em,.gd-tbl td em{display:block}
+
+/* the readiness checklist: the first unticked step is the current one */
+.gd-ck-h{display:flex; align-items:baseline; gap:16px; margin-top:16px}
+.gd-ck-h .gn-link{margin-left:auto; font-size:var(--gn-type-label)}
+.gd-ck{cursor:pointer}
+.gd-ck > span:nth-child(2) b{display:block; font-weight:400}
+.gd-ck > span:nth-child(2) em{display:block; font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-top:2px}
+.gd-ck.is-now > span:nth-child(2) b{font-weight:600}
+.gd-ck.is-done > span:nth-child(2) b,.gd-ck.is-done > span:nth-child(2) em{color:var(--gn-text-caption)}
+.gd-ck .gn-check-r{min-width:0}
+.gd-ck .gn-check-r .gn-link{font-size:var(--gn-type-label); white-space:nowrap}
+
+/* the three ways to get help, side by side, the search inside the first */
+.gd-ways{margin-top:24px}
+.gd-ways .gn-tile{gap:8px}
+.gd-ways .gn-tile p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); line-height:1.5; margin:0}
+.gd-ways .gn-search{margin-top:4px}
+.gd-ways .gn-search .gn-in{background-color:var(--gn-bg-page)}
+.gd-ways .gn-tile-a{padding-top:8px}
+.gd-ways .gn-tile-a .gn-link + .gn-link{margin-left:16px}
+
+/* a table cell that names its retry rule in a word or two */
+.gd-word{min-width:96px}
+
+@media print{
+  .gd-pair{grid-template-columns:1fr}
+  .gd-ck input,.gd-ck-h .gn-link{display:none!important}
+  .gd-ways .gn-search{display:none!important}
+}

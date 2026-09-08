@@ -9,41 +9,32 @@
 <link rel="stylesheet" href="../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../design-system/gn.css">
 <link rel="stylesheet" href="shared/site.css">
+<link rel="stylesheet" href="shared/reference.css">
 <script src="../design-system/shared/icons.js"></script>
 <script src="../design-system/gn-charts.js"></script>
 <script src="shared/data.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
-<div class="dv-h"><div class="gn-eyebrow">Reference</div><h1>SDKs and tools</h1><p>Libraries that handle the token exchange, the refresh and the two plan headers. A CLI for the sandbox. The OpenAPI document and a Postman collection.</p></div>
+<div class="dv-h"><div class="gn-eyebrow">Reference</div><h1>SDKs and tools</h1><p>A library for each of five languages, installed and making its first call in one sample. A CLI for the sandbox. The OpenAPI document and a Postman collection.</p></div>
 <h2 id="libraries">Libraries</h2>
-<p>Each library exposes every endpoint in the reference, refreshes the OAuth token for you, and sets Idempotency-Key when you do not.</p>
-<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Language</th><th scope="col">Install</th><th scope="col">Version</th><th scope="col">Source</th></tr></thead><tbody>
-<tr><td>Node</td><td class="gn-mono">npm install @dgn/node</td><td>4.2.1</td><td><span class="gn-mute">Repository with the SDK</span></td></tr>
-<tr><td>Python</td><td class="gn-mono">pip install dgn</td><td>4.2.0</td><td><span class="gn-mute">Repository with the SDK</span></td></tr>
-<tr><td>Java</td><td class="gn-mono">com.dgn:dgn-java:4.2.0</td><td>4.2.0</td><td><span class="gn-mute">Repository with the SDK</span></td></tr>
-<tr><td>.NET</td><td class="gn-mono">dotnet add package Dgn</td><td>4.2.0</td><td><span class="gn-mute">Repository with the SDK</span></td></tr>
-<tr><td>Go</td><td class="gn-mono">go get github.com/dgn/dgn-go</td><td>4.1.3</td><td><span class="gn-mute">Repository with the SDK</span></td></tr>
-</tbody></table></div>
+<p>Each library exposes every endpoint in the reference, exchanges and refreshes the token, sets Idempotency-Key when you do not, and retries what the network says to retry.</p>
+<div id="rfSdks"></div>
 <h2 id="cli">The CLI</h2>
-<p>Send requests to the sandbox, tail your webhook deliveries, and forward events to a handler on your machine without registering a URL.</p>
-<div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Install and log in</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="bash" data-name="Shell">npm install -g @dgn/cli
-dgn login                      # opens the portal to grant a sandbox key
-dgn authorizations create --amount 5820 --currency USD --card 6011330000000005
-dgn events listen --forward-to localhost:4000/dgn/events</pre></div></div>
+<p>Send requests to the sandbox, tail your webhook deliveries, and forward events to a handler on your machine without registering a URL. Four commands from nothing to a delivery.</p>
+<div class="rf-cli" id="rfCli"></div>
 <h2 id="openapi">OpenAPI and Postman</h2>
 <div class="gn-card-grid" style="margin-top:16px;max-width:820px">
   <div class="gn-card"><h3 style="font-size:15px">OpenAPI 3.1</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every endpoint, object and event, versioned with the API. Generate your own client.</p><div class="gn-actions" style="margin-top:12px"><button class="gn-link" type="button" onclick="dvToast('Download started')">dgn-v4.2.yaml</button></div></div>
   <div class="gn-card"><h3 style="font-size:15px">Postman collection</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Environments for sandbox and certification, credentials read from variables.</p><div class="gn-actions" style="margin-top:12px"><button class="gn-link" type="button" onclick="dvToast('Download started')">dgn-v4.2.postman.json</button></div></div>
 </div>
 <h2 id="samples">Sample applications</h2>
-<div class="gn-rows" style="margin-top:16px">
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Acquirer host, Node</b><span>Authorize, capture and reverse against the sandbox, with a webhook handler that verifies signatures.</span></div><div class="gn-row-r"><span class="gn-mute">Repository with the SDK</span></div></div>
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>ISO 8583 bridge, Java</b><span>Maps a 1987-variant message onto the Authorization object, field by field.</span></div><div class="gn-row-r"><span class="gn-mute">Repository with the SDK</span></div></div>
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Disputes evidence, Python</b><span>Lists open cases, uploads evidence per type, submits before the deadline.</span></div><div class="gn-row-r"><span class="gn-mute">Repository with the SDK</span></div></div>
-</div>
+<p>Three applications that run against the sandbox with the demo credentials. The columns say which calls each one makes.</p>
+<div id="rfSamples"></div>
+<p class="gn-label" style="margin-top:12px">Each sample ships in the repository with its SDK.</p>
 
 </main></div>
+<script src="shared/reference.js"></script>
 <script src="shared/site.js"></script>
 </body>
 </html>

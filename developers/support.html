@@ -9,31 +9,46 @@
 <link rel="stylesheet" href="../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../design-system/gn.css">
 <link rel="stylesheet" href="shared/site.css">
+<link rel="stylesheet" href="shared/guides.css">
 <script src="../design-system/shared/icons.js"></script>
 <script src="../design-system/gn-charts.js"></script>
 <script src="shared/data.js"></script>
+<script src="shared/guides.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--1"><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Developers</div><h1>Support</h1><p>Search the docs first. Then the community. Then a case, which needs an account so we can see what you sent.</p></div>
-<form class="gn-search" style="max-width:640px" onsubmit="supSearch();return false"><input class="gn-in" placeholder="Search the docs and reference" id="supQ" autocomplete="off"><button class="gn-btn" type="submit">Search</button></form>
+<div class="gn-tiles gd-ways" id="ways">
+  <div class="gn-tile"><span class="gn-tile-k">Search the docs</span><p>Every guide, the reference, the changelog. Most answers are one word away.</p><form class="gn-search" onsubmit="supSearch();return false"><input class="gn-in" placeholder="Search the docs and reference" id="supQ" autocomplete="off"><button class="gn-btn" type="submit">Search</button></form></div>
+  <div class="gn-tile"><span class="gn-tile-k">Ask the community</span><p>Questions from other integrators, answered by Discover solutions engineers. Read without an account.</p><div class="gn-tile-a"><a class="gn-link" href="#community">Community</a></div></div>
+  <div class="gn-tile"><span class="gn-tile-k">Open a case</span><p>Needs an account, so the request id you quote is one we can open. High severity is answered within four hours.</p><div class="gn-tile-a"><a class="gn-link" href="#signin">Sign in to open a case</a><a class="gn-link" href="mailto:developers@discover.example">Or email developers@discover.example</a></div></div>
+</div>
 <div id="supRes" style="max-width:640px"></div>
 <script>function supClear(){ var q=document.getElementById('supQ'); q.value=''; dvDrop('supQ'); document.getElementById('supRes').innerHTML=''; q.focus() }
 function supSearch(){ var v=document.getElementById('supQ').value.trim(), out=document.getElementById('supRes'); if(!v){ out.innerHTML=''; return } var all=dvSearch(v), hits=all.slice(0,8), shown=v.replace(/</g,'&lt;'); out.innerHTML=hits.length?'<p style="margin-top:16px">'+(all.length>hits.length?hits.length+' of '+all.length+' pages match '+shown+'. Add a word to narrow it.':all.length+(all.length===1?' page matches ':' pages match ')+shown+'.')+' <button class="gn-link" type="button" onclick="supClear()">Clear</button></p><div class="gn-rows" style="margin-top:8px">'+hits.map(function(h){ return '<a class="gn-row is-link" style="padding-left:0;padding-right:0" href="'+h.href+'"><div class="gn-row-t"><b>'+h.title+'</b></div><div class="gn-row-r"><span class="gn-num">'+h.section+'</span></div></a>' }).join('')+'</div>':'<div class="gn-empty"><b>No pages match '+v.replace(/</g,'&lt;')+'.</b><span>Try the name of an object, an endpoint, an event or a code, or open the <a href="api/index.html">reference</a>.</span></div>' }</script>
-<h2 id="routes">Where to go</h2>
-<div class="gn-card-grid gn-card-grid--3" style="margin-top:16px">
-  <a class="gn-card is-link" href="docs/errors.html"><h3 style="font-size:15px">An error code</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every response code and error type, what it means, what to do.</p></a>
-  <a class="gn-card is-link" href="status.html"><h3 style="font-size:15px">Status</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Status per product and environment, and the last 90 days.</p></a>
-  <a class="gn-card is-link" href="#community"><h3 style="font-size:15px">Community</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Questions and answers from other integrators. Read without an account.</p></a>
+
+<h2 id="routes">Before you ask</h2>
+<p>Three things answer most cases before they are opened.</p>
+<div class="gn-dl" style="margin-top:16px;max-width:820px">
+  <div class="gn-dl-r"><a class="gn-link" href="docs/errors.html">An error code</a><span>Every response code and error type, what it means, what to do, and whether to retry.</span><span class="gn-num">Errors</span></div>
+  <div class="gn-dl-r"><a class="gn-link" href="status.html">Status</a><span>Each product and environment now, and the last 90 days of incidents.</span><span class="gn-num">Status</span></div>
+  <div class="gn-dl-r"><span>The request_id</span><span>On every response and on every row in Logs in the Developer Portal. Quote it and we can open exactly what you sent.</span><span class="gn-num">Logs</span></div>
 </div>
+
 <h2 id="community">Community</h2>
-<div class="gn-rows" style="margin-top:16px">
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Mapping DE 22 to entry_mode for contactless with PIN</b><span>Answered by a Discover solutions engineer, May 30.</span></div><div class="gn-row-r"><span class="gn-status is-good">Answered</span></div></div>
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>409 conflict on a retry inside the timeout</b><span>The first request was still in flight. Documented under Idempotency.</span></div><div class="gn-row-r"><span class="gn-status is-good">Answered</span></div></div>
-  <div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>Staging chain missing an intermediate</b><span>Most clients accept a short chain. The network requires the full one.</span></div><div class="gn-row-r"><span class="gn-status is-good">Answered</span></div></div>
-</div>
+<div class="gn-table-wrap"><table class="gn-table"><thead><tr><th scope="col">Question</th><th scope="col">Answer</th><th scope="col">When</th><th scope="col">State</th></tr></thead><tbody>
+  <tr><td>Mapping DE 22 to entry_mode for contactless with PIN</td><td>Contactless with PIN is <span class="gn-mono">contactless</span>. The PIN travels in the cryptogram, never in entry_mode.</td><td class="gn-nowrap">May 30</td><td><span class="gn-status is-good">Answered</span></td></tr>
+  <tr><td>409 conflict on a retry inside the timeout</td><td>The first request was still in flight. Documented under <a href="docs/errors.html#idempotency">Idempotency</a>.</td><td class="gn-nowrap">May 27</td><td><span class="gn-status is-good">Answered</span></td></tr>
+  <tr><td>Staging chain missing an intermediate</td><td>Most clients accept a short chain. The network requires the full one, leaf to root.</td><td class="gn-nowrap">May 6</td><td><span class="gn-status is-good">Answered</span></td></tr>
+</tbody></table></div>
+
 <h2 id="case">Open a case</h2>
-<p>A case needs an account, so the request id you quote is one we can open. Response within one business day; high severity within four hours.</p>
+<p>A case needs an account, so the request id you quote is one we can open. Severity sets the clock.</p>
+<div class="gn-table-wrap" style="max-width:820px"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Severity</th><th scope="col">Means</th><th scope="col">First response</th><th scope="col">Then</th></tr></thead><tbody>
+<tr><td><span class="gn-status is-bad">High</span></td><td>Production authorizations failing, or money wrong in a cycle</td><td>4 hours, any day</td><td>Updates every hour until it closes</td></tr>
+<tr><td><span class="gn-status is-warn">Normal</span></td><td>One endpoint, one merchant, or certification blocked</td><td>1 business day</td><td>Updates every business day</td></tr>
+<tr><td><span class="gn-status is-quiet">Low</span></td><td>A question about the reference or a sample</td><td>2 business days</td><td>Closed with the answer</td></tr>
+</tbody></table></div>
 <div class="gn-actions" style="margin-top:16px"><a class="gn-btn" href="#signin">Sign in to open a case</a><a class="gn-link" href="mailto:developers@discover.example">Or email developers@discover.example</a></div>
 <div class="gn-card-grid" style="margin-top:56px;max-width:820px">
   <div class="gn-card" id="signin"><h3 style="font-size:22px">Sign in</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Your keys, endpoints, logs, cases and your account team are in the Developer Portal.</p><form onsubmit="signIn();return false"><label class="gn-field"><span class="gn-field-l">Email</span><input class="gn-in" id="siEmail" placeholder="name@acquirer.example" autocomplete="username"></label><label class="gn-field" style="margin-top:16px"><span class="gn-field-l">Password</span><input class="gn-in" id="siPass" type="password" autocomplete="current-password"></label><div class="gn-form-act"><button class="gn-btn" type="submit">Sign in</button><button class="gn-link" type="button" onclick="dvToast('Not available in this prototype')">Forgot password</button></div></form></div>
@@ -45,7 +60,7 @@ function signUp(){ var e=document.getElementById('suEmail'), c=document.getEleme
 </script>
 <script>document.getElementById('supQ').addEventListener('dv-restored',supSearch); if(document.getElementById('supQ').value) supSearch();</script>
 <h2 id="terms">API terms</h2>
-<p>The sandbox is free to use and needs no agreement. Certification and production need a participation agreement, signed in the Partner Portal. Keys are yours to keep secret; a key that leaks is yours to expire on API keys in the Developer Portal, and the network expires any key it sees in the open. The full terms are not part of this prototype.</p>
+<p>The sandbox is free to use and needs no agreement. Certification and production need a participation agreement, signed in the Partner Portal. Keys are yours to keep secret. A key that leaks is yours to expire on API keys in the Developer Portal, and the network expires any key it sees in the open. The full terms are not part of this prototype.</p>
 
 </main></div>
 <script src="shared/site.js"></script>

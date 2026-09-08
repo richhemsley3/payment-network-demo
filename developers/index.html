@@ -16,27 +16,60 @@
 <body class="dv">
 <div class="dv-shell dv-shell--1"><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Developers</div><h1>Build against the network directly.</h1><p>One integration, direct to the issuer. The reference, the events, the test cards and a sandbox are public. An account is for keys.</p></div>
-<div class="gn-card-grid gn-card-grid--3 dv-doors">
-  <a class="gn-card is-link dv-door" href="docs/quickstart.html"><h2>Quickstart</h2><p>A token, then your first authorization, on the sandbox in ten minutes.</p><span class="gn-mono">POST /acceptance/v1/authorizations</span></a>
-  <a class="gn-card is-link dv-door" href="api/index.html"><h2>API reference</h2><p>Every object and endpoint. What you send, what comes back, a sample in your language.</p><span class="gn-mono">8 endpoints · 6 events</span></a>
-  <a class="gn-card is-link dv-door" href="docs/testing.html"><h2>Test cards and sandbox</h2><p>Eight cards, each with a named outcome. Send one now, no account.</p><span class="gn-mono">6011 3300 0000 0005</span></a>
+
+<h2 id="try">Send one request</h2>
+<p>The shared demo sandbox answers without an account. Pick a card, press Send, read the answer.</p>
+<div class="dv-live">
+  <div>
+    <div class="dv-build-bar"><label class="gn-field"><span class="gn-field-l">Card</span><select class="gn-in gn-in--auto gn-in--mono" id="hmCard"></select></label><label class="gn-field"><span class="gn-field-l">Amount</span><input class="gn-in gn-in--mono" id="hmAmt" value="58.20" inputmode="decimal"></label><button class="gn-btn gn-btn--primary" type="button" id="hmSend">Send</button></div>
+    <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL" id="hmCurl"></pre><pre class="gn-code" data-lang="node" data-name="Node" id="hmNode"></pre><pre class="gn-code" data-lang="python" data-name="Python" id="hmPython"></pre></div></div>
+  </div>
+  <div class="gn-console"><div class="gn-console-bar"><span class="gn-mono">POST /acceptance/v1/authorizations</span><span class="gn-rs" id="hmRs"></span></div><pre id="hmOut" aria-live="polite"><span class="gn-console-wait">Press Send to see this card's answer.</span></pre></div>
 </div>
+<p><a href="docs/quickstart.html">Quickstart</a> runs this request through a token, a capture and the event in ten minutes. Every card and entry mode is on the <a href="docs/testing.html#console">sandbox page</a>, and every field on the <a href="api/index.html#authorize">Authorize endpoint</a>.</p>
+<script>
+(function(){ var sel=document.getElementById('hmCard'), amt=document.getElementById('hmAmt'), out=document.getElementById('hmOut'), rs=document.getElementById('hmRs');
+  sel.innerHTML=DV.cards.map(function(c,i){ return '<option value="'+i+'">'+c[0]+' · '+c[1]+'</option>' }).join('');
+  function minor(){ var v=amt.value.trim(); return /^\d+(\.\d{1,2})?$/.test(v)&&parseFloat(v)>0?Math.round(parseFloat(v)*100):null }
+  function paint(){ var s=DV.sample(DV.body(+sel.value, minor()||5820, 'contactless')); document.getElementById('hmCurl').textContent=s.curl; document.getElementById('hmNode').textContent=s.node; document.getElementById('hmPython').textContent=s.python }
+  sel.addEventListener('change',paint); amt.addEventListener('input',paint); amt.addEventListener('dv-restored',paint); paint();
+  document.getElementById('hmSend').addEventListener('click',function(){ var m=minor(); if(!dvErr(amt, m?'':'Enter an amount in dollars, like 58.20.')){ amt.focus(); return } if(dvOffline()){ rs.innerHTML=''; out.textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var r=DV.respond(+sel.value, m); rs.innerHTML='<b'+(r.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+r.round_trip_ms+' ms'; out.textContent=JSON.stringify(r,null,2) });
+})();
+</script>
+
+<h2 id="flow">One transaction, end to end</h2>
+<p>Five messages carry a payment from the terminal to the wire. Two are yours to send. Three arrive signed, at an endpoint you register once.</p>
+<div class="dv-flow">
+  <div><span class="gn-label">You send</span><b>POST /acceptance/v1/authorizations</b><p>The issuer answers within 500 ms, or your stand-in rules do.</p></div>
+  <div><span class="gn-label">Arrives</span><b>authorization.decisioned</b><p>Within a second of the answer, approved or declined.</p></div>
+  <div><span class="gn-label">You send</span><b>POST /acceptance/v1/captures</b><p>Within 7 days. One call takes up to 5,000 ids.</p></div>
+  <div><span class="gn-label">Arrives</span><b>settlement.posted</b><p>When the cycle is final, with the wire reference.</p></div>
+  <div><span class="gn-label">Arrives if a cardholder disputes</span><b>dispute.opened</b><p>The reason code and your deadline. Evidence goes to the Disputes endpoint.</p></div>
+</div>
+
 <h2 id="products">Products</h2>
-<p>Acceptance is where every integration starts.</p>
-<div class="gn-card-grid gn-card-grid--3" style="margin-top:16px">
-  <a class="gn-card is-link" href="docs/authorization.html"><h3 style="font-size:15px">Acceptance</h3><div class="gn-tags" style="margin-top:8px"><span class="gn-tag">Authorize</span><span class="gn-tag">Capture</span><span class="gn-tag">Reverse</span><span class="gn-tag">Refund</span></div><p style="color:var(--gn-text-secondary);margin-top:12px">Authorization, clearing and settlement, direct to the issuer. Answered within 500 ms, or by stand-in rules you set.</p></a>
-  <a class="gn-card is-link" href="api/index.html#tokens"><h3 style="font-size:15px">Tokens</h3><div class="gn-tags" style="margin-top:8px"><span class="gn-tag">Create</span><span class="gn-tag">token.updated</span></div><p style="color:var(--gn-text-secondary);margin-top:12px">Replace a card number with a merchant-scoped token. Kept current when the card is reissued.</p></a>
-  <a class="gn-card is-link" href="api/index.html#disputes"><h3 style="font-size:15px">Disputes</h3><div class="gn-tags" style="margin-top:8px"><span class="gn-tag">Cases</span><span class="gn-tag">Evidence</span></div><p style="color:var(--gn-text-secondary);margin-top:12px">Retrieval through arbitration in the transaction record, with the deadline on every case.</p></a>
-  <a class="gn-card is-link" href="api/index.html#settlements"><h3 style="font-size:15px">Settlement reports</h3><p style="color:var(--gn-text-secondary);margin-top:12px">Daily figures in ledger format. Published by 5:00 AM local.</p></a>
-  <a class="gn-card is-link" href="docs/webhooks.html"><h3 style="font-size:15px">Events</h3><p style="color:var(--gn-text-secondary);margin-top:12px">Signed webhooks for every decision, dispute, settlement and reissue. Retried for three days.</p></a>
-  <a class="gn-card is-link" href="api/index.html#decisioning"><h3 style="font-size:15px">Risk signal</h3><p style="color:var(--gn-text-secondary);margin-top:12px">A network score and its reasons on every authorization response. Optional to read.</p></a>
-</div>
+<p>Acceptance is where every integration starts. Each product is the calls you make, the events it sends and one guide.</p>
+<div class="gn-table-wrap"><table class="gn-table dv-products"><thead><tr><th scope="col">Product</th><th scope="col">You call</th><th scope="col">You receive</th><th scope="col">Guide</th></tr></thead><tbody>
+  <tr><td>Acceptance<em>Authorization, clearing and settlement, direct to the issuer.</em></td><td class="gn-mono"><span class="dv-call">POST /acceptance/v1/authorizations</span><span class="dv-call">POST /acceptance/v1/authorizations/{id}/reverse</span><span class="dv-call">POST /acceptance/v1/captures</span><span class="dv-call">POST /acceptance/v1/refunds</span></td><td class="gn-mono">authorization.decisioned</td><td><a href="docs/authorization.html">Accept a payment</a></td></tr>
+  <tr><td>Tokens<em>A merchant-scoped token replaces the card number and survives reissue.</em></td><td class="gn-mono">POST /tokens/v1/tokens</td><td class="gn-mono">token.updated</td><td><a href="api/index.html#tokens">The Token object</a></td></tr>
+  <tr><td>Disputes<em>Retrieval through arbitration, with the deadline on every case.</em></td><td class="gn-mono">POST /disputes/v1/cases/{id}/evidence</td><td class="gn-mono">dispute.opened</td><td><a href="api/index.html#disputes">The Case object</a></td></tr>
+  <tr><td>Settlement<em>Daily figures in ledger format, published by 5:00 AM local.</em></td><td class="gn-mono">GET /money/v1/settlements/{date}</td><td class="gn-mono">settlement.posted</td><td><a href="api/index.html#settlements">Settlement reports</a></td></tr>
+  <tr><td>Decisioning<em>A network score and its reasons on every authorization. Optional to read.</em></td><td class="gn-mono">GET /decisioning/v1/decisions/{id}</td><td class="gn-mono">merchant.risk_changed</td><td><a href="api/index.html#decisioning">Explain a decision</a></td></tr>
+  <tr><td>Events<em>Signed webhooks, retried for three days.</em></td><td>One endpoint you register</td><td class="gn-mono">certificate.expiring</td><td><a href="docs/webhooks.html">Receive events</a></td></tr>
+</tbody></table><div class="gn-table-foot"><span>8 endpoints · 6 events. The <a href="api/index.html">reference</a> has every field of each.</span></div></div>
+
 <h2 id="public">What is public, and what an account is for</h2>
-<div class="gn-doc gn-doc--2" style="max-width:820px">
-  <div class="gn-doc-r"><span class="gn-doc-l">Public, no account</span><span class="gn-doc-v">The reference, the event reference, the guides, the test cards, the changelog, status, and one request at a time on the shared demo sandbox.</span></div>
-  <div class="gn-doc-r"><span class="gn-doc-l">A free account</span><span class="gn-doc-v">Your own sandbox keys, webhook endpoints, logs of what you sent, and the Developer Portal. Certification and production come with a participation agreement.</span></div>
-</div>
-<div class="dv-band dv-band--tone"><div style="display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center"><div><h2 style="margin-top:0;font-size:var(--gn-type-subhead)">Your platform already speaks ISO 8583.</h2><p style="margin-top:8px;max-width:56ch">The specification shows what maps and what changes, endpoint by endpoint. Most acquirers confirm feasibility in an afternoon.</p></div><a class="gn-btn gn-btn--primary" href="docs/quickstart.html">Send your first request</a></div></div>
+<div class="gn-table-wrap" style="max-width:820px"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">What</th><th scope="col">No account</th><th scope="col">A free account</th></tr></thead><tbody>
+  <tr><td>The reference, the event reference and the guides</td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td></tr>
+  <tr><td>The test cards and the demo console, one request at a time</td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td></tr>
+  <tr><td>The changelog and status</td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td></tr>
+  <tr><td>Your own sandbox keys and webhook endpoints</td><td><span class="gn-status is-quiet">Not yet</span></td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td></tr>
+  <tr><td>Logs of what you sent, and the Developer Portal</td><td><span class="gn-status is-quiet">Not yet</span></td><td><svg class="dv-yes" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Yes</span></td></tr>
+  <tr><td>Certification and production</td><td><span class="gn-status is-quiet">Not yet</span></td><td>With a participation agreement</td></tr>
+</tbody></table></div>
+
+<div class="dv-band dv-band--tone"><div class="dv-band-g"><div><h2 style="margin-top:0;font-size:var(--gn-type-subhead)">Your platform already speaks ISO 8583.</h2><p style="margin-top:8px;max-width:56ch">The specification shows what maps and what changes, endpoint by endpoint. Most acquirers confirm feasibility in an afternoon.</p></div><a class="gn-btn" href="docs/authorization.html#iso">Read what maps</a></div></div>
+
 <h2 id="latest">Latest changes</h2>
 <div class="gn-rows" style="margin-top:16px" id="dvLatest"></div>
 <script>document.getElementById('dvLatest').innerHTML=DV.changelog.slice(0,3).map(function(c){ return '<div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>'+c[3]+'</b><span>'+c[4]+'</span></div><div class="gn-row-r"><span class="gn-mono">'+c[1]+'</span><span class="gn-num">'+DV.date(c[0])+'</span></div></div>' }).join('')+'<div class="gn-pager" style="justify-content:flex-end"><a class="gn-link" href="changelog.html">All changes</a></div>';</script>

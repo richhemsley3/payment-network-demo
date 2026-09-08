@@ -9,45 +9,145 @@
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
 <link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/guides.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
+<script src="../shared/guides.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Build</div><h1>Accept a payment</h1><p>Authorize, capture, reverse, refund. Partial approvals, stand-in when the issuer is slow, and the score that rides on every answer.</p></div>
 <div class="dv-pre"><b>Before you start</b><span>A sandbox token from the <a href="quickstart.html">quickstart</a>. The Authorization object in the <a href="../api/index.html#authorization">reference</a>.</span></div>
+
+<h2 id="flow">How a payment moves</h2>
+<p>Four calls and two events carry a payment from the terminal to the wire. Your host makes the calls. The network answers each one and sends the events.</p>
+<div id="gdFlow"></div>
+<script>GD.seq('gdFlow',{label:'Your host authorizes through the network to the issuer, captures, and receives two events', lanes:[{k:'you',n:'Your host'},{k:'net',n:'Discover Global Network'},{k:'iss',n:'Issuer'}], steps:[
+ {from:'you',to:'net',l:'POST /acceptance/v1/authorizations',t:'with an Idempotency-Key'},
+ {from:'net',to:'iss',l:'The request, on the network\'s rails'},
+ {from:'iss',to:'net',l:'Approve, partial or decline',t:'within 500 ms, or your stand-in rules answer',kind:'return'},
+ {from:'net',to:'you',l:'decision, response_code, score',t:'one answer, one request_id',kind:'return'},
+ {from:'net',to:'you',l:'authorization.decisioned to your endpoint',t:'within a second, signed',kind:'event'},
+ {from:'you',to:'net',l:'POST /acceptance/v1/captures',t:'within 7 days, in full or in part'},
+ {from:'net',to:'net',l:'The night\'s clearing file'},
+ {from:'net',to:'you',l:'settlement.posted to your endpoint',t:'about 6:00 AM ET, with the wire reference',kind:'event'}]});</script>
+
 <h2 id="authorize">Authorize</h2>
-<p>An authorization asks the issuer to hold an amount. The answer is a decision, the issuer's code, and how long the issuer took. Answered within 500 ms, or by stand-in rules you set.</p>
+<p>An authorization asks the issuer to hold an amount. The answer is a decision, the issuer's code, and how long the issuer took.</p>
+<div class="gd-pair">
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
   -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
   -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan_token": "tok_9d1b4e", "entry_mode": "ecommerce", "avs": { "street": "12 Ash St", "postal": "80202" } }'</pre><pre class="gn-code" data-lang="node" data-name="Node">const auth = await dgn.authorizations.create({ amount: 5820, currency: "USD", merchantId: "mch_demo", panToken: "tok_9d1b4e", entryMode: "ecommerce", avs: { street: "12 Ash St", postal: "80202" } });</pre><pre class="gn-code" data-lang="python" data-name="Python">auth = client.authorizations.create(amount=5820, currency="USD", merchant_id="mch_demo", pan_token="tok_9d1b4e", entry_mode="ecommerce", avs={"street": "12 Ash St", "postal": "80202"})</pre></div></div>
-<h3 id="partial">Partial approval</h3>
-<p>A prepaid or limited card may approve less than requested: <span class="gn-mono">decision: partial</span>, code 10, and <span class="gn-mono">approved_amount</span>. Capture that amount, or reverse and ask for another card.</p>
-<h3 id="standin">Stand-in</h3>
-<p>When the issuer does not answer in time, the network answers on your stand-in rules: a ceiling per transaction and per card per day, set in Configuration. The response carries <span class="gn-mono">answered_by: network</span>. Stand-in approvals clear like any other.</p>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">Response</span><span class="gn-status is-good">200 in 41 ms</span></div><pre class="gn-code gn-code--ink">{
+  "id": "auth_71ab3c",
+  "decision": "approved",
+  "response_code": "00",
+  "approved_amount": 5820,
+  "answered_by": "issuer",
+  "avs": { "street": "Y", "postal": "Y" },
+  "issuer_ms": 41,
+  "score": 22,
+  "request_id": "req_71ab3c"
+}</pre></div>
+</div>
+<h3 id="answers">The four answers</h3>
+<p>Every authorization answers with one of four decisions. The code says why, and <span class="gn-mono">answered_by</span> says who.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">decision</th><th scope="col">Code</th><th scope="col">answered_by</th><th scope="col">What you do</th></tr></thead><tbody>
+<tr><td><span class="gn-mono">approved</span></td><td><span class="gn-status is-good">00</span></td><td>issuer</td><td>Capture within 7 days.</td></tr>
+<tr id="partial"><td><span class="gn-mono">partial</span></td><td><span class="gn-status is-warn">10</span></td><td>issuer</td><td>A prepaid or limited card approved less than requested. Capture <span class="gn-mono">approved_amount</span>, or reverse and ask for another card.</td></tr>
+<tr><td><span class="gn-mono">declined</span></td><td><span class="gn-status is-warn">51</span> <span class="gn-status is-bad">05 14 54</span></td><td>issuer</td><td>Read the code. <a href="errors.html#codes">Every code</a> says whether a retry is allowed.</td></tr>
+<tr id="standin"><td><span class="gn-mono">stand_in</span></td><td><span class="gn-status is-good">00</span></td><td>network</td><td>The issuer did not answer within 500 ms. Your stand-in rules answered, inside the ceiling per transaction and per card per day set in Configuration. Capture like any other approval.</td></tr>
+</tbody></table></div>
+
+<h2 id="lifecycle">Where an authorization can go</h2>
+<p>An approval is a hold. What you call next moves it, and the night's cycle moves it without you.</p>
+<div id="gdStates"></div>
+<script>GD.states('gdStates',{label:'authorized moves to captured by Capture, to reversed by Reverse, or lapses after 7 days. captured moves to settled overnight or to refunded by Refund. settled can be disputed.', w:640, h:200, nodes:[
+ {id:'auth',x:8,y:24,l:'authorized',tone:'is-good'},{id:'cap',x:262,y:24,l:'captured',tone:'is-good'},{id:'set',x:516,y:24,l:'settled',tone:'is-good'},
+ {id:'rev',x:8,y:144,l:'reversed'},{id:'ref',x:262,y:144,l:'refunded'},{id:'dsp',x:516,y:144,l:'disputed',tone:'is-warn'}], edges:[
+ {a:'auth',b:'cap',from:'r',to:'l',l:'Capture, within 7 days'},{a:'cap',b:'set',from:'r',to:'l',l:'the night\'s cycle',kind:'event'},
+ {a:'auth',b:'rev',from:'b',to:'t',l:'Reverse, or the hold lapses after 7 days'},{a:'cap',b:'ref',from:'b',to:'t',l:'Refund, settled or not'},{a:'set',b:'dsp',from:'b',to:'t',l:'dispute.opened',kind:'event',anchor:'end'}]});</script>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">State</th><th scope="col">What moves it there</th><th scope="col">Window</th></tr></thead><tbody>
+<tr><td><span class="gn-status is-good">authorized</span></td><td>The issuer, or stand-in, approved the hold.</td><td>7 days before the hold lapses</td></tr>
+<tr><td><span class="gn-status is-good">captured</span></td><td>You called Capture. The amount joins the day's clearing file.</td><td>Within 7 days of the authorization</td></tr>
+<tr><td><span class="gn-status is-good">settled</span></td><td>The night's cycle posted. <span class="gn-mono">settlement.posted</span> carries the wire reference.</td><td>About 6:00 AM ET the next day</td></tr>
+<tr><td><span class="gn-status is-quiet">reversed</span></td><td>You called Reverse before capture. The issuer releases the hold at once.</td><td>Any time before capture</td></tr>
+<tr><td><span class="gn-status is-quiet">refunded</span></td><td>You called Refund after capture. The cardholder sees the money in 3 to 5 days.</td><td>Any time after capture</td></tr>
+<tr><td><span class="gn-status is-warn">disputed</span></td><td>The cardholder's bank opened a case. <span class="gn-mono">dispute.opened</span> carries the reason code and your evidence deadline.</td><td>Up to 120 days after settlement</td></tr>
+</tbody></table></div>
+
 <h2 id="capture">Capture</h2>
-<p>Move an approved hold into the day's clearing file. Within 7 days, in full or in part. A batch takes up to 5,000 ids on one call.</p>
+<p>Move an approved hold into the day's clearing file. A batch takes up to 5,000 ids on one call.</p>
+<div class="gd-pair">
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/captures \
   -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
   -d '{ "authorization_id": "auth_71ab3c", "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.captures.create({ authorizationId: "auth_71ab3c", amount: 5820 });
 // end of day
 await dgn.captures.createBatch({ authorizationIds: ids });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.captures.create(authorization_id="auth_71ab3c", amount=5820)
 client.captures.create_batch(authorization_ids=ids)</pre></div></div>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">Response</span><span class="gn-status is-good">201</span></div><pre class="gn-code gn-code--ink">{
+  "id": "cap_3e91a0",
+  "authorization_id": "auth_71ab3c",
+  "amount": 5820,
+  "status": "captured",
+  "cycle": { "date": "2026-06-02" },
+  "request_id": "req_71ab44"
+}</pre></div>
+</div>
+
 <h2 id="reverse">Reverse</h2>
-<p>Release a hold you no longer need, in full or in part. The issuer sees it immediately. A reversal after capture is a refund.</p>
+<p>Release a hold you no longer need, in full or in part. The issuer sees it immediately.</p>
+<div class="gd-pair">
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations/auth_71ab3c/reverse \
   -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
   -d '{ "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.authorizations.reverse("auth_71ab3c", { amount: 5820 });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.authorizations.reverse("auth_71ab3c", amount=5820)</pre></div></div>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">Response</span><span class="gn-status is-good">200</span></div><pre class="gn-code gn-code--ink">{
+  "id": "auth_71ab3c",
+  "status": "reversed",
+  "released_amount": 5820,
+  "held_amount": 0,
+  "request_id": "req_71ab4b"
+}</pre></div>
+</div>
+
 <h2 id="refund">Refund</h2>
-<p>Return captured money to the cardholder. Full or partial. Reaches the cardholder in 3 to 5 days and appears in that night's cycle as an adjustment.</p>
+<p>Return captured money to the cardholder, in full or in part. It reaches the cardholder in 3 to 5 days and appears in that night's cycle as an adjustment.</p>
+<div class="gd-pair">
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/refunds \
   -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
   -d '{ "authorization_id": "auth_71ab3c", "amount": 2000, "reason": "requested_by_customer" }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.refunds.create({ authorizationId: "auth_71ab3c", amount: 2000, reason: "requested_by_customer" });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.refunds.create(authorization_id="auth_71ab3c", amount=2000, reason="requested_by_customer")</pre></div></div>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">Response</span><span class="gn-status is-good">201</span></div><pre class="gn-code gn-code--ink">{
+  "id": "rf_a41c07",
+  "authorization_id": "auth_71ab3c",
+  "amount": 2000,
+  "status": "pending",
+  "reason": "requested_by_customer",
+  "request_id": "req_71ab52"
+}</pre></div>
+</div>
+
 <h2 id="score">The score</h2>
-<p>Every authorization response carries <span class="gn-mono">score</span>, 0 to 100, and <span class="gn-mono">score_reasons</span>: network-side signal the issuer does not hold, such as whether this device has paid this merchant before. Read it or ignore it. Rules on it live in Fraud in the Partner Portal.</p>
+<p>Every authorization response carries <span class="gn-mono">score</span>, 0 to 100, and <span class="gn-mono">score_reasons</span>: network-side signal the issuer does not hold. Read it or ignore it. Rules on it live in Fraud in the Partner Portal.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Reason</th><th scope="col">What the network saw</th><th scope="col">Moves the score</th></tr></thead><tbody>
+<tr><td><span class="gn-mono">device_seen_before</span></td><td>This device has paid this merchant before.</td><td class="is-num"><span class="gn-status is-good">down</span></td></tr>
+<tr><td><span class="gn-mono">velocity</span></td><td>Several cards from one device inside twenty minutes.</td><td class="is-num"><span class="gn-status is-bad">up</span></td></tr>
+<tr><td><span class="gn-mono">avs_mismatch</span></td><td>The street or the postal code did not match.</td><td class="is-num"><span class="gn-status is-warn">up</span></td></tr>
+<tr><td><span class="gn-mono">merchant_baseline</span></td><td>The merchant is outside its own fourteen-day baseline.</td><td class="is-num"><span class="gn-status is-warn">up</span></td></tr>
+</tbody></table></div>
+
 <h2 id="iso">If your platform speaks ISO 8583</h2>
-<p>The mapping is direct. DE 4 is <span class="gn-mono">amount</span>, DE 49 is <span class="gn-mono">currency</span>, DE 22 is <span class="gn-mono">entry_mode</span>, DE 39 comes back as <span class="gn-mono">response_code</span>. The <a href="../sdks.html#samples">ISO 8583 bridge sample</a> maps a 1987-variant message field by field.</p>
+<p>The mapping is direct. The <a href="../sdks.html#samples">ISO 8583 bridge sample</a> maps a 1987-variant message field by field.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Data element</th><th scope="col">Field</th><th scope="col">Direction</th></tr></thead><tbody>
+<tr><td>DE 2</td><td><span class="gn-mono">pan</span> or <span class="gn-mono">pan_token</span></td><td>You send</td></tr>
+<tr><td>DE 4</td><td><span class="gn-mono">amount</span>, minor units</td><td>You send</td></tr>
+<tr><td>DE 22</td><td><span class="gn-mono">entry_mode</span></td><td>You send</td></tr>
+<tr><td>DE 42</td><td><span class="gn-mono">merchant_id</span></td><td>You send</td></tr>
+<tr><td>DE 49</td><td><span class="gn-mono">currency</span></td><td>You send</td></tr>
+<tr><td>DE 38</td><td><span class="gn-mono">id</span>, the approval reference</td><td>Comes back</td></tr>
+<tr><td>DE 39</td><td><span class="gn-mono">response_code</span></td><td>Comes back</td></tr>
+</tbody></table></div>
+
 <div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="webhooks.html"><h3 style="font-size:15px">Receive events</h3><p style="color:var(--gn-text-secondary);margin-top:8px">authorization.decisioned, within a second.</p></a><a class="gn-card is-link" href="errors.html"><h3 style="font-size:15px">Errors and idempotency</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What to retry, and with which key.</p></a><a class="gn-card is-link" href="../api/index.html#authorization"><h3 style="font-size:15px">The Authorization object</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field.</p></a></div></div>
 
 </main><nav class="dv-toc"></nav></div>

@@ -1481,6 +1481,28 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 .heat-k{display:flex; gap:20px; padding-top:10px; font-size:13px; color:var(--g550)} .heat-k span{display:flex; align-items:center; gap:6px} .heat-k i{width:14px; height:14px; border-radius:3px; display:inline-block}
 /* the plan strip marks the week the plan is in */
 .tl2-h .tl2-w span.is-now{color:var(--navy); font-weight:600}
+
+/* ── the agent's week: seven columns, the day's items beneath its name ── */
+.wk{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; margin-top:16px}
+.wk-d{border-top:2px solid var(--g150); padding-top:10px; min-height:120px}
+.wk-d.is-today{border-top-color:var(--navy)}
+.wk-h b{display:block; font-weight:600; font-size:13px} .wk-h span{display:block; font-size:13px; color:var(--g550)}
+.wk-d.is-today .wk-h b{color:var(--navy)}
+.wk-i{margin-top:10px; font-size:13px; line-height:1.4; padding:6px 8px; background:var(--g025); border-radius:var(--r-small); cursor:pointer}
+.wk-i:hover{background:var(--g050)} .wk-i.is-no{color:var(--bad)} .wk-i:focus-visible{outline:2px solid var(--navy); outline-offset:2px}
+.wk-e{margin-top:10px; font-size:13px; color:var(--g400)}
+/* ── the inbox, with the context column ── */
+.inbox--3{grid-template-columns:minmax(0,300px) minmax(0,1fr) 240px; gap:0 28px}
+.inbox-c{border-left:1px solid var(--g150); padding-left:24px}
+.inbox-cb{padding:12px 0; border-bottom:1px solid var(--g100)} .inbox-cb:last-child{border-bottom:0}
+.inbox-cb > b{display:block; font-weight:400; margin-top:4px} .inbox-cb > b.gn-link{cursor:pointer}
+.inbox-cb > span{display:block; font-size:13px; color:var(--g550); margin-top:2px}
+.inbox-cb .gn-menu{margin-top:6px}
+.inbox-ev{display:block; font-size:13px; color:var(--g650); margin-top:4px} .inbox-ev b{font-weight:600; color:var(--g900)}
+.inbox-i.is-high b{color:var(--g900)}
+.note-i{position:relative} .note-i .msg.is-note{background:var(--g025); border-radius:var(--r-part); padding:12px} .note-tag{position:absolute; right:12px; top:12px; font-size:13px; color:var(--g550)}
+.inbox-thr .gn-thread-f .gn-seg{margin-bottom:8px}
+@media (max-width:1180px){ .inbox--3{grid-template-columns:minmax(0,280px) minmax(0,1fr)} .inbox-c{grid-column:1 / -1; border-left:0; padding-left:0; border-top:1px solid var(--g150); padding-top:12px} .wk{grid-template-columns:repeat(4,minmax(0,1fr))} }
 /* the caught card carries its own action */
 .al-a{margin-top:20px}
 
@@ -4330,24 +4352,37 @@ body.mode-prep #prepbar{display:flex}
  /* the six seats on the network's side. Marcus is the demo seat and sees
     everything; a seat's acts are what it may change (agCanDo). */
  var AG_SEATS = [
-  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','agHandshake','agMessage','agCase','agCaseReply','agCaseClose','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
-  {k:'rel',  t:'Relationship',          who:'sonia',  d:'Issues the agreement, runs the quarterly review, decides product requests and messages the partner.', acts:['issueAgr','agMessage','agCase','agCaseReply','agCaseClose','agStep:agr','agRemind','agNote','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','agRoleView','agRoleBack']},
+  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','agHandshake','agMessage','agCase','agCaseReply','agCaseClose','agCaseNote','agCaseAssign','agCanned','agCaseStatus','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
+  {k:'rel',  t:'Relationship',          who:'sonia',  d:'Issues the agreement, runs the quarterly review, decides product requests and messages the partner.', acts:['issueAgr','agMessage','agCase','agCaseReply','agCaseClose','agCaseNote','agCaseAssign','agCanned','agCaseStatus','agStep:agr','agRemind','agNote','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','agRoleView','agRoleBack']},
   {k:'risk', t:'Risk and compliance',   who:'lena',   d:'Clears or holds each of the six areas and decides the risk review.', acts:['riskArea','riskClear','agRemind','agNote','agRoleView','agRoleBack']},
-  {k:'cert', t:'Certification engineer',who:'ana',    d:'Books windows, confirms or declines window requests and validates certification.', acts:['agBook','agValidate','winOk','winNo','agCase','agCaseReply','agCaseClose','agRemind','agNote','agRoleView','agRoleBack']},
+  {k:'cert', t:'Certification engineer',who:'ana',    d:'Books windows, confirms or declines window requests and validates certification.', acts:['agBook','agValidate','winOk','winNo','agCase','agCaseReply','agCaseClose','agCaseNote','agCaseAssign','agCanned','agCaseStatus','agRemind','agNote','agRoleView','agRoleBack']},
   {k:'sol',  t:'Solutions engineer',    who:'theo',   d:'Opens the sandbox to the partner’s engineer and reads the production handshake.', acts:['openSandbox','agHandshake','agRemind','agNote','agRoleView','agRoleBack']},
-  {k:'ops',  t:'Operations support',    who:'jae',    d:'Takes alerts or hands them to an engineer, resolves them, reminds partners of mandates and messages them.', acts:['agTake','agMessage','agCase','agCaseReply','agCaseClose','agHand','agResolve','agRemind','agNote','agRoleView','agRoleBack']}
+  {k:'ops',  t:'Operations support',    who:'jae',    d:'Takes alerts or hands them to an engineer, resolves them, reminds partners of mandates and messages them.', acts:['agTake','agMessage','agCase','agCaseReply','agCaseClose','agCaseNote','agCaseAssign','agCanned','agCaseStatus','agHand','agResolve','agRemind','agNote','agRoleView','agRoleBack']}
  ];
  /* the six areas as the network reads them: the partner's own lines say "you", these say whose */
  var RISK_AREAS_NET = ['Three years of audited statements, liquidity and concentration.','Licenses and registrations in each market the partner operates in.','Who touches the message path and how they are governed.','The PCI DSS attestation, how keys are held and any incidents.','How the partner watches traffic and handles declines.','How the partner fails over, how fast and when it was last tested.'];
  /* cases from partners, across the book: the shared inbox. Brightline's are
     SUPPORT_CASES; these are the rest. Reply due one business day after opening. */
  var AG_CASES = [
-  {id:'case_1183', k:'halcyon', by:'Grace Lindqvist', r:'COO, Halcyon Acquiring', t:'Settlement currencies for our EU merchants', area:'Configuration', sev:'Normal', opened:'June 2, 8:40 AM', at:0, st:'open', owner:'marcus',
+  {id:'case_1183', k:'halcyon', by:'Grace Lindqvist', r:'COO, Halcyon Acquiring', t:'Settlement currencies for our EU merchants', area:'Configuration', sev:'Normal', opened:'June 2, 8:40 AM', at:0, st:'open', owner:'marcus', rel:{step:'bank', label:'Set up payments, Settlement account'},
    thread:[['Grace Lindqvist','June 2, 8:40 AM','Schedule B lists USD only. Eleven of our merchants settle in EUR. Do we add a currency before the window or after go-live?']]},
-  {id:'case_1179', k:'tallgrass', by:'Kofi Mensah', r:'CTO, Tallgrass Payments', t:'Fare-capping rounding rule', area:'Certification', sev:'High', opened:'June 1, 4:10 PM', at:-1, st:'open', owner:'ana',
-   thread:[['Kofi Mensah','June 1, 4:10 PM','Three cases still fail after we applied the rule. Our host rounds the capped fare before the tax line. Which order does the network expect?'],['Ana Okafor','June 1, 5:02 PM','Cap after tax and round to the cent. The worked example for FARE-07 is on its way.']]},
+  {id:'case_1179', k:'tallgrass', by:'Kofi Mensah', r:'CTO, Tallgrass Payments', t:'Fare-capping rounding rule', area:'Certification', sev:'High', opened:'June 1, 4:10 PM', at:-1, st:'open', owner:'ana', rel:{view:'certs', label:'Window May 11 to 15'},
+   thread:[['Kofi Mensah','June 1, 4:10 PM','Three cases still fail after we applied the rule. Our host rounds the capped fare before the tax line. Which order does the network expect?'],['ana','June 1, 5:02 PM','Cap after tax and round to the cent. The worked example for FARE-07 is on its way.']],
+   notes:[['ana','June 1, 4:40 PM','FARE-07 fails on rounding only. The other two follow from it.']]},
+  {id:'case_1182', k:'marlow', by:'Devin Marlow', r:'Founder, Marlow & Third', t:'Which bank letter format does the network accept?', area:'Documents', sev:'High', opened:'June 1, 9:15 AM', at:-1, st:'open', owner:null, rel:{step:'bank', label:'Settlement account, 6 days overdue'},
+   thread:[['Devin Marlow','June 1, 9:15 AM','Our bank issues a confirmation on its portal, not a signed letter. Will a PDF export of that page do, or do we need the signed version?']]},
+  {id:'case_1176', k:'ostrand', by:'Ines Ostrand', r:'Product, Ostrand Financial', t:'Vault choice for the token program', area:'Products', sev:'Normal', opened:'May 30, 2:20 PM', at:-3, st:'waiting', owner:'theo', rel:{view:'request', label:'Token program request'},
+   thread:[['Ines Ostrand','May 30, 2:20 PM','If we keep the vault network-hosted, do our merchants need any change for reissued cards?'],['theo','May 30, 4:05 PM','None. token.updated tells you the card behind a token changed and the token keeps working. Do you want that event on by default for every merchant, or only where they ask?']]},
+  {id:'case_1174', k:'verrill', by:'Ana Verrill', r:'CEO, Verrill Commerce', t:'Second terminal line in the re-certification window', area:'Certification', sev:'Normal', opened:'May 29, 3:30 PM', at:-4, st:'open', owner:'ana', rel:{view:'certs', label:'Window May 25 to 29'},
+   thread:[['Ana Verrill','May 29, 3:30 PM','We are adding a second terminal line in July. Can it ride the May 25 window or does it need its own?']]},
   {id:'case_1171', k:'northbank', by:'Tom Achebe', r:'Head of Network, Northbank Payments', t:'Move the daily report to 7:00 AM ET', area:'Reporting', sev:'Normal', opened:'May 29, 11:20 AM', at:-4, st:'resolved', owner:'jae',
-   thread:[['Tom Achebe','May 29, 11:20 AM','Our operations shift starts at 7. Can the daily settlement report land before it?'],['Jae Park','May 29, 2:05 PM','Moved to 6:30 AM ET from May 30. The schedule is on your Reporting page.']]}
+   thread:[['Tom Achebe','May 29, 11:20 AM','Our operations shift starts at 7. Can the daily settlement report land before it?'],['jae','May 29, 2:05 PM','Moved to 6:30 AM ET from May 30. The schedule is on your Reporting page.']]}
+ ];
+ /* answers the team gives often, ready to insert into a reply */
+ var CANNED = [
+  ['Currencies', 'A settlement currency is added to Schedule B by amendment. It can be added before the window, and the window then tests both currencies.'],
+  ['Bank letter', 'A signed letter on the bank’s paper, or the bank’s own portal confirmation exported as a PDF with the account name and number visible. Either is accepted.'],
+  ['Window', 'A second line can ride a booked window if its cases are in the configuration seven days before the window opens. Otherwise it takes the next free week.']
  ];
  /* what each partner must keep current: attestations and audited accounts, with the day each is due */
  var ATTEST = [
@@ -7199,10 +7234,10 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    else if(STAGE===5 && !SCENE.handoff){ var ho5=hoList(BOOK[0]), hoN=ho5.filter(function(it){return it[2]}).length;
      r.push(!((SCENE.ho||{}).brightline||{}).live ? {k:'brightline', p:'Brightline', t:'Activated 6:00 AM, first authorization 6:04 AM, first hour clean.', turn:'You', mine:true, since:waitWord(waited(0)), d:waited(0), act:'<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="hoTick" data-k="live" data-p="brightline">Clear live operation</button>'}
                                      : {k:'brightline', p:'Brightline', t:'Live, handoff to operations '+hoN+' of '+ho5.length+' done.', turn:'You', mine:true, since:waitWord(waited(0)), d:waited(0), act:'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="brightline">Open</button>'}); }
-   else if(STAGE===6) r.push({k:'brightline', p:'Brightline', t:'Card-not-present approvals fell 1.4 points at one merchant on one gateway.', turn:'You', mine:true, since:NOW===DAY0?'6:20 AM':agoWord(NOW-DAY0), d:NOW-DAY0, due:DAY0-NOW, act:'<button class="gn-btn gn-btn--sm" data-act="agAlert" data-k="cnp">Open</button>'});
-   if(SCENE.sent && !SCENE.reqBl) r.push({k:'brightline', p:'Brightline', t:'Wallets requested by Dana Iverson.', turn:'You', mine:true, since:agoDay((SCENE.at||{}).sent), d:daysAt('sent'), due:1-daysAt('sent'), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-go2="request">Review the request</button>'});
+   else if(STAGE===6) r.push({k:'brightline', p:'Brightline', t:'Card-not-present approvals fell 1.4 points at one merchant on one gateway.', kind:'Alert', turn:'You', mine:true, since:NOW===DAY0?'6:20 AM':agoWord(NOW-DAY0), d:NOW-DAY0, due:DAY0-NOW, act:'<button class="gn-btn gn-btn--sm" data-act="agAlert" data-k="cnp">Open</button>'});
+   if(SCENE.sent && !SCENE.reqBl) r.push({k:'brightline', p:'Brightline', t:'Wallets requested by Dana Iverson.', kind:'Request', turn:'You', mine:true, since:agoDay((SCENE.at||{}).sent), d:daysAt('sent'), due:1-daysAt('sent'), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-go2="request">Review the request</button>'});
    AG_ALERTS.forEach(function(a){ if((SCENE.taken||{})[a.k] && !(SCENE.resolved||{})[a.k]) r.push({k:a.k, p:a.p, t:agAlertT(a)+'.', turn:'You', mine:true, since:agoDay((SCENE.at||{})['ag:'+a.k]), d:daysAt('ag:'+a.k), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>'}) });
-   BOOK.slice(1).forEach(function(b){ var x=BOOKX[b.k]; if(b.turn==='You'){ if(b.k==='northbank'&&SCENE.reviewDone) return; if(b.k==='ostrand'&&SCENE.reqSt) return; var go=b.k==='northbank'?'review':b.k==='ostrand'?'request':null; r.push({k:b.k, p:b.n, t:b.next+'.', turn:'You', mine:true, since:waitWord(waited(x.days)), d:waited(x.days), due:b.k==='northbank'?daysLeft('June 30'):b.k==='ostrand'?1-waited(x.days):undefined, act:go?'<button class="gn-btn gn-btn--sm" data-go2="'+go+'">'+esc(x.act||'Open')+'</button>':'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="'+b.k+'">'+esc(x.act||'Open')+'</button>'}) } });
+   BOOK.slice(1).forEach(function(b){ var x=BOOKX[b.k]; if(b.turn==='You'){ if(b.k==='northbank'&&SCENE.reviewDone) return; if(b.k==='ostrand'&&SCENE.reqSt) return; var go=b.k==='northbank'?'review':b.k==='ostrand'?'request':null; r.push({k:b.k, p:b.n, t:b.next+'.', kind:b.k==='northbank'?'Review':b.k==='ostrand'?'Request':'Step', turn:'You', mine:true, since:waitWord(waited(x.days)), d:waited(x.days), due:b.k==='northbank'?daysLeft('June 30'):b.k==='ostrand'?1-waited(x.days):undefined, act:go?'<button class="gn-btn gn-btn--sm" data-go2="'+go+'">'+esc(x.act||'Open')+'</button>':'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="'+b.k+'">'+esc(x.act||'Open')+'</button>'}) } });
    BOOK.slice(1).forEach(function(b){ var x=BOOKX[b.k]; if(b.turn&&b.turn!=='You'&&b.turn!=='—') r.push({k:b.k, p:b.n, t:b.next+'.', turn:b.turn, since:waitWord(waited(x.days)), d:waited(x.days)}) });
    return r;
  }
@@ -7219,18 +7254,38 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
      var rr=r; if(PANEL===3){ var rest=BOOK.slice(1).filter(function(b){ return b.turn && b.turn!=='—' }); rr=r.filter(function(x){ return x.p==='Brightline' }).concat([{p:rest.length+' more', t:rest.map(function(b){ return b.n.replace(/ (Payments|Financial|Acquiring|Commerce)$/,'') }).join(', '), turn:'—', since:''}]); }
      return rows(rr.map(function(x){ return {t:esc(x.p), d:esc(x.t), r:turnCol(x.turn), cls:x.mine?'is-mine':'', act:x.act} }),'gn-rows--compact');
    }
-   var head=ph('Your turn', mine.length+' waiting on you. '+theirs.length+' waiting on partners.');
-   var month=GOLIVES.filter(function(g){return g[1].indexOf('May')===0}).length, wins=certWindows();
-   var f=figs([['Waiting on you',String(mine.length),mine.length?'oldest '+daysWord(mine.reduce(function(a,x){return Math.max(a,x.d)},0)):''],['Waiting on a partner',String(theirs.length),'oldest '+daysWord(theirs[0]?theirs[0].d:0)],['Go-lives in May',String(month),STAGE>=5?'1 done':''],['Windows in May',String(wins.length),SCENE.agBooked?'':'1 not yet booked']], 'gn-figs--compact');
-   var yours = mine.length ? secH('Yours')+tbl2([['Partner'],['What'],['Since',1],['Due'],['']], mine.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act||''], act:'agPartner', k:x.k} })) : secH('Yours')+'<p class="para">Nothing waiting on you.</p>';
-   var mx=Math.max(1, theirs.reduce(function(a,x){return Math.max(a,x.d)},0)), shown=theirs.slice(0,10); /* the ten longest; the book holds the rest */
+   /* the home: what today holds, then the queue by what is due, then the week, then the book */
+   var cases=agCases().filter(function(c){ return c.st==='open' }).sort(function(a,b){ return caseDue(a)-caseDue(b) });
+   var dueToday=mine.filter(function(x){ return x.due===0 }).length+cases.filter(function(c){ return caseDue(c)===0 }).length, overdue=mine.filter(function(x){ return x.due<0 }).length+cases.filter(function(c){ return caseDue(c)<0 }).length;
+   var head=ph('Your turn', mine.length+' waiting on you, '+nn(cases.length,'reply','replies')+' due, '+theirs.length+' waiting on partners.');
+   var todayF=figs([['Due today',String(dueToday),''],['Overdue',String(overdue),overdue?'oldest first below':''],['Replies due',String(cases.length),cases.filter(function(c){return c.sev==='High'}).length?nn(cases.filter(function(c){return c.sev==='High'}).length,'high'):''],['Waiting on partners',String(theirs.length),theirs[0]?'longest '+daysWord(theirs[0].d):'']], 'gn-figs--compact');
+   var byDue=mine.slice().sort(function(a,b){ return (a.due===undefined?99:a.due)-(b.due===undefined?99:b.due) });
+   var yours = mine.length ? secH('Yours', 'By what is due')+tbl2([['Partner'],['What'],['Kind'],['Since',1],['Due'],['']], byDue.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(x.kind||'Step'), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act||''], act:'agPartner', k:x.k} })) : secH('Yours')+'<p class="para">Nothing waiting on you.</p>';
+   var replies = cases.length ? secH('Replies due', goLink('Cases','data-go2="cases"'))+tbl2([['Case'],['From'],['Owner'],['Due']], cases.slice(0,4).map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return {c:[esc(c.t), esc((b?b.n+', ':'')+c.by), c.owner?esc(personName(c.owner)):'<span class="gn-doc-x">Unassigned</span>', caseDueWord(c)], act:'agCase', k:c.id} })) : '';
+   var mx=Math.max(1, theirs.reduce(function(a,x){return Math.max(a,x.d)},0)), shown=theirs.slice(0,10);
    var wait = secH('Waiting on a partner', 'Longest first')+tbl2([['Partner'],['On'],['Waiting',1],['']], shown.map(function(x){ var lead=((BOOKX[x.k]||{}).lead||'').split(', ')[0];
      return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'agPartner', k:x.k} }))+(theirs.length>10?'<div class="gn-table-foot"><span></span><span>'+goLink('All '+theirs.length+' in Partners','data-go2="book"')+'</span></div>':'');
-   var week=secH('This week', (wins.length?nn(wins.length,'window'):'')+(SCENE.agBooked?'':', 1 not yet booked')+', '+nn(month,'go-live'))+timeline([{day:'May', items:[
-     {t:'May 4', title:'Brightline certification window opens', d:certTotal()+' cases from configuration.', r:sw(STAGE>=4?'Booked':'After configuration',''), act:'agPartner', k:'brightline'},
-     {t:'May 11', title:'Tallgrass Payments certification window', d:'31 cases, three fare-capping cases to clear first.', r:sw('Booked',''), act:'agPartner', k:'tallgrass'},
-     {t:'May 14', title:'Brightline go-live', d:'Activation at 6:00 AM, first settlement May 15.', r:STAGE>=5?word('Live'):sw('Target',''), act:'agPartner', k:'brightline'}]}]);
-   return head+yours+wait+week;
+   /* the week as seven days, from the clock: windows, go-lives, replies due, attestations, the alert's next step */
+   var dow=(NOW+4)%7, mon=NOW-((dow+6)%7), days=[]; for(var di=0;di<7;di++) days.push(mon+di);
+   var ev=[];
+   calWeeks().forEach(function(w){ var s=parseDay(w[0].replace(/ to .*$/,'')); if(s!==null) w[1].forEach(function(it){ ev.push({day:s, t:'Window opens: '+it[0], go2:'certs'}) }) });
+   GOLIVES.forEach(function(g){ var s=parseDay(g[1]); if(s!==null) ev.push({day:s, t:'Go-live: '+g[0], go2:'golives'}) });
+   cases.forEach(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; ev.push({day:NOW+caseDue(c), t:'Reply due: '+(b?b.n:''), act:'agCase', k:c.id, tone:caseDue(c)<0?'no':''}) });
+   ATTEST.forEach(function(a){ var s=parseDay(a.due); if(s!==null && a.st!=='received') ev.push({day:s, t:'Attestation due: '+(BOOK.filter(function(x){return x.k===a.k})[0]||{}).n, go2:'releases'}) });
+   if(STAGE>=6 && !(SCENE.resolved||{}).cnp) ev.push({day:DAY0, t:'Gateway call, 11:00 AM: Brightline', act:'agAlert', k:'cnp'});
+   mine.forEach(function(x){ if(x.due!==undefined && x.kind!=='Alert') ev.push({day:NOW+x.due, t:x.kind+' due: '+x.p, act:'agPartner', k:x.k, tone:x.due<0?'no':''}) });
+   var DN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+   var week=secH('This week', dayName(days[0])+' to '+dayName(days[6]))+'<div class="wk">'+days.map(function(dd,di){ var items=ev.filter(function(e){ return e.day===dd });
+     return '<div class="wk-d'+(dd===NOW?' is-today':'')+'"><div class="wk-h"><b>'+DN[di]+'</b><span>'+esc(dayName(dd).replace(/^(\w+) /,''))+'</span></div>'+(items.length?items.map(function(e){ var lk=e.go2?' data-go2="'+e.go2+'"':' data-act="'+e.act+'" data-k="'+e.k+'"'; return '<div class="wk-i is-link'+(e.tone?' is-'+e.tone:'')+'"'+lk+'>'+esc(e.t)+'</div>' }).join(''):'<div class="wk-e">Nothing scheduled</div>')+'</div>' }).join('')+'</div>';
+   /* partners to watch: the ones not good, with the first thing wrong */
+   var watchList=BOOK.filter(function(b){ return BOOKX[b.k].health!=='good' });
+   var watch = watchList.length ? secH('Watch', nn(watchList.length,'partner'))+'<div class="nt-grid">'+watchList.map(function(b){ var x=BOOKX[b.k]; return '<article class="gn-notice is-link" data-act="agPartner" data-k="'+b.k+'"><div class="gn-notice-h">'+healthWord(x.health)+'<span>'+esc(bookStage(b))+'</span></div><h3>'+esc(b.n)+'</h3><p>'+esc(healthWhy(b)||'Nothing waiting')+'</p></article>' }).join('')+'</div>' : '';
+   /* across the book: the latest six things that happened, from every partner's log */
+   var logs=[]; BOOK.forEach(function(b){ var x=BOOKX[b.k]; if(b.k==='brightline'){ AG_ACT.filter(function(a){ return a.at<=STAGE }).slice(0,3).forEach(function(a){ logs.push({day:parseDay(a.day), dayS:a.day, t:a.t, title:b.n+': '+a.title, d:a.d, k:b.k}) }) } else (x.log||[]).forEach(function(l){ logs.push({day:parseDay(l.day), dayS:l.day, t:l.t, title:b.n+': '+l.title, d:l.d, k:b.k}) }) });
+   logs=logs.filter(function(l){ return l.day!==null }).sort(function(a,b){ return b.day-a.day }).slice(0,6);
+   var byDay={}; logs.forEach(function(l){ (byDay[l.dayS]=byDay[l.dayS]||[]).push({t:l.t, title:esc(l.title), d:esc(l.d), act:'agPartner', k:l.k}) });
+   var across=secH('Across the book', 'Latest')+timeline(Object.keys(byDay).map(function(k){ return {day:k, items:byDay[k]} }));
+   return head+todayF+yours+replies+wait+week+watch+across;
  };
  /* every step of the shared plan, with its state, for any partner in the book:
     Brightline's from live state, the others' from the plan counts */
@@ -7269,17 +7324,41 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function msgN(name, role, when, text){ var w=PEOPLE[name]; if(w) return msg(name, when, text); var ini=name.split(' ').map(function(s){return s.charAt(0)}).join('').slice(0,2).toUpperCase();
    return '<div class="msg"><i class="av a36">'+esc(ini)+'</i><div><div class="msg-h"><b>'+esc(name)+'</b><span>'+esc(role)+', '+esc(when)+'</span></div><p>'+esc(text)+'</p></div></div>' }
  /* every case across the book: Brightline's from its own support cases, the rest from the book. Reply is due one business day after opening. */
- function agCases(){ var bl=(STAGE>=5?SUPPORT_CASES:[]).concat(SCENE.cases||[]).map(function(c){ var w=PEOPLE[c.who]||{}; return {id:c.id, k:'brightline', by:w.n||c.who, r:(w.r||'')+', Brightline', t:c.t, area:c.area, sev:c.sev, opened:c.opened, at:0, st:(SCENE.caseSt||{})[c.id]||c.st, owner:c.owner||'marcus', thread:(c.thread||[]).map(function(m){ var p=PEOPLE[m[0]]; return [p?p.n:m[0], m[1], m[2]] }).concat(((SCENE.caseReplies||{})[c.id]||[]))} });
-   var rest=AG_CASES.map(function(c){ return Object.assign({}, c, {st:(SCENE.caseSt||{})[c.id]||c.st, thread:c.thread.concat(((SCENE.caseReplies||{})[c.id]||[]))}) });
+ /* routing: which seat a case's area belongs to when nobody has it yet */
+ var CASE_ROUTE={Certification:'ana', Configuration:'marcus', Documents:'marcus', Products:'theo', Reporting:'jae', Settlement:'jae', API:'theo', Onboarding:'marcus'};
+ /* the resolution target by severity, in business days; the reply clock pauses while the partner has it */
+ function caseResolveDays(c){ return c.sev==='High'?2:5 }
+ var CASE_DOCS={Certification:['docs/certification.html','Certify and go live'], Configuration:['api/index.html','API reference'], API:['docs/errors.html','Errors and idempotency'], Products:['api/index.html#tokens','Tokens'], Reporting:['docs/webhooks.html','Receive events'], Settlement:['api/index.html#settlements','Settlements']};
+ function personName(k){ var w=PEOPLE[k]; return w?w.n:k }
+ function agCases(){ var own=SCENE.caseOwner||{}, stt=SCENE.caseSt||{}, rp=SCENE.caseReplies||{}, nt=SCENE.caseNotes||{};
+   var bl=(STAGE>=5?SUPPORT_CASES:[]).concat(SCENE.cases||[]).map(function(c){ var w=PEOPLE[c.who]||{}; return {id:c.id, k:'brightline', by:w.n||c.who, r:(w.r||'')+', Brightline', t:c.t, area:c.area, sev:(c.sev||'Normal').split(':')[0], opened:c.opened, at:0, st:stt[c.id]||c.st, owner:own[c.id]!==undefined?own[c.id]:(c.owner||'marcus'), rel:c.area==='Settlement'?{view:'partner', label:'Settlement and fees'}:null, thread:(c.thread||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] }).concat((rp[c.id]||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] })), notes:(nt[c.id]||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] })} });
+   var rest=AG_CASES.map(function(c){ return Object.assign({}, c, {st:stt[c.id]||c.st, owner:own[c.id]!==undefined?own[c.id]:c.owner, thread:c.thread.map(function(m){ return [personName(m[0]), m[1], m[2]] }).concat((rp[c.id]||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] })), notes:(c.notes||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] }).concat((nt[c.id]||[]).map(function(m){ return [personName(m[0]), m[1], m[2]] }))}) });
    return bl.concat(rest) }
  function slaWord(daysLeftN){ return daysLeftN<0 ? sw('Overdue '+daysWord(-daysLeftN),'no') : daysLeftN===0 ? sw('Due today','wa') : sw('Due '+(daysLeftN===1?'tomorrow':'in '+daysWord(daysLeftN)),'') }
- function caseDue(c){ return (c.at+1)-(NOW-DAY0) } /* one business day after it opened, against the clock */
+ /* a reply is due one business day after a case opens, the same day for a high one; against the clock */
+ function caseDue(c){ return (c.at+(c.sev==='High'?0:1))-(NOW-DAY0) }
+ function caseDueWord(c){ return c.st==='waiting'?sw('Waiting on '+c.by.split(' ')[0],''):c.st==='hold'?sw('On hold','wa'):c.st==='resolved'?word('Resolved'):slaWord(caseDue(c)) }
+ function caseState(c){ return c.st==='resolved'?word('Resolved'):c.st==='waiting'?sw('Waiting on partner',''):c.st==='hold'?sw('On hold','wa'):!c.owner&&c.thread.length<2?sw('New','wa'):sw('Open','') }
  /* the settlement files the network received from each live partner, the last fourteen days: on time, late, or missing */
  function settleStrip(){ var days=[]; for(var i=13;i>=0;i--) days.push(dayName(NOW-i)); var seedOf=function(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return h };
    var live_=BOOK.filter(function(b){ return bookStage(b)==='Live' });
    return '<div class="heat"><div class="heat-r heat-h"><span></span>'+days.map(function(d,i){ return '<span>'+(i%3===0||i===13?esc(d.replace(/^(\w{3})\w* /,'$1 ')):'')+'</span>' }).join('')+'</div>'
     +live_.map(function(b){ var h=seedOf(b.k); return '<div class="heat-r is-link" data-act="agPartner" data-k="'+b.k+'"><span>'+esc(b.n)+'</span>'+days.map(function(d,i){ var v=((h>>i)&3); var st=b.k==='brightline'?(i===9?'late':'ok'):v===3&&i!==13?'late':(v===2&&b.k==='verrill'&&i===5)?'missing':'ok'; return '<i class="is-'+st+'" title="'+esc(b.n+', '+d+': '+(st==='ok'?'on time':st==='late'?'late':'missing'))+'"></i>' }).join('')+'</div>' }).join('')
     +'<div class="heat-k"><span><i class="is-ok"></i>On time</span><span><i class="is-late"></i>Late</span><span><i class="is-missing"></i>Missing</span></div></div>' }
+ /* what the record says about a partner's health: five drivers, each a fact with a tone */
+ function healthRows(b, cur, d, isLive, lr){
+   var alOpen=AG_ALERTS.filter(function(a){ return a.p===b.n && a.kind==='action' && STAGE>=a.from && STAGE<=a.until && !(SCENE.resolved||{})[a.k] }), cOpen=agCases().filter(function(c){ return c.k===b.k && c.st!=='resolved' });
+   var x=BOOKX[b.k]||{}, passing = b.k==='brightline' ? (STAGE>=4 ? certPassing()+' of '+certTotal()+' passing' : 'Not yet in a window') : b.k==='tallgrass' ? '28 of 31 passing' : (x.plan&&x.plan[4]>=1) ? 'Passed' : 'Not yet in a window';
+   return [
+     ['Responsiveness', d>=5?'Slow':d>=2?'Waiting '+daysWord(d):'Answers within a day', d?'Waiting '+daysWord(d)+' on '+(cur?cur.x.t.toLowerCase():'the next step'):'Nothing waiting'],
+     ['Documents', alOpen.length?nn(alOpen.length,'item')+' overdue':'Nothing overdue', alOpen.length?agAlertT(alOpen[0]):'Everything received on time'],
+     ['Certification', passing, b.k==='tallgrass'?'Three fare-capping cases on one rule':''],
+     ['Traffic', isLive&&lr?lr[3]+' approved, '+lr[4]+' disputes per 10k':'Not live', isLive&&lr?'Network 96.1% and 4.0':''],
+     ['Cases', cOpen.length?nn(cOpen.length,'open case'):'None open', cOpen.length?cOpen[0].t:'']];
+ }
+ /* the first thing wrong with a partner, for the home's Watch cards */
+ function healthWhy(b){ var st=bookStage(b), isLive=st==='Live', lr=BOOK_REPORT.live.filter(function(x){return x[0]===b.n})[0], steps=bookSteps(b), cur=steps.filter(function(r){return r.st==='now'})[0];
+   var rows=healthRows(b, cur, daysIn(b), isLive, lr); var bad=rows.filter(function(r){ return /Slow|overdue|open case|Waiting/.test(r[1]) })[0]; return bad?bad[1]+(bad[2]?', '+bad[2].charAt(0).toLowerCase()+bad[2].slice(1):''):'' }
  function stepOwner(x){ var o=(NET_PART[x.k]||{}).own; return o==='network'?'The network':o==='both'?'Both sides':'Partner' }
  function stepStatus(r, b){ if(r.x.k==='agr' && b.k==='brightline' && r.st==='now' && (SCENE.issued||STAGE>=3)) return sw('Waiting on Brightline',''); if(r.st==='done') return word('Done'); if(r.st==='now'){ var o=stepOwner(r.x), a=stepAction(b, r), mine=a.indexOf('agRemind')<0 && a.indexOf('gn-status')<0; /* whose move it is follows the action on the step, not only who owns it: an issued agreement waits on the partner's signature */ return o==='Both sides'?sw('In progress','wa'):mine?sw('Your turn','wa'):sw('Waiting on '+b.n,'') } if(r.st==='dgn') return sw('In review','wa'); if(r.st==='eng') return sw('With their engineer',''); return sw('Later',''); }
  function relAcked(r, b){ if(r.acked.indexOf(b.k)>=0) return true; if(b.k==='brightline' && r.k==='v9' && (SCENE.ntAck||{}).v9) return true; if((SCENE.acks||{})[r.k+'|'+b.k]) return true; return false }
@@ -7343,14 +7422,9 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
      var rem=(SCENE.reminded||{})[b.k], remLine = rem!==undefined ? ', reminded '+agoWord(NOW-rem) : '';
      next=secH('Next')+'<article class="gn-notice" id="next"><div class="gn-notice-h">'+stepStatus(cur,b)+'<span>'+esc(g?g.t:'')+'</span></div><h3>'+esc(cur.x.t)+'</h3><p>'+esc((NET_PART[cur.x.k]||{}).d||'')+'</p><div class="gn-notice-f"><span>'+(d?'Waiting '+daysWord(d):'Open today')+remLine+'</span>'+act+'</div></article>'; }
    /* 2b. health, from what the record says: how fast they answer, what is overdue, what is passing, how the traffic runs */
-   var alOpen=AG_ALERTS.filter(function(a){ return a.p===b.n && a.kind==='action' && STAGE>=a.from && STAGE<=a.until && !(SCENE.resolved||{})[a.k] }), cOpen=agCases().filter(function(c){ return c.k===b.k && c.st==='open' });
+   var drv=healthRows(b, cur, d, isLive, lr);
    var passing = b.k==='brightline' ? (STAGE>=4 ? certPassing()+' of '+certTotal()+' passing' : 'Not yet in a window') : b.k==='tallgrass' ? '28 of 31 passing' : (x.plan&&x.plan[4]>=1) ? 'Passed' : 'Not yet in a window';
-   var drivers=doc([
-     ['Responsiveness', d>=5?'Slow':d>=2?'Waiting '+daysWord(d):'Answers within a day', d?'Waiting '+daysWord(d)+' on '+(cur?cur.x.t.toLowerCase():'the next step'):'Nothing waiting'],
-     ['Documents', alOpen.length?nn(alOpen.length,'item')+' overdue':'Nothing overdue', alOpen.length?agAlertT(alOpen[0]):'Everything received on time'],
-     ['Certification', passing, b.k==='tallgrass'?'Three fare-capping cases on one rule':''],
-     ['Traffic', isLive&&lr?lr[3]+' approved, '+lr[4]+' disputes per 10k':'Not live', isLive&&lr?'Network 96.1% and 4.0':''],
-     ['Cases', cOpen.length?nn(cOpen.length,'open case'):'None open', cOpen.length?cOpen[0].t:'']]);
+   var drivers=doc(drv);
    var health=secH('Health', healthWord(x.health))+drivers;
    /* 2c. the plan in time: the nine-week plan with this week marked, for a partner still on it */
    var nowWeek = b.k==='brightline' ? {1:0,2:1,3:2,4:4,5:9,6:9}[STAGE] : PLAN_WEEK[b.k];
@@ -7510,19 +7584,38 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    return head+docs+secH('Six areas', okN+' of 6 cleared')+rowsT+decide;
  };
  AGENT.cases=function(){
-   var all=agCases(), seg=tab('caseSeg','open'), list=all.filter(function(c){ return seg==='all' || c.st===seg }).sort(function(a,b){ return (a.st==='open'?0:1)-(b.st==='open'?0:1) || caseDue(a)-caseDue(b) });
-   var open_=all.filter(function(c){return c.st==='open'}), late=open_.filter(function(c){return caseDue(c)<0});
-   var head=ph('Cases', open_.length+' open across the book'+(late.length?', '+nn(late.length,'reply')+' overdue.':'.'));
-   var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0];
-   var segs=tabs('caseSeg',[['open','Open',ct(open_.length)],['resolved','Resolved',ct(all.length-open_.length)],['all','All',String(all.length)]],'open');
-   var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+'</span><span>'+(c.st==='open'?slaWord(caseDue(c)):word('Resolved'))+'</span></div>' }).join(''):'<p class="gn-empty">No cases here.</p>')+'</div>';
-   var pane='';
-   if(sel){ var bb=BOOK.filter(function(x){return x.k===sel.k})[0], ownr=PEOPLE[sel.owner]||{};
-     pane='<div class="inbox-p"><div class="inbox-h"><h2>'+esc(sel.t)+'</h2><span>'+esc(bb?bb.n:'')+' · '+esc(sel.area)+' · '+esc(sel.sev)+' · opened '+esc(sel.opened)+'</span>'+(sel.st==='open'?slaWord(caseDue(sel)):word('Resolved'))+'</div>'
-      +doc([['From', esc(sel.by), sel.r],['Owner', esc(ownr.n||sel.owner), ownr.r||''],['Partner', '<span class="gn-link" data-act="agPartner" data-k="'+sel.k+'">'+esc(bb?bb.n:'')+'</span>', bb?bookStage(bb):'']])
-      +'<div class="inbox-thr">'+sel.thread.map(function(m){ return msgN(m[0], m[0]===sel.by?sel.r:(PEOPLE[Object.keys(PEOPLE).filter(function(k){return PEOPLE[k].n===m[0]})[0]]||{}).r||'Discover Global Network', m[1], m[2]) }).join('')
-      +(sel.st==='open'&&agCanDo('agCaseReply')?'<form class="gn-ask gn-thread-f" onsubmit="return false"><textarea class="gn-in" id="agReply" rows="3" aria-label="Reply to '+esc(sel.by)+'"></textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="agCaseReply" data-k="'+sel.id+'">Reply</button><span class="gn-link" data-act="agCaseClose" data-k="'+sel.id+'">Mark resolved</span></div></form>':'')+'</div></div>'; }
-   return head+segs+'<div class="inbox">'+rows+pane+'</div>';
+   var all=agCases(), who=tab('caseWho','mine'), seg=tab('caseSeg','open');
+   var me=agSeat().who;
+   var list=all.filter(function(c){ return (seg==='all' || (seg==='open'?c.st!=='resolved':c.st===seg)) && (who==='all' || (who==='mine'?c.owner===me:!c.owner)) })
+     .sort(function(a,b){ var ra=a.st==='resolved'?2:a.st==='waiting'?1:0, rb=b.st==='resolved'?2:b.st==='waiting'?1:0; return ra-rb || caseDue(a)-caseDue(b) });
+   var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
+   var head=ph('Cases', open_.length+' open across the book'+(late.length?', '+nn(late.length,'reply','replies')+' overdue':'')+(un.length?', '+nn(un.length,'case')+' unassigned.':'.'));
+   var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
+   var bar=toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
+   var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
+   var pane='', ctx='';
+   if(sel){ var bb=BOOK.filter(function(x){return x.k===sel.k})[0], ownr=PEOPLE[sel.owner]||null, mode=tab('caseMode','reply'), canned=CANNED.filter(function(a){ return true });
+     var thread=sel.thread.map(function(m){ return {t:'reply', m:m} }).concat(sel.notes.map(function(m){ return {t:'note', m:m} }));
+     var hist=thread.map(function(e){ var role=e.m[0]===sel.by?sel.r:(PEOPLE[Object.keys(PEOPLE).filter(function(k){return PEOPLE[k].n===e.m[0]})[0]]||{}).r||'Discover Global Network'; return e.t==='note'?'<div class="note-i">'+msgN(e.m[0], role, e.m[1], e.m[2]).replace('<div class="msg">','<div class="msg is-note">')+'<span class="note-tag">Internal note</span></div>':msgN(e.m[0], role, e.m[1], e.m[2]) }).join('');
+     var composer = sel.st!=='resolved' && agCanDo('agCaseReply') ? '<form class="gn-ask gn-thread-f" onsubmit="return false">'+tabs('caseMode',[['reply','Reply to '+sel.by.split(' ')[0]],['note','Internal note']],'reply')
+       +'<textarea class="gn-in'+(SCENE.caseErr===sel.id?' is-err':'')+'" id="agReply" rows="3" aria-label="'+(mode==='note'?'Internal note':'Reply to '+esc(sel.by))+'"></textarea>'+(SCENE.caseErr===sel.id?'<span class="gn-help is-err">Write the '+(mode==='note'?'note':'reply')+' first.</span>':'')
+       +'<div class="gn-form-act">'+(mode==='note'?'<button class="gn-btn gn-btn--primary" data-act="agCaseNote" data-k="'+sel.id+'">Add note</button>':'<button class="gn-btn gn-btn--primary" data-act="agCaseReply" data-k="'+sel.id+'">Reply</button><span class="gn-link" data-act="agCaseReply" data-k="'+sel.id+'" data-close="1">Reply and resolve</span>'+menu('canned:'+sel.id, CANNED.map(function(a){ return ['Insert: '+a[0], 'agCanned', sel.id+'|'+a[0]] })))+'</div></form>' : sel.st==='resolved' ? '<p class="gn-empty">Resolved. A new reply from '+esc(sel.by.split(' ')[0])+' reopens it.</p>' : '';
+     pane='<div class="inbox-p"><div class="inbox-h"><h2>'+esc(sel.t)+'</h2><span><span class="gn-mono">'+esc(sel.id)+'</span> · '+esc(sel.area)+' · '+(sel.sev==='High'?sw('High','wa'):'Normal')+' · opened '+esc(sel.opened)+'</span>'+caseDueWord(sel)+'</div><div class="inbox-thr">'+hist+composer+'</div></div>';
+     var seatsFor=AG_SEATS.filter(function(s){ return s.acts.indexOf('agCaseReply')>=0 });
+     var ownerCtl = agCanDo('agCaseAssign') ? menu('own:'+sel.id, seatsFor.map(function(s){ return [(s.who===sel.owner?'Keep with ':'Hand to ')+PEOPLE[s.who].n, 'agCaseAssign', sel.id+'|'+s.who] })) : '';
+     var routeTo=CASE_ROUTE[sel.area], suggest = !sel.owner && routeTo && agCanDo('agCaseAssign') ? '<span>Suggested for '+esc(sel.area.toLowerCase())+': '+esc(personName(routeTo))+' <span class="gn-link" data-act="agCaseAssign" data-k="'+sel.id+'|'+routeTo+'">Assign</span></span>' : '';
+     var statusCtl = sel.st!=='resolved' && agCanDo('agCaseClose') ? menu('st:'+sel.id, [['Open','agCaseStatus',sel.id+'|open'],['On hold, waiting on our side','agCaseStatus',sel.id+'|hold'],['Resolve without a reply','agCaseClose',sel.id,true]]) : '';
+     var docLink = CASE_DOCS[sel.area] ? '<a class="gn-link" href="'+devHref()+CASE_DOCS[sel.area][0]+'">'+esc(CASE_DOCS[sel.area][1])+'</a>' : '';
+     var relLink = sel.rel ? (sel.rel.view ? '<span class="gn-link" data-go2="'+sel.rel.view+'">'+esc(sel.rel.label)+'</span>' : '<span class="gn-link" data-act="agPartner" data-k="'+sel.k+'">'+esc(sel.rel.label)+'</span>') : '—';
+     var acts=[['Opened', sel.opened, sel.by]].concat(sel.owner?[['Assigned', sel.thread.length>1?sel.thread[1][1]:sel.opened, personName(sel.owner)]]:[]).concat(sel.thread.slice(1).map(function(m){ return ['Replied', m[1], m[0]] })).concat(sel.st==='resolved'?[['Resolved', sel.thread[sel.thread.length-1][1], personName(sel.owner||'marcus')]]:[]);
+     ctx='<aside class="inbox-c"><div class="inbox-cb"><div class="gn-eyebrow">Partner</div><b class="gn-link" data-act="agPartner" data-k="'+sel.k+'">'+esc(bb?bb.n:'')+'</b><span>'+esc(bb?bb.kind+' · '+bookStage(bb):'')+'</span>'+(bb?'<span>'+healthWord(BOOKX[bb.k].health)+(daysIn(bb)?' · waiting '+daysWord(daysIn(bb)):'')+'</span>':'')+'</div>'
+      +'<div class="inbox-cb"><div class="gn-eyebrow">Status</div><b>'+caseState(sel)+'</b>'+statusCtl+'</div>'
+      +'<div class="inbox-cb"><div class="gn-eyebrow">Owner</div>'+(ownr?'<b>'+esc(ownr.n)+'</b><span>'+esc(ownr.r)+'</span>':'<b class="gn-doc-x">Unassigned</b>')+suggest+ownerCtl+'</div>'
+      +'<div class="inbox-cb"><div class="gn-eyebrow">Targets</div><b>'+(sel.st==='open'?(caseDue(sel)<0?'Reply was due '+dayName(NOW+caseDue(sel)):'Reply by '+dayName(NOW+caseDue(sel))):sel.st==='waiting'?'Reply clock paused, with '+esc(sel.by.split(' ')[0]):sel.st==='hold'?'Reply clock running, on hold':'Closed')+'</b><span>'+(sel.sev==='High'?'High: reply the same day, resolve in 2 business days':'Normal: reply in one business day, resolve in 5')+'</span>'+(sel.st!=='resolved'?'<span>Resolve by '+dayName(DAY0+sel.at+caseResolveDays(sel))+'</span>':'')+'</div>'
+      +(docLink?'<div class="inbox-cb"><div class="gn-eyebrow">From the docs</div><b>'+docLink+'</b><span>Public developer site</span></div>':'')
+      +'<div class="inbox-cb"><div class="gn-eyebrow">Related</div><b>'+relLink+'</b></div>'
+      +'<div class="inbox-cb"><div class="gn-eyebrow">History</div>'+acts.map(function(a){ return '<span class="inbox-ev"><b>'+esc(a[0])+'</b> '+esc(a[1])+' · '+esc(a[2])+'</span>' }).join('')+'</div></aside>'; }
+   return head+bar+'<div class="inbox inbox--3">'+rows+pane+ctx+'</div>';
  };
  AGENT.releases=function(){
    var head=ph('Compliance', 'Releases, mandates and attestations, and who has met each.');
@@ -7815,7 +7908,11 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); keep('#booked'); toast('Window booked'); taskDone('A3') },
    /* a reminder leaves the portal, so the dialog says who gets it and what it carries before it goes */
    agCase:function(b){ SCENE.caseSel=b.dataset.k; go('cases') },
-   agCaseReply:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseReplies=SCENE.caseReplies||{}; (SCENE.caseReplies[b.dataset.k]=SCENE.caseReplies[b.dataset.k]||[]).push([PEOPLE[SEAT].n, 'Just now', v]); drawApp(VIEW); keep('#agReply'); toast('Reply sent') },
+   agCaseReply:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; var me=agSeat().who; SCENE.caseReplies=SCENE.caseReplies||{}; (SCENE.caseReplies[b.dataset.k]=SCENE.caseReplies[b.dataset.k]||[]).push([me, 'Just now', v]); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]=b.dataset.close?'resolved':'waiting'; SCENE.caseOwner=SCENE.caseOwner||{}; if(!(agCases().filter(function(c){return c.id===b.dataset.k})[0]||{}).owner) SCENE.caseOwner[b.dataset.k]=me; paintShell(); drawApp(VIEW); keep('#agReply, .inbox-i.is-on'); toast(b.dataset.close?'Reply sent and case resolved':'Reply sent') },
+   agCaseNote:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; SCENE.caseNotes=SCENE.caseNotes||{}; (SCENE.caseNotes[b.dataset.k]=SCENE.caseNotes[b.dataset.k]||[]).push([agSeat().who, 'Just now', v]); drawApp(VIEW); keep('#agReply'); toast('Note added') },
+   agCaseStatus:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); focusMain(); toast(kv[1]==='hold'?'On hold':'Reopened') },
+   agCaseAssign:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseOwner=SCENE.caseOwner||{}; SCENE.caseOwner[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); focusMain(); toast('Handed to '+personName(kv[1])) },
+   agCanned:function(b){ var kv=b.dataset.k.split('|'), a=CANNED.filter(function(x){return x[0]===kv[1]})[0]; SCENE.menu=null; drawApp(VIEW); var t=$('#agReply'); if(t&&a){ t.value=(t.value?t.value+' ':'')+a[1]; t.focus() } },
    agCaseClose:function(b){ SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]='resolved'; drawApp(VIEW); focusMain(); toast('Case resolved') },
    agMessage:function(b){ var k=b.dataset.k, bk=BOOK.filter(function(x){return x.k===k})[0], lead=((BOOKX[k]||{}).lead||'').split(', ')[0]||(bk&&bk.n);
      askDialog({t:'Message '+lead+'?', p:'Sent to their portal and their email. Their reply comes to Your turn.', ok:'Send', body:'<label class="gn-field"><span class="gn-field-l">Message</span><textarea class="gn-in" id="dlgMsg" rows="3"></textarea></label>', go:function(){ var f=$('#dlgMsg'), v=(f&&f.value.trim())||'Checking in ahead of the quarterly review.'; SCENE.agMsgs=SCENE.agMsgs||{}; (SCENE.agMsgs[k]=SCENE.agMsgs[k]||[]).unshift({t:v, at:NOW}); drawApp(VIEW); focusMain(); toast('Message sent to '+lead) }}) },

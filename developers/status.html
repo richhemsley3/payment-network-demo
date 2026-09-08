@@ -9,19 +9,20 @@
 <link rel="stylesheet" href="../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../design-system/gn.css">
 <link rel="stylesheet" href="shared/site.css">
+<link rel="stylesheet" href="shared/reference.css">
 <script src="../design-system/shared/icons.js"></script>
 <script src="../design-system/gn-charts.js"></script>
 <script src="shared/data.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--1"><main class="dv-body">
-<div class="dv-h"><div class="gn-eyebrow">Developers</div><h1>Status</h1><p>Every product and environment now, the last 90 days, and what happened when something did.</p></div>
+<div class="dv-h"><div class="gn-eyebrow">Developers</div><h1>Status</h1><p>Every product and environment now, each day of the last 90, and what happened when something did.</p></div>
 <div class="gn-strip is-good" style="margin:0 0 8px"><b>All products operational.</b><span>Updated June 2, 6:04 AM ET. Sandbox maintenance Sunday, June 7, 2:00 to 4:00 AM ET.</span></div>
 <h2 id="now">Now</h2>
-<div class="gn-rows" style="margin-top:16px" id="stNow"></div>
-<script>document.getElementById('stNow').innerHTML=DV.status.products.map(function(p){ var ok=p[1]==='Operational'; return '<div class="gn-row" style="padding-left:0;padding-right:0"><div class="gn-row-t"><b>'+p[0]+'</b>'+(ok?'':'<span>'+p[1]+'</span>')+'</div><div class="gn-row-m"><span class="dv-hist" style="width:320px" data-hist="'+p[0]+'"></span></div><div class="gn-row-r"><span class="gn-status '+(ok?'is-good':'is-warn')+'">'+(ok?'Operational':'Maintenance')+'</span></div></div>' }).join('');
-document.querySelectorAll('[data-hist]').forEach(function(h){ var n=h.getAttribute('data-hist'); var s=''; for(var i=0;i<90;i++){ var cls=''; if(n==='Acceptance'&&i===79) cls='w'; if(n==='Sandbox'&&i===57) cls='b'; if(n==='Webhooks'&&i===14) cls='w'; s+='<i class="'+cls+'" data-tip="Day '+(90-i)+' ago"></i>' } h.innerHTML=s });</script>
-<div class="gn-chart-key" style="margin-top:8px"><span><i class="f1" style="background:var(--gn-good);border-color:transparent"></i>Operational</span><span><i class="f1" style="background:var(--gn-warn);border-color:transparent"></i>Degraded</span><span><i class="f1" style="background:var(--gn-bad);border-color:transparent"></i>Unavailable</span><span>90 days, oldest on the left</span></div>
+<div class="rf-now" id="rfNow"></div>
+<div class="gn-chart-key" style="margin-top:12px"><span><span class="dv-hist rf-key"><i></i></span>Operational</span><span><span class="dv-hist rf-key"><i class="w"></i></span>Degraded</span><span><span class="dv-hist rf-key"><i class="b"></i></span>Unavailable</span><span>Hover a day to name it</span></div>
+<h2 id="maintenance">Scheduled maintenance</h2>
+<div id="rfMaint" style="margin-top:16px;max-width:760px"></div>
 <h2 id="latency">Latency and availability</h2>
 <div class="gn-chartcards" style="margin-top:16px">
   <div class="gn-chartcard"><div class="gn-chart-h"><span>Median issuer answer, production</span><b>43 ms</b></div><div id="stLat"></div><div class="gn-chartcard-f"><span>Last 14 days</span></div></div>
@@ -33,14 +34,15 @@ GNChart.line('#stLat',{labels:D,series:[{values:[42,41,68,43,42,44,41,43,42,41,4
 GNChart.bar('#stAv',{labels:['March','April','May'],series:[{values:[99.99,99.98,99.99]}],fmt:function(v){return v+'%'},min:99.9,max:100,h:160,valueLabels:true});
 </script>
 <h2 id="incidents">Incident history</h2>
-<div class="gn-timeline" id="stInc"></div>
-<script>document.getElementById('stInc').innerHTML=DV.status.incidents.map(function(i){ return '<div class="gn-tl-day"><h3>'+i[0]+'</h3><div class="gn-tl-i"><span class="gn-tl-t">'+i[2]+'</span><div class="gn-tl-b"><b>'+i[1]+'</b><p>'+i[3]+'</p></div><div class="gn-tl-r"><span class="gn-status">Resolved</span></div></div></div>' }).join('');</script>
+<p>Three in 90 days. Each one as it was posted, update by update, and how it closed.</p>
+<div id="rfInc"></div>
 <h2 id="subscribe">Subscribe</h2>
 <p>Incidents and maintenance by email, the moment they are posted here.</p>
 <div class="gn-inline" style="margin-top:16px;align-items:flex-start"><label class="gn-field" style="width:320px"><span class="gn-field-l dv-sr">Email</span><input class="gn-in" id="stEmail" placeholder="you@acquirer.example" autocomplete="email"></label><button class="gn-btn" type="button" onclick="stSub()">Subscribe</button></div>
 <script>function stSub(){ var e=document.getElementById('stEmail'); if(dvOffline(e)) return; if(dvErr(e, !e.value.trim()?'Enter your email.':!dvEmail(e.value)?'Enter an email address, like you@acquirer.example.':'')) { dvToast('Subscribed. Incidents go to '+e.value.trim()+'.'); dvDrop('stEmail'); e.value='' } else e.focus() }</script>
 
 </main></div>
+<script src="shared/reference.js"></script>
 <script src="shared/site.js"></script>
 </body>
 </html>

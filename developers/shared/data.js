@@ -50,6 +50,36 @@ window.DV={
   products:[['Acceptance','Operational'],['Tokens','Operational'],['Disputes','Operational'],['Webhooks','Operational'],['Settlement reports','Operational'],['Sandbox','Maintenance Sunday, June 7, 2:00 to 4:00 AM ET']],
   incidents:[['May 22','Issuer responses slow for one BIN range','6:12 to 7:40 AM ET','Stand-in rules answered. No authorization was lost.'],['April 30','Sandbox unavailable','2:00 to 2:40 AM ET','Scheduled maintenance ran long. Production was not affected.'],['March 18','Webhook deliveries delayed','8:10 to 8:52 AM ET','Up to 12 minutes late for 3% of endpoints. No delivery was lost.']]
  },
+ /* the request builder: entry modes from the Authorize endpoint, one body, one sample per language, one answer per card. The answers are
+    the shapes the prototype's sandbox returns (TESTRES), with round_trip_ms as the Authorization object carries it. */
+ entry:['contactless','chip','magstripe','ecommerce','keyed'],
+ body:function(i,amt,entry){ return {amount:amt,currency:'USD',merchant_id:'mch_demo',pan_token:DV.cards[i][0].replace(/ /g,''),entry_mode:entry||'contactless'} },
+ sample:function(b){ var j='{ "amount": '+b.amount+', "currency": "USD", "merchant_id": "'+b.merchant_id+'", "pan_token": "'+b.pan_token+'", "entry_mode": "'+b.entry_mode+'" }'; return {
+  curl:'curl -X POST '+DV.base.sandbox+'/acceptance/v1/authorizations \\\n  -H "Authorization: Bearer $TOKEN" \\\n  -H "Idempotency-Key: $(uuidgen)" \\\n  -d \''+j+'\'',
+  node:'const auth = await dgn.authorizations.create({\n  amount: '+b.amount+', currency: "USD", merchantId: "'+b.merchant_id+'",\n  panToken: "'+b.pan_token+'", entryMode: "'+b.entry_mode+'"\n});',
+  python:'auth = client.authorizations.create(\n  amount='+b.amount+', currency="USD", merchant_id="'+b.merchant_id+'",\n  pan_token="'+b.pan_token+'", entry_mode="'+b.entry_mode+'")' } },
+ respond:function(i,amt){ var c=DV.cards[i], code=c[2], last=c[0].slice(-4); var M={'0005':['auth_71ab3c',41],'0385':['auth_71ab40',44],'0872':['auth_71ab52',39],'0905':['auth_71ab5e',38],'1010':['auth_71ab68',502],'2027':['auth_71ab73',43],'3504':['auth_71ab88',40],'4040':['auth_71ab9a',37]}[last]; var r={id:M[0]};
+  if(code==='10'){ r.decision='partial'; r.response_code='10'; r.requested_amount=amt; r.approved_amount=Math.round(amt/2) }
+  else if(last==='1010'){ r.decision='stand_in'; r.response_code='00'; r.approved_amount=amt; r.answered_by='network' }
+  else if(code==='00'){ r.decision='approved'; r.response_code='00'; r.approved_amount=amt; if(last==='0005') r.avs={street:'Y',postal:'Y'}; if(last==='2027') r.callback_queued='dispute.opened +4m'; if(last==='3504') r.token_lifecycle='issuer_managed' }
+  else { r.decision='declined'; r.response_code=code; r.reason={'51':'insufficient_funds','05':'do_not_honor','54':'expired_card'}[code] }
+  r.round_trip_ms=M[1]; return r },
+ /* the decision table: what your code does with each card's answer, and what follows it. Same order as cards. */
+ after:[
+  ['Capture within 7 days.','authorization.decisioned within a second.'],
+  ['Capture approved_amount, or reverse the hold.','authorization.decisioned within a second.'],
+  ['Retry on your own schedule, not within 60 seconds.','authorization.decisioned within a second.'],
+  ['Do not retry the same message. Ask for another card.','authorization.decisioned within a second.'],
+  ['Capture as an approval. answered_by says the network answered.','authorization.decisioned within a second.'],
+  ['Capture. Then answer the case on the Disputes endpoint.','dispute.opened after four minutes, with reason 4837 and your deadline.'],
+  ['Capture. Keep using the token.','token.updated after two minutes. The token keeps working.'],
+  ['Ask for another card.','authorization.decisioned within a second.']
+ ],
+ envs:[
+  ['Sandbox','https://sandbox.api.dgn.com','The demo credentials, or your own from a free account.','Test cards. Nothing is charged.'],
+  ['Certification','https://cert.api.dgn.com','The same credentials, promoted by the network.','Your certification cases, sent by your host.'],
+  ['Production','https://api.dgn.com','The same credentials, promoted at activation.','Live cards. A test card is declined with 14.']
+ ],
  /* one code, one tone, everywhere a code is shown: approved is good, a soft decline or a network answer is warning, a hard decline is bad */
  /* en-US dates, the year only outside the site's year (June 2, 2026) */
  date:function(iso){ var p=iso.split('-'), m=['January','February','March','April','May','June','July','August','September','October','November','December'][+p[1]-1]; return m+' '+(+p[2])+(p[0]==='2026'?'':', '+p[0]) },

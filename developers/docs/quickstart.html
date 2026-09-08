@@ -16,41 +16,99 @@
 <body class="dv">
 <div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Start</div><h1>Quickstart</h1><p>A token, then your first authorization, on the sandbox. Ten minutes. The same message you already send, at a new endpoint.</p></div>
-<div class="dv-pre"><b>Before you start</b><span>A sandbox client id and secret from a free account, or the demo credentials below, which run on a shared sandbox and are rotated daily.</span><span style="margin-top:8px"><span class="gn-mono">DGN_ID=demo_9f2a</span>&nbsp;&nbsp;<span class="gn-mono">DGN_SECRET=demo_shared_secret</span></span></div>
+<div class="dv-pre"><b>Before you start</b><span>A terminal with curl, or Node or Python. The demo credentials below run on a shared sandbox and are rotated daily. Your own come with a <a href="../support.html#signup">free account</a>.</span></div>
+<div class="gn-cred"><div class="gn-cred-k">Demo credentials</div><div class="gn-cred-r"><span>Client id</span><span class="gn-mono">DGN_ID=demo_9f2a</span></div><div class="gn-cred-r"><span>Client secret</span><span class="gn-mono">DGN_SECRET=demo_shared_secret</span></div><div class="gn-cred-r"><span>Base URL</span><span class="gn-mono">https://sandbox.api.dgn.com</span></div><div class="gn-cred-f">Shared, so a request you send may sit beside someone else's in the sandbox log. Nothing is charged.</div></div>
+<div class="dv-qs"><ol class="gn-stepper" style="--n:5" id="qsBar" aria-label="Progress"></ol><div class="dv-qs-n"><span id="qsN">0 of 5 done</span><button class="gn-link" type="button" id="qsReset" hidden>Start again</button></div></div>
 <div class="dv-steps">
 <div class="dv-step"><h2 id="token">Get a token</h2><p>Credentials exchange for an OAuth token valid for one hour. The libraries refresh it for you.</p>
-<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/oauth/token \
+<div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Request</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/oauth/token \
   -u "$DGN_ID:$DGN_SECRET" \
   -d grant_type=client_credentials</pre><pre class="gn-code" data-lang="node" data-name="Node">import { Network } from "@dgn/node";
 const dgn = new Network({ clientId: process.env.DGN_ID, clientSecret: process.env.DGN_SECRET, env: "sandbox" });
 // the client fetches and refreshes the token</pre><pre class="gn-code" data-lang="python" data-name="Python">import dgn
-client = dgn.Network(client_id=os.environ["DGN_ID"], client_secret=os.environ["DGN_SECRET"], env="sandbox")</pre></div></div></div>
-<div class="dv-step"><h2 id="first">Send your first authorization</h2><p>Amounts are in minor units. 5820 is $58.20. The card is a test card; the response is the outcome it is built for.</p>
+client = dgn.Network(client_id=os.environ["DGN_ID"], client_secret=os.environ["DGN_SECRET"], env="sandbox")</pre></div></div>
+<div class="dv-code-h"><span class="gn-label">Response</span></div><pre class="gn-code gn-code--ink" style="margin-top:8px">{
+  "access_token": "eyJhbGciOiJSUzI1NiJ9…",
+  "expires_in": 3600
+}</pre>
+<label class="dv-done"><input type="checkbox" class="gn-check" data-step="token">Done</label></div>
+<div class="dv-step"><h2 id="first">Send your first authorization</h2><p>Amounts are in minor units. 5820 is $58.20. The card is a test card, and the answer is the outcome it is built for. <a href="testing.html?card=0#console">Send this one from the sandbox page</a> if you would rather not open a terminal.</p>
 <div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Request</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
   -H "Authorization: Bearer $TOKEN" \
   -H "Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7" \
-  -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan": "6011330000000005", "entry_mode": "contactless" }'</pre><pre class="gn-code" data-lang="node" data-name="Node">const auth = await dgn.authorizations.create({
+  -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan_token": "6011330000000005", "entry_mode": "contactless" }'</pre><pre class="gn-code" data-lang="node" data-name="Node">const auth = await dgn.authorizations.create({
   amount: 5820, currency: "USD", merchantId: "mch_demo",
-  pan: "6011330000000005", entryMode: "contactless"
+  panToken: "6011330000000005", entryMode: "contactless"
 });</pre><pre class="gn-code" data-lang="python" data-name="Python">auth = client.authorizations.create(
   amount=5820, currency="USD", merchant_id="mch_demo",
-  pan="6011330000000005", entry_mode="contactless")</pre></div></div>
+  pan_token="6011330000000005", entry_mode="contactless")</pre></div></div>
 <div class="dv-code-h"><span class="gn-label">Response</span></div><pre class="gn-code gn-code--ink" style="margin-top:8px">{
   "id": "auth_71ab3c",
   "decision": "approved",
   "response_code": "00",
   "approved_amount": 5820,
+  "round_trip_ms": 41,
+  "network": "discover",
   "avs": { "street": "Y", "postal": "Y" },
-  "issuer_ms": 41,
-  "score": 22
-}</pre></div>
-<div class="dv-step"><h2 id="decline">Try a decline</h2><p>Change the card. <span class="gn-mono">6011 3300 0000 0872</span> answers insufficient funds: a 200 with <span class="gn-mono">decision: declined</span> and <span class="gn-mono">response_code: 51</span>. A decline is an answer, not an error.</p></div>
+  "created": "2026-05-14T14:31:08Z"
+}</pre>
+<label class="dv-done"><input type="checkbox" class="gn-check" data-step="first">Done</label></div>
+<div class="dv-step"><h2 id="decline">Try a decline</h2><p>Change the card and nothing else. <span class="gn-mono">6011 3300 0000 0872</span> answers insufficient funds: a 200 with <span class="gn-mono">decision: declined</span> and <span class="gn-mono">response_code: 51</span>. A decline is an answer, and your code branches on the code.</p>
+<div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Request</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{ "amount": 5820, "currency": "USD", "merchant_id": "mch_demo", "pan_token": "6011330000000872", "entry_mode": "contactless" }'</pre><pre class="gn-code" data-lang="node" data-name="Node">const declined = await dgn.authorizations.create({
+  amount: 5820, currency: "USD", merchantId: "mch_demo",
+  panToken: "6011330000000872", entryMode: "contactless"
+});</pre><pre class="gn-code" data-lang="python" data-name="Python">declined = client.authorizations.create(
+  amount=5820, currency="USD", merchant_id="mch_demo",
+  pan_token="6011330000000872", entry_mode="contactless")</pre></div></div>
+<div class="dv-code-h"><span class="gn-label">Response</span></div><pre class="gn-code gn-code--ink" style="margin-top:8px">{
+  "id": "auth_71ab52",
+  "decision": "declined",
+  "response_code": "51",
+  "reason": "insufficient_funds",
+  "round_trip_ms": 39,
+  "network": "discover",
+  "created": "2026-05-14T14:31:40Z"
+}</pre>
+<label class="dv-done"><input type="checkbox" class="gn-check" data-step="decline">Done</label></div>
 <div class="dv-step"><h2 id="capture">Capture it</h2><p>An approval is a hold. Capture moves it into the day's clearing file. Capture within 7 days, in full or in part.</p>
-<div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/captures \
+<div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Request</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/captures \
   -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: $(uuidgen)" \
-  -d '{ "authorization_id": "auth_71ab3c", "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.captures.create({ authorizationId: auth.id, amount: 5820 });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.captures.create(authorization_id=auth.id, amount=5820)</pre></div></div></div>
-<div class="dv-step"><h2 id="events">Receive the event</h2><p>Every decision arrives at an endpoint you register as <span class="gn-mono">authorization.decisioned</span>, signed, within a second. The CLI forwards events to your machine before you have a URL.</p><pre class="gn-code">dgn events listen --forward-to localhost:4000/dgn/events</pre></div>
+  -d '{ "authorization_id": "auth_71ab3c", "amount": 5820 }'</pre><pre class="gn-code" data-lang="node" data-name="Node">await dgn.captures.create({ authorizationId: auth.id, amount: 5820 });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.captures.create(authorization_id=auth.id, amount=5820)</pre></div></div>
+<div class="dv-code-h"><span class="gn-label">Response</span></div><pre class="gn-code gn-code--ink" style="margin-top:8px">{
+  "id": "cap_5c10",
+  "count": 1,
+  "gross": 5820,
+  "settlement_date": "2026-05-15",
+  "file": "clr_20260515_001"
+}</pre>
+<label class="dv-done"><input type="checkbox" class="gn-check" data-step="capture">Done</label></div>
+<div class="dv-step"><h2 id="events">Receive the event</h2><p>Every decision arrives at an endpoint you register as <span class="gn-mono">authorization.decisioned</span>, signed, within a second. The CLI forwards events to your machine before you have a URL.</p>
+<div class="dv-code-wrap"><div class="dv-code-h"><span class="gn-label">Request</span><button class="gn-link" type="button" data-copy-code>Copy</button></div><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="Shell">dgn events listen --forward-to localhost:4000/dgn/events</pre></div></div>
+<div class="dv-code-h"><span class="gn-label">What arrives at localhost:4000</span></div><pre class="gn-code gn-code--ink" style="margin-top:8px">POST /dgn/events
+DGN-Signature: t=1747233069,v1=5f1c2a…
+
+{
+  "id": "evt_8a1f83",
+  "type": "authorization.decisioned",
+  "created": "2026-05-14T14:31:09Z",
+  "data": { "id": "auth_71ab3c", "decision": "approved", "response_code": "00", "issuer_ms": 41 }
+}</pre>
+<label class="dv-done"><input type="checkbox" class="gn-check" data-step="events">Done</label></div>
 </div>
+<script>
+/* progress: the stepper above the steps, a checkbox at the foot of each, kept in localStorage for the next visit */
+(function(){ var STEPS=['token','first','decline','capture','events'], NAMES=['Get a token','Send your first authorization','Try a decline','Capture it','Receive the event'], K='dv-qs'; var done=[]; try{ done=JSON.parse(localStorage.getItem(K)||'[]').filter(function(s){ return STEPS.indexOf(s)>-1 }) }catch(e){}
+  var bar=document.getElementById('qsBar'), n=document.getElementById('qsN'), reset=document.getElementById('qsReset');
+  function save(){ try{ localStorage.setItem(K,JSON.stringify(done)) }catch(e){} }
+  function paint(){ var cur=STEPS.filter(function(s){ return done.indexOf(s)<0 })[0]; bar.innerHTML=STEPS.map(function(s,i){ var d=done.indexOf(s)>-1; return '<li class="'+(d?'is-done':s===cur?'is-cur':'')+'"'+(s===cur?' aria-current="step"':'')+'><i>'+(d?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg><span class="dv-sr">Done</span>':(i+1))+'</i><span>'+NAMES[i]+'</span></li>' }).join(''); n.textContent=done.length+' of 5 done'; reset.hidden=!done.length; document.querySelectorAll('.dv-done input').forEach(function(c){ c.checked=done.indexOf(c.getAttribute('data-step'))>-1 }) }
+  document.querySelectorAll('.dv-done input').forEach(function(c){ c.addEventListener('change',function(){ var s=c.getAttribute('data-step'); done=done.filter(function(x){ return x!==s }); if(c.checked) done.push(s); save(); paint() }) });
+  reset.addEventListener('click',function(){ done=[]; save(); paint(); dvToast('Progress cleared') });
+  paint();
+})();
+</script>
 <div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="../api/index.html#authorize"><h3 style="font-size:15px">The Authorize endpoint</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field you can send, and what comes back.</p></a><a class="gn-card is-link" href="webhooks.html"><h3 style="font-size:15px">Receive events</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Register an endpoint and verify the signature.</p></a><a class="gn-card is-link" href="testing.html"><h3 style="font-size:15px">Test cards</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Partial approval, stand-in, a dispute four minutes later.</p></a></div></div>
 
 </main><nav class="dv-toc"></nav></div>

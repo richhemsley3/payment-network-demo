@@ -14,25 +14,51 @@
 <script src="../shared/data.js"></script>
 </head>
 <body class="dv">
-<div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
-<div class="dv-h"><div class="gn-eyebrow">Docs</div><h1>Guides</h1><p>Task-shaped, in the order an integration happens. Each says what you need first, shows every call with a sample, and hands off to what comes next.</p></div>
-<h2 id="start">Start</h2>
-<div class="gn-card-grid" style="margin-top:16px">
-  <a class="gn-card is-link" href="quickstart.html"><h3 style="font-size:15px">Quickstart</h3><p style="color:var(--gn-text-secondary);margin-top:8px">A token, then your first authorization on the sandbox. Ten minutes.</p></a>
-  <a class="gn-card is-link" href="testing.html"><h3 style="font-size:15px">Test cards and sandbox</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Eight cards with named outcomes, and the demo console.</p></a>
+<div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
+<div class="dv-h"><div class="gn-eyebrow">Docs</div><h1>Guides</h1><p>Six guides in the order an integration happens. Each says what you need first, shows every call with a sample, and hands off to what comes next.</p></div>
+<h2 id="paths">Start from what you want to do</h2>
+<p>Three goals, each a path through the guides. The first step of each needs no account.</p>
+<div class="dv-paths">
+  <div class="dv-path"><h3>Accept a payment</h3><ol class="gn-stepper gn-stepper--v">
+    <li><i>1</i><span><b><a href="quickstart.html#token">Get a token</a></b><em>The demo credentials, valid for an hour.</em></span></li>
+    <li><i>2</i><span><b><a href="quickstart.html#first">Send an authorization</a></b><em>A test card, answered in 41 ms.</em></span></li>
+    <li><i>3</i><span><b><a href="authorization.html#capture">Capture the hold</a></b><em>Within 7 days, in full or in part.</em></span></li>
+    <li><i>4</i><span><b><a href="errors.html#codes">Branch on the code</a></b><em>Soft and hard declines, and when to retry.</em></span></li>
+  </ol></div>
+  <div class="dv-path"><h3>Receive events</h3><ol class="gn-stepper gn-stepper--v">
+    <li><i>1</i><span><b><a href="webhooks.html#shape">Read a delivery</a></b><em>What arrives, signed, within a second.</em></span></li>
+    <li><i>2</i><span><b><a href="webhooks.html#register">Register an endpoint</a></b><em>One URL for every event. Needs an account.</em></span></li>
+    <li><i>3</i><span><b><a href="webhooks.html#verify">Verify the signature</a></b><em>HMAC over the timestamp and the body.</em></span></li>
+    <li><i>4</i><span><b><a href="webhooks.html#retries">Handle retries</a></b><em>Three days of them, de-duplicated on the event id.</em></span></li>
+  </ol></div>
+  <div class="dv-path"><h3>Certify and go live</h3><ol class="gn-stepper gn-stepper--v">
+    <li><i>1</i><span><b><a href="certification.html#who">Who sends what</a></b><em>Your host sends the cases. The network watches.</em></span></li>
+    <li><i>2</i><span><b><a href="certification.html#groups">The case groups</a></b><em>Generated from your configuration.</em></span></li>
+    <li><i>3</i><span><b><a href="certification.html#submit">Submit for validation</a></b><em>Once every case is seen and passing.</em></span></li>
+    <li><i>4</i><span><b><a href="certification.html#activation">Activation</a></b><em>The same credentials, promoted to production.</em></span></li>
+  </ol></div>
 </div>
-<h2 id="build">Build</h2>
-<div class="gn-card-grid" style="margin-top:16px">
-  <a class="gn-card is-link" href="authorization.html"><h3 style="font-size:15px">Accept a payment</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Authorize, capture, reverse, refund. Partial approvals and stand-in.</p></a>
-  <a class="gn-card is-link" href="webhooks.html"><h3 style="font-size:15px">Receive events</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Register an endpoint, verify signatures, handle retries.</p></a>
-  <a class="gn-card is-link" href="errors.html"><h3 style="font-size:15px">Errors and idempotency</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Response codes, error types, and when to retry.</p></a>
-</div>
-<h2 id="launch">Launch</h2>
-<div class="gn-card-grid" style="margin-top:16px">
-  <a class="gn-card is-link" href="certification.html"><h3 style="font-size:15px">Certify and go live</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What certification is, what you upload, what activation does.</p></a>
-</div>
+<h2 id="guides">The guides</h2>
+<p>What each one asks of you before you start, and what you have when you finish.</p>
+<div class="gn-table-wrap"><table class="gn-table"><thead><tr><th scope="col">Guide</th><th scope="col">You need</th><th scope="col">You finish with</th><th scope="col" class="is-num">Takes</th></tr></thead><tbody>
+  <tr><td><a href="quickstart.html">Quickstart</a><em>Start</em></td><td>A terminal. Demo credentials are on the page.</td><td>A token, an approval, a decline, a capture, and the event on your machine.</td><td class="is-num">10 min</td></tr>
+  <tr><td><a href="testing.html">Test cards and sandbox</a><em>Start</em></td><td>Nothing.</td><td>Every outcome the sandbox answers, sent from the page and copied in your language.</td><td class="is-num">5 min</td></tr>
+  <tr><td><a href="authorization.html">Accept a payment</a><em>Build</em></td><td>A token.</td><td>Authorize, capture, reverse and refund wired, with partial approval and stand-in handled.</td><td class="is-num">30 min</td></tr>
+  <tr><td><a href="webhooks.html">Receive events</a><em>Build</em></td><td>An account, for the endpoint.</td><td>A verified delivery and a retry policy that never processes an event twice.</td><td class="is-num">20 min</td></tr>
+  <tr><td><a href="errors.html">Errors and idempotency</a><em>Build</em></td><td>A code from a log.</td><td>What it means, whether to retry, and a key that makes the retry safe.</td><td class="is-num">10 min</td></tr>
+  <tr><td><a href="certification.html">Certify and go live</a><em>Launch</em></td><td>An account and a participation agreement.</td><td>Every case seen and passing, validated, and production activated.</td><td class="is-num">A booked week</td></tr>
+</tbody></table></div>
+<h2 id="lookup">If you arrived with something in hand</h2>
+<div class="gn-table-wrap" style="max-width:820px"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">You have</th><th scope="col">Read</th></tr></thead><tbody>
+  <tr><td>A response code from a log</td><td><a href="errors.html#codes">Response codes</a></td></tr>
+  <tr><td>A 409 or a 429</td><td><a href="errors.html#types">Error types</a></td></tr>
+  <tr><td>A platform that speaks ISO 8583</td><td><a href="authorization.html#iso">If your platform speaks ISO 8583</a></td></tr>
+  <tr><td>A delivery whose signature fails</td><td><a href="webhooks.html#verify">Verify the signature</a></td></tr>
+  <tr><td>A certification window booked</td><td><a href="certification.html#who">Who sends what</a></td></tr>
+  <tr><td>A request that stopped being answered</td><td><a href="../status.html">Status</a></td></tr>
+</tbody></table></div>
 
-</main><nav class="dv-toc"></nav></div>
+</main></div>
 <script src="../shared/site.js"></script>
 </body>
 </html>

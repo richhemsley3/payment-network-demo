@@ -9,40 +9,96 @@
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
 <link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/guides.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
+<script src="../shared/guides.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell"><aside class="dv-side"></aside><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Build</div><h1>Errors and idempotency</h1><p>Two kinds of answer. A decision you did not want is a 200 with a response code. A request the network could not process is a 4xx or 5xx with a type and a message.</p></div>
 <div class="dv-pre"><b>Before you start</b><span>An answer you did not expect and its <span class="gn-mono">request_id</span>, from your own logs or from Logs in the Developer Portal.</span></div>
+
+<h2 id="kinds">Which kind of answer</h2>
+<p>The HTTP status says which table to read. A 200 carries a decision, and <span class="gn-mono">response_code</span> is the issuer's word. Anything else carries an error, and <span class="gn-mono">type</span> is the network's word.</p>
+<div class="gd-pair">
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">A decision</span><span class="gn-status is-good">200</span></div><pre class="gn-code gn-code--ink">{
+  "id": "auth_71ab52",
+  "decision": "declined",
+  "response_code": "51",
+  "reason": "insufficient_funds",
+  "request_id": "req_71ab52"
+}</pre><div class="gd-fig-l">Read <span class="gn-mono">response_code</span> under <a href="#codes">Response codes</a>.</div></div>
+<div class="gd-resp"><div class="gn-code-h"><span class="gn-label">An error</span><span class="gn-status is-bad">400</span></div><pre class="gn-code gn-code--ink">{
+  "type": "invalid_request",
+  "message": "amount must be a positive integer in minor units",
+  "param": "amount",
+  "request_id": "req_71ab00"
+}</pre><div class="gd-fig-l">Read <span class="gn-mono">type</span> under <a href="#types">Error types</a>. Quote <span class="gn-mono">request_id</span> to support.</div></div>
+</div>
+
 <h2 id="codes">Response codes</h2>
-<p>The issuer's answer. On the Authorization object as <span class="gn-mono">response_code</span>.</p>
-<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th><th scope="col">What happened</th><th scope="col">What to do</th></tr></thead><tbody id="rcBody"></tbody></table></div>
-<script>document.getElementById('rcBody').innerHTML=DV.codes.map(function(c){ var tone=DV.tone(c[0]); return '<tr><td><span class="gn-status '+tone+'">'+c[0]+'</span></td><td>'+c[1]+'</td><td>'+c[2]+'</td><td>'+c[3]+'</td></tr>' }).join('');</script>
+<p>The issuer's answer, on the Authorization object as <span class="gn-mono">response_code</span>. The last column is the retry rule.</p>
+<div class="gn-table-wrap gd-tbl"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Code</th><th scope="col">What happened</th><th scope="col">What to do</th><th scope="col">Retry</th></tr></thead><tbody id="rcBody"></tbody></table></div>
+<script>(function(){ var R={'00':'none','10':'none','05':'never','51':'later, new message','54':'never','14':'never','91':'once, after 30 s','96':'same key'}; document.getElementById('rcBody').innerHTML=DV.codes.map(function(c){ var tone=DV.tone(c[0]); return '<tr><td><span class="gn-status '+tone+'">'+c[0]+'</span><em>'+c[1]+'</em></td><td>'+c[2]+'</td><td>'+c[3]+'</td><td class="gd-word">'+(R[c[0]]||'')+'</td></tr>' }).join('') })();</script>
+
 <h2 id="types">Error types</h2>
 <p>A request the network could not process. The body carries <span class="gn-mono">type</span>, a <span class="gn-mono">message</span> you can show a person, and the <span class="gn-mono">request_id</span> to quote to support.</p>
-<pre class="gn-code gn-code--ink">HTTP/1.1 400 Bad Request
-{ "type": "invalid_request", "message": "amount must be a positive integer in minor units", "param": "amount", "request_id": "req_71ab00" }</pre>
-<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Type</th><th scope="col">Status</th><th scope="col">What happened</th><th scope="col">What to do</th></tr></thead><tbody id="etBody"></tbody></table></div>
-<script>document.getElementById('etBody').innerHTML=DV.errors.map(function(c){ return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td>'+c[2]+'</td><td>'+c[3]+'</td></tr>' }).join('');</script>
+<div class="gn-table-wrap gd-tbl"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Type</th><th scope="col">What happened</th><th scope="col">What to do</th><th scope="col">Retry</th></tr></thead><tbody id="etBody"></tbody></table></div>
+<script>(function(){ var R={invalid_request:'never',unauthorized:'new token',forbidden:'never',not_found:'never',conflict:'wait, same key',rate_limited:'after Retry-After',network_error:'same key'}; document.getElementById('etBody').innerHTML=DV.errors.map(function(c){ return '<tr><td><span class="gn-mono">'+c[0]+'</span><em>'+c[1]+'</em></td><td>'+c[2]+'</td><td>'+c[3]+'</td><td class="gd-word">'+(R[c[0]]||'')+'</td></tr>' }).join('') })();</script>
+
 <h2 id="idempotency">Idempotency</h2>
-<p>Send an <span class="gn-mono">Idempotency-Key</span> header on any POST. Repeat the same key within 24 hours and you get the original answer, not a second authorization. One key per attempt on your side. A key still in flight returns 409: wait for the first answer, do not retry during it.</p>
+<p>Send an <span class="gn-mono">Idempotency-Key</span> header on any POST. The network authorizes once and keeps the answer under that key for 24 hours. A repeat with the same key gets the original answer. A repeat while the first request is still in flight gets a 409.</p>
+<div id="gdIdem"></div>
+<script>GD.seq('gdIdem',{label:'A request with key k1 times out. A retry with k1 while the first is in flight gets 409. A retry after the timeout gets the original answer.', lanes:[{k:'you',n:'Your host'},{k:'net',n:'Discover Global Network'}], steps:[
+ {from:'you',to:'net',l:'POST /authorizations, Idempotency-Key k1'},
+ {from:'net',to:'net',l:'Authorizes once. Keeps the answer\nunder k1 for 24 hours.'},
+ {from:'net',to:'you',l:'No answer inside your timeout',t:'the answer is on its way',kind:'return'},
+ {from:'you',to:'net',l:'The same request, k1, too soon'},
+ {from:'net',to:'you',l:'409 conflict',t:'k1 is still in flight. Wait.',kind:'return'},
+ {from:'you',to:'net',l:'The same request, k1, after the timeout'},
+ {from:'net',to:'you',l:'200, the original answer',t:'one authorization, one hold',kind:'return'}]});</script>
 <div class="dv-code-wrap"><div class="dv-code"><pre class="gn-code" data-lang="curl" data-name="cURL">curl -X POST https://sandbox.api.dgn.com/acceptance/v1/authorizations \
   -H "Authorization: Bearer $TOKEN" \
   -H "Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7" \
-  -d @request.json</pre><pre class="gn-code" data-lang="node" data-name="Node">// the library sets a key per call; pass your own to make a retry safe
+  -d @request.json</pre><pre class="gn-code" data-lang="node" data-name="Node">// the library sets a key per call. Pass your own so a retry is the same attempt.
 await dgn.authorizations.create(body, { idempotencyKey: order.id + ":auth" });</pre><pre class="gn-code" data-lang="python" data-name="Python">client.authorizations.create(**body, idempotency_key=f"{order.id}:auth")</pre></div></div>
+
 <h2 id="retry">When to retry</h2>
-<div class="gn-doc gn-doc--2" style="max-width:820px">
-  <div class="gn-doc-r"><span class="gn-doc-l">Retry, same key</span><span class="gn-doc-v">network_error, rate_limited after Retry-After, a timeout with no answer.</span></div>
-  <div class="gn-doc-r"><span class="gn-doc-l">Retry, new message</span><span class="gn-doc-v">A soft decline, 51, on your own schedule. Never within 60 seconds.</span></div>
-  <div class="gn-doc-r"><span class="gn-doc-l">Do not retry</span><span class="gn-doc-v">invalid_request, unauthorized, forbidden, a hard decline: 05, 14, 54.</span></div>
-  <div class="gn-doc-r"><span class="gn-doc-l">Wait</span><span class="gn-doc-v">conflict, 409. The first request is still in flight.</span></div>
-</div>
+<p>Start from what came back. The leaves say what to send next, and with which key.</p>
+<div id="gdTree"></div>
+<script>GD.tree('gdTree',{q:'What came back?',kids:[
+ {l:'nothing, or a timeout',node:{leaf:'Retry, same key.\nFrom 1 s, doubling.',tone:'is-warn'}},
+ {l:'5xx, or 429',node:{leaf:'Retry, same key.\n429: wait Retry-After.',tone:'is-warn'}},
+ {l:'another 4xx',node:{q:'Is it 409?',kids:[
+   {l:'yes',node:{leaf:'Wait for the first answer.\nThen the same key.',tone:'is-warn'}},
+   {l:'no',node:{leaf:'Fix the request.\nDo not retry unchanged.',tone:'is-bad'}}]}},
+ {l:'200, a decision',node:{q:'Which response_code?',kids:[
+   {l:'00 or 10',node:{leaf:'Done. Capture.',tone:'is-good'}},
+   {l:'51',node:{leaf:'Later, a new message.\nNever within 60 s.'}},
+   {l:'91',node:{leaf:'Once, after 30 s.\nUnless stand-in answered.'}},
+   {l:'96',node:{leaf:'Retry, same key.',tone:'is-warn'}},
+   {l:'05, 14, 54',node:{leaf:'Never. Ask for\nanother card.',tone:'is-bad'}}]}}]},{label:'Retry decision: nothing back or 5xx means retry with the same key, 409 means wait, other 4xx means fix, a 200 is read by its response code'});</script>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">What came back</th><th scope="col">Retry</th><th scope="col">Key</th><th scope="col">Wait first</th></tr></thead><tbody>
+<tr><td>No answer, a timeout, <span class="gn-mono">network_error</span></td><td>Yes</td><td>The same</td><td>1 second, doubling to a minute</td></tr>
+<tr><td>429 <span class="gn-mono">rate_limited</span></td><td>Yes</td><td>The same</td><td><span class="gn-mono">Retry-After</span> seconds</td></tr>
+<tr><td>409 <span class="gn-mono">conflict</span></td><td>After the first answer</td><td>The same</td><td>Your timeout</td></tr>
+<tr><td>400, 401, 403, 404</td><td>No</td><td></td><td>Fix the request, or the token</td></tr>
+<tr><td>200, code <span class="gn-status is-warn">51</span></td><td>Later</td><td>A new one</td><td>60 seconds at least</td></tr>
+<tr><td>200, code <span class="gn-status is-warn">91</span></td><td>Once</td><td>A new one</td><td>30 seconds</td></tr>
+<tr><td>200, code <span class="gn-status is-warn">96</span></td><td>Yes</td><td>The same</td><td>1 second</td></tr>
+<tr><td>200, code <span class="gn-status is-bad">05</span> <span class="gn-status is-bad">14</span> <span class="gn-status is-bad">54</span></td><td>Never</td><td></td><td>Ask for another card</td></tr>
+</tbody></table></div>
+
 <h2 id="limits">Rate limits</h2>
-<p>5,000 requests a minute per key in production, 500 in the sandbox. Over the limit returns 429 with <span class="gn-mono">Retry-After</span> in seconds. Limits are on the key, so one key per service keeps a noisy service from starving another.</p>
+<p>Limits are on the key, so one key per service keeps a noisy service from starving another.</p>
+<div class="gn-table-wrap"><table class="gn-table gn-table--dense"><thead><tr><th scope="col">Environment</th><th scope="col">Limit per key</th><th scope="col">Over the limit</th></tr></thead><tbody>
+<tr><td>Production</td><td>5,000 requests a minute</td><td>429 with <span class="gn-mono">Retry-After</span> in seconds</td></tr>
+<tr><td>Certification</td><td>5,000 requests a minute</td><td>429 with <span class="gn-mono">Retry-After</span> in seconds</td></tr>
+<tr><td>Sandbox</td><td>500 requests a minute</td><td>429 with <span class="gn-mono">Retry-After</span> in seconds</td></tr>
+</tbody></table></div>
+
 <div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="testing.html#declines"><h3 style="font-size:15px">Try a decline</h3><p style="color:var(--gn-text-secondary);margin-top:8px">One test card for each code above.</p></a><a class="gn-card is-link" href="webhooks.html#retries"><h3 style="font-size:15px">Delivery retries</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What the network retries on its side, and for how long.</p></a><a class="gn-card is-link" href="../support.html"><h3 style="font-size:15px">Support</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Quote the request_id and we can open what you sent.</p></a></div></div>
 
 </main><nav class="dv-toc"></nav></div>
