@@ -5805,7 +5805,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    if(o.plan){ var pl=o.plan; sb=pl[1]>=1; cert=pl[4]>=1||pl[3]===4; prod=pl[4]===2; }
    var canOpen = o.agent && STAGE===2 && SCENE.submitted && !SCENE.sandbox && !o.plan;
    var t=[['Sandbox','sandbox.api.dgn.com', sb?['Open','ok']:canOpen?['Ready to open','wa']:['Waiting on the network','wa'], sb&&!o.plan?'Opened by Marcus Bell, March 9, 2:06 PM':'', canOpen?'<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="openSandbox">Open sandbox</button>':''],
-          ['Certification','cert.api.dgn.com', prod?['Done','ok']:cert?['Open','ok']:o.plan?['Not yet booked','']:[STAGE===3?'After signature':'Booked',''], cert&&!o.plan?'May 4 to 8, booked April 12':'', ''],
+          ['Certification','cert.api.dgn.com', prod?['Done','ok']:cert?['Open','ok']:o.plan?['Not yet booked','']:[STAGE>=4?'Booked':'After signature',''], cert&&!o.plan?'May 4 to 8, booked April 12':'', ''],
           ['Production','api.dgn.com', prod?['Live','ok']:['At activation',''], prod&&!o.plan?'Activated May 14, 6:00 AM':'', o.agent&&STAGE===4&&!o.plan?(SCENE.actDate?sw('Activation '+SCENE.actDate,'ok'):'<span class="gn-link" data-act="actPick" data-k="May 14, 6:00 AM ET">Schedule activation for May 14</span>'):'']];
    return '<div class="tiles">'+t.map(function(e){ return '<div class="tile"><span class="tile-k">'+esc(e[0])+'</span><i class="gn-mono">'+esc(e[1])+'</i>'+sw(e[2][0],e[2][1])+(e[3]?'<small>'+esc(e[3])+'</small>':'')+(e[4]?'<div class="tile-a">'+e[4]+'</div>':'')+'</div>' }).join('')+'</div>';
  }
