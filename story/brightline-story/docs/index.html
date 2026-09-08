@@ -4284,11 +4284,11 @@ body.mode-prep #prepbar{display:flex}
  /* the six seats on the network's side. Marcus is the demo seat and sees
     everything; a seat's acts are what it may change (agCanDo). */
  var AG_SEATS = [
-  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
+  {k:'impl', t:'Implementation lead',   who:'marcus', d:'Opens environments, issues agreements and identifiers, books windows, schedules activation, decides risk reviews and requests, takes alerts and hands off.', acts:['openSandbox','issueAgr','agStep','agBook','agValidate','agHandshake','actPick','winOk','winNo','agTake','agHand','agResolve','agRemind','agNote','handoff','hoTick','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','riskClear','riskArea','agRoleView','agRoleBack']},
   {k:'rel',  t:'Relationship',          who:'sonia',  d:'Issues the agreement, runs the quarterly review and decides product requests.', acts:['issueAgr','agStep:agr','agRemind','agNote','agendaTick','rvSave','reviewDone','reqBlApprove','reqBlDecline','reqApprove','reqDecline','agRoleView','agRoleBack']},
   {k:'risk', t:'Risk and compliance',   who:'lena',   d:'Clears or holds each of the six areas and decides the risk review.', acts:['riskArea','riskClear','agRemind','agNote','agRoleView','agRoleBack']},
   {k:'cert', t:'Certification engineer',who:'ana',    d:'Books windows, confirms or declines window requests and validates certification.', acts:['agBook','agValidate','winOk','winNo','agRemind','agNote','agRoleView','agRoleBack']},
-  {k:'sol',  t:'Solutions engineer',    who:'theo',   d:'Opens the sandbox to the partner’s engineer.', acts:['openSandbox','agRemind','agNote','agRoleView','agRoleBack']},
+  {k:'sol',  t:'Solutions engineer',    who:'theo',   d:'Opens the sandbox to the partner’s engineer and reads the production handshake.', acts:['openSandbox','agHandshake','agRemind','agNote','agRoleView','agRoleBack']},
   {k:'ops',  t:'Operations support',    who:'jae',    d:'Takes alerts or hands them to an engineer, resolves them and reminds partners of mandates.', acts:['agTake','agHand','agResolve','agRemind','agNote','agRoleView','agRoleBack']}
  ];
  /* the six areas as the network reads them: the partner's own lines say "you", these say whose */
@@ -7259,7 +7259,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    /* 4. environments, then what the network issued and what it read off the handshake; the production chain reads the clock */
    var ids=[]; if(bl){ if(STAGE>=4) ids.push(['Acquirer identifier','44-0917','Issued March 20'],['Institution range','601186 0000 to 601186 9999','Schedule A']);
      if(STAGE>=3 || SCENE.sandbox) ids.push(['Sandbox certificate','CN=api.brightline.example','Read from the first handshake, March 9']);
-     if(STAGE>=5) ids.push(['Production chain', certWord(), certNote()]) }
+     if(STAGE>=5 || SCENE.handshake) ids.push(['Production chain', certWord(), STAGE>=5?certNote():'Read from the first handshake, '+dayName(NOW)]);
+     else if(STAGE>=4 && SCENE.prodChain) ids.push(['Production chain', 'Uploaded, not yet read'+(agCanDo('agHandshake')?' <button class="gn-btn gn-btn--sm" data-act="agHandshake">Read the handshake</button>':''), agCanDo('agHandshake')?'From the partner’s engineer':agWho('agHandshake')]) }
    var env=secH('Environments')+(bl?envTiles({agent:true}):envTiles({agent:true, plan:x.plan}))+(ids.length?'<div class="env-doc">'+doc(ids)+'</div>':'');
    if(next.indexOf('data-act="openSandbox"')>=0) env=env.replace('gn-btn gn-btn--primary gn-btn--sm" data-act="openSandbox"', 'gn-btn gn-btn--sm" data-act="openSandbox"'); /* one solid button: the Next card carries it, the tile repeats it plain */
    /* 5. documents received and issued */
@@ -7350,7 +7351,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var val = STAGE===4 && SCENE.certSubmitted && !SCENE.validated;
    var bookBtn = SCENE.agBooked ? '<span id="booked">'+sw('Booked May 11 to 15','')+'</span>' : '<button class="gn-btn gn-btn--sm'+(val?'':' gn-btn--primary')+'" data-act="agBook">Book May 11 to 15</button>';
    var tl=timeline([{day:'May', items:[
-     {t:'May 4 to 8', title:'Brightline', d:certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.'), r:val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')},
+     {t:'May 4 to 8', title:'Brightline', d:certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&PANEL===7&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.'), r:val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')},
      {t:'May 11 to 15', title:'Tallgrass Payments', d:'31 cases. Three fare-capping cases fail on one rounding rule. The rule has been sent.', r:word('soon')},
      {t:SCENE.agBooked?'May 11 to 15':'Not booked', title:'Halcyon Acquiring', d:'Configuration confirmed April 30. Target May 21 needs a window by May 11.', r:bookBtn, cls:SCENE.agBooked?'':'is-now'}
    ]}]);
@@ -7463,6 +7464,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    bookOpen:function(){ SCENE.bookOpen=true; drawApp(VIEW); },
    bookClose:function(){ SCENE.bookOpen=false; drawApp(VIEW); },
    bookPick:function(b){ SCENE.booked=b.dataset.k; SCENE.bookOpen=false; drawApp(VIEW); toast('Meeting booked'); },
+   agHandshake:function(){ SCENE.handshake=true; drawApp(VIEW); keep('.env-doc'); toast('Handshake read, chain valid') },
    agValidate:function(){ SCENE.validated=true; drawApp(VIEW); agKeep(VIEW==='turn'?'#mn h1':'#mn .tl-i'); toast('Validated end to end'); taskDone('A3') },
    actPick:function(b){ SCENE.actDate=b.dataset.k; drawApp(VIEW); keep('#next'); toast('Activation scheduled'); taskDone('A4') },
    frames:function(){ SEATS=['dana','marcus','priya']; go('frames') },
