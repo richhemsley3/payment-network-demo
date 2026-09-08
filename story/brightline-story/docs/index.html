@@ -1511,6 +1511,12 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 .hdr-res .ask-do .ask-go{width:auto; display:inline; padding:2px 0; color:var(--navy)} .hdr-res .ask-do .ask-go b{color:var(--navy)}
 .hdr-res .ask-how{margin:4px 12px 6px 28px; padding:0; font-size:13px; color:var(--g650); line-height:1.5} .hdr-res .ask-how li{margin-top:4px}
 .askfrom{margin-top:16px; padding:10px 12px; background:var(--g025); border-radius:var(--r-part); font-size:13px; color:var(--g650)}
+/* figures as cards: one toned surface each, the label above the value, the note beneath; compact rows keep the smaller value. Inside a frame the cards go back to inline, a card in a card stacks surfaces. Prototype-only until the system carries .gn-figs--cards (review.md 10). */
+.gn-figs--cards{gap:16px}
+.gn-figs--cards .gn-fig{display:flex; flex-direction:column; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface); min-width:0}
+.gn-figs--cards .gn-fig span{order:-1; margin:0 0 12px}
+.gn-figs--cards .gn-fig small{margin-top:8px}
+.fr .gn-figs--cards{gap:16px 24px} .fr .gn-figs--cards .gn-fig{padding:0; background:none; border-radius:0}
 /* the caught card carries its own action */
 .al-a{margin-top:20px}
 
@@ -4500,6 +4506,20 @@ body.mode-prep #prepbar{display:flex}
   {k:'v3', kind:'info', t:'v3 endpoints retire December 31, 2026', d:'No action needed on v4.2. Calls to /v3 return 410 after that date.', act:'Changelog', go:'changelog', from:5, until:6}
  ];
 
+ /* yesterday in production, by hour: p99 and p50 in milliseconds, and authorizations the network answered under stand-in. One issuer slowed between 2 and 3 AM; p50 held. */
+ var DEV_HOURS = {
+  p99:[168,172,480,455,190,176,164,160,158,162,166,170,172,168,166,164,162,160,158,160,164,166,170,168],
+  p50:[43,43,52,50,44,44,43,43,44,44,44,45,45,44,44,44,43,43,44,44,44,44,44,43],
+  standin:[0,0,89,57,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+ };
+ /* by endpoint, yesterday: method, path, requests, p50, p99, errors, reference tag */
+ var DEV_ENDPOINTS = [
+  ['POST','/acceptance/v1/authorizations',46120,44,214,1490,'authorize'],
+  ['POST','/acceptance/v1/captures',1640,38,96,41,'capture'],
+  ['GET','/money/v1/settlements/{date}',310,61,142,0,'settlements'],
+  ['POST','/tokens/v1/provision',141,52,188,12,'provision']
+ ];
+
  /* ══ reference, fifth pass: objects, attributes, event payload schemas ═══ */
  var OBJECTS = [
   {k:'authorization', g:'Acceptance', t:'The Authorization object', d:'The issuer’s response to an authorization request. Carries the decision, response code, and timing.',
@@ -4595,6 +4615,13 @@ body.mode-prep #prepbar{display:flex}
   disp:[['Auto-accept below','$25.00','Cases under this amount are accepted automatically. Dispute fee applies.'],['Evidence template','Physical goods, shipped','Pre-fills step 2 of a counter'],['Deadline reminders','7, 3 and 1 day before','To the dispute contact and the case inbox'],['Dispute contact','Mara Lindqvist','disputes@brightline.example']],
   accept:[['Retry after soft decline','Once, after 24 hours','Code 51 only. Never on 05'],['Partial approvals','Accept','Approved amount is what you have'],['Stand-in','On','Your rules, ceiling $250, card present only'],['AVS mismatch','Allow, flag','Street mismatch scores higher in the network model']],
   tok:[['Reissue updates','Automatic','token.updated is sent. The token stays valid.'],['Vault','Network','No change to your systems'],['Notify merchants','Monthly summary','Of tokens updated on their file']]
+ };
+ /* the onboarding partners against the plan each confirmed: the target go-live, where the plan lands now, the step that holds it and whose move it is */
+ var BOOK_PLAN = {
+  halcyon:  {target:'May 21',  now:'June 11', slip:21, step:'Certification window', why:'Window requested May 5 and not booked. Two windows a week, the next with room is June 1 to 5.', move:'The network'},
+  marlow:   {target:'June 12', now:'June 26', slip:14, step:'Settlement account',   why:'Bank letter due March 30, two reminders sent. Nothing after it can start.', move:'Marlow & Third'},
+  tallgrass:{target:'June 30', now:'June 30', slip:0,  step:'Certification, fare-capping cases', why:'Three cases fail on the rounding rule. A clean run is expected before the window.', move:'Tallgrass Payments'},
+  brightline:{target:'May 14', now:'May 14', slip:0,  step:'Certification May 4 to 8', why:'', move:'Brightline'}
  };
  var BOOK_REPORT = {
   stages:[['Deal',1],['Onboarding',2],['Certifying',1],['Live',4]],
@@ -5584,7 +5611,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -5766,8 +5793,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function dspNeed(){ return DISPUTE_CASES.filter(function(c){ return dspStatus(c)==='needs_response' }) }
  var ASK_SUGGEST={
    partner:['Why did card-not-present approvals fall?','Show me declines at Cedar Books yesterday','Which merchants have the most disputes?','What needs me today?','How do I counter a dispute?'],
-   developer:['Why did that delivery fail?','How do I rotate the production key?','Which card returns a decline?','Where does certification stand?','What is our p99?'],
-   agent:['What is overdue today?','Why is Marlow at risk?','Which cases are unassigned?','How do I hand a partner to operations?','Which attestations are due this month?']
+   developer:['What happened to latency overnight?','Which deliveries failed?','Which requests errored yesterday?','How do I rotate the production key?','Where does certification stand?'],
+   agent:['Which partners are behind plan?','Which cases are unassigned?','What is waiting on partners?','Why is Marlow at risk?','How do I hand a partner to operations?']
  };
  var ASK={
   partner:[
@@ -5809,12 +5836,20 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    {m:/get(ting)? started|onboard|step|what.*next|plan/, a:function(){ var S=stepState(); return {a:live()?'Onboarding is complete. Brightline went live May 14.':S.done+' of '+STEPS.length+' steps done. Next: '+(S.cur?S.cur.t:'nothing')+'.', do:[[live()?'Overview':'Getting started', live()?'overview':'start']]} }}
   ],
   developer:[
-   {m:/deliver|webhook|retry|503|fail(ed|ing)/, a:function(){ var f=DELIVERIES.filter(function(d){return d[3]!=='200'})[0]; return {a:f?'Delivery '+f[0]+' ('+f[1]+') has failed '+f[4]+' times with '+f[3]+' from your endpoint. The next retry is '+f[5]+'. Retries stop after 3 days.':'Every delivery in the last 7 days returned 200.', do:[['Webhooks','webhooks']], how:['Open Webhooks and the failing delivery.','Read your endpoint’s answer on each attempt.','Fix the endpoint and choose Retry now. A 200 closes the delivery.']} }},
+   /* the report from the question: the night's latency */
+   {m:/p99|latency|slow|overnight|last night|performance|spike|stand-?in/, a:function(){ var q=this.q, raw=this.raw, si=DEV_HOURS.standin.reduce(function(a,v){return a+v},0); if(!live()) return null;
+     return {a:'p99 was 210 ms yesterday against 160 ms seven days ago. The climb sits in one hour, 2 to 3 AM, when one issuer answered in 400 to 500 ms and the network answered '+si+' of your authorizations under stand-in. Your p50 held at 44 ms.',
+       do:[askDo('Open the report', function(){ SCENE.devRep='latency'; SCENE.devRepQ=raw; SCENE.env='prod'; go('overview') }), askDo('Requests over 400 ms', function(){ SCENE.env='prod'; SCENE.lf='slow'; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=raw; go('logs') })]} }},
+   /* errors, filtered to the path the question names */
+   {m:/\berrors?\b|\berrored\b|4\d\d|5\d\d|failing requests|what failed/, a:function(){ var q=this.q, raw=this.raw, path=(q.match(/authorizations?|captures?|settlements?|tokens?|provision/)||[''])[0].replace(/s$/,''); if(/deliver|webhook/.test(q)) return null;
+     var log=reqLog(), errs=log.filter(function(r){ return (r.st===0||r.st>=400) && (!path||r.p.indexOf(path)>-1) }), by={}; errs.forEach(function(r){ var k=r.st===0?'failed handshake':String(r.st); by[k]=(by[k]||0)+1 });
+     return {a:(errs.length?nn(errs.length,'request')+' errored in '+ENVN[envSel()]+(path?' on '+path+'s':'')+', newest first: '+Object.keys(by).map(function(k){return by[k]+' × '+k}).join(', ')+'. A 402 is a decline, an answer rather than an error.':'No request errored in '+ENVN[envSel()]+(path?' on '+path+'s':'')+'.'),
+       do:[askDo('Errors in Logs'+(path?', '+path+'s':''), function(){ SCENE.lf='err'; SCENE.lm='all'; SCENE.q=path; SCENE.logFrom=raw; go('logs') })]} }},
+   {m:/deliver|webhook|retry|503|fail(ed|ing)/, a:function(){ var raw=this.raw, f=DELIVERIES.filter(function(d){return d[3]!=='200'})[0]; return {a:f?'Delivery '+f[0]+' ('+f[1]+') has failed '+f[4]+' times with '+f[3]+' from your endpoint. The next retry is '+f[5]+'. Retries stop after 3 days.':'Every delivery in the last 7 days returned 200.', do:[askDo('Failed deliveries', function(){ var ep=devEndpoints()[0]; if(ep){ SCENE.epId=ep.id; SCENE.ept='del' } SCENE.df='fail'; SCENE.dt='all'; SCENE.whFrom=raw; go('webhooks') })], how:['Open Webhooks and the failing delivery.','Read your endpoint’s answer on each attempt.','Fix the endpoint and choose Retry now. A 200 closes the delivery.']} }},
    {m:/rotate|key|secret|credential/, a:function(){ return {a:'A rotated key issues a new one, shown once. The old key keeps signing for 7 days before it expires. Move the service to the new key inside the grace.', do:[['API keys','keys']], how:['Open API keys and choose the Production segment.','Choose Rotate on the key.','Copy the new key while it is shown and deploy it.','The old key reads Expires in 7 days until the service is off it.']} }},
    {m:/test card|which card|decline|stand-?in|card for/, a:function(){ var q=this.q||''; var t=TESTS.filter(function(x){ return q.indexOf('stand')>=0?x[1]==='stand-in':q.indexOf('partial')>=0?x[1]==='partial':x[1]==='declined' })[0]||TESTS[2]; return {a:t[0]+' answers '+t[1]+': '+t[2]+' Any CVC and expiry.', do:[['Test cards','sandbox']]} }},
    {m:/certif|cases?|pass|snag|conn-?02/, a:function(){ return {a:STAGE>=5?'Certification passed May 8, validated end to end.':STAGE>=4?certPassing()+' of '+certTotal()+' cases seen and passing. '+(PANEL===7&&!SCENE.certOk?'CONN-02 fails on the certificate chain, which ended one link early: upload the full chain and check it.':'Submit for validation once every case is seen and passing.'):'Certification opens at signature. the '+certTotal()+' cases come from your configuration and your host sends them to cert.api.dgn.com.', do:[['Certification','cert']], how:STAGE>=4&&STAGE<5?['Open Certification.','Upload the full chain, leaf to root, and choose Check the chain.','When every case is seen and passing, choose Submit for validation.']:undefined} }},
    {m:/go.?live|ready|activation|production/, a:function(){ var ft=ftState(); return {a:live()?'Live since May 14, 6:00 AM ET. Production is api.dgn.com.':'Go-live needs four production objects: the production key, the endpoint, the certificate chain and the activation date. '+(ft.open?ft.open+' still open.':'All four ready.'), do:[['Go-live','golive']]} }},
-   {m:/p99|latency|slow|performance|error rate/, a:function(){ var log=reqLog(), errs=log.filter(function(r){return r.st===0||r.st>=400}); return {a:'Last 24 hours in '+ENVN[envSel()]+': '+(envSel()==='prod'?'48,211 requests, 3.2% errors, p50 44 ms, p99 210 ms.':log.length+' requests, '+errs.length+' errors.'), do:[['Overview','overview'],['Logs','logs']]} }},
    {m:/409|idempot|duplicate|timeout/, a:function(){ return {a:'A 409 means the Idempotency-Key is still in flight from an earlier request. Wait for the first answer. The same key within 24 hours returns it. One key per attempt.', do:[['API reference','spec']]} }},
    {m:/token|reissue|pan_token|wallet/, a:function(){ return {a:'A network token follows the card: a reissued card sends token.updated and the token keeps working. In the message the token arrives as pan_token.', do:[['API reference','spec'],['Event reference','events']]} }},
    {m:/base url|environment|sandbox|cert\.api|api\.dgn|host/, a:function(){ return {a:'Sandbox at sandbox.api.dgn.com answers with test responses. Certification at cert.api.dgn.com is where your host sends the cases. Production at api.dgn.com is live. The environment switch on each page sets which one a sample and the keys are for.', do:[['Configuration','config']]} }},
@@ -5824,9 +5859,17 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    {m:/changelog|version|v4|deprecat|retire/, a:function(){ return {a:'v4.2 is current. v3 endpoints retire December 31, 2026. The changelog says what to change for each version.', do:[['Changelog','changelog']]} }}
   ],
   agent:[
+   /* the report from the question: partners against plan */
+   {m:/behind|slip|against plan|on plan|on track|miss.*(date|go.?live|target)|late partners|which partners are late/, a:function(){ var q=this.q, raw=this.raw, onb=BOOK.filter(function(b){ return bookStage(b)!=='Live' && BOOK_PLAN[b.k] }), behind=onb.filter(function(b){return BOOK_PLAN[b.k].slip>0}).sort(function(a,b){return BOOK_PLAN[b.k].slip-BOOK_PLAN[a.k].slip}), on=onb.filter(function(b){return !BOOK_PLAN[b.k].slip});
+     return {a:(behind.length?behind.length+' of '+onb.length+' onboarding partners are behind plan: '+behind.map(function(b){ var p=BOOK_PLAN[b.k]; return b.n+' '+p.slip+' days, held at '+p.step.charAt(0).toLowerCase()+p.step.slice(1) }).join(', and ')+'.':'Every onboarding partner is on plan.')+(on.length?' '+on.map(function(b){return b.n}).join(' and ')+(on.length>1?' are':' is')+' on plan.':''),
+       do:[askDo('Open the report', function(){ SCENE.agRep='plan'; SCENE.agRepQ=raw; go('bookrep') }), askDo('Onboarding partners', function(){ SCENE.bookSeg='onb'; SCENE.bookFrom=raw; go('book') })]} }},
+   /* cases filtered the way the question asks */
+   {m:/waiting on (a |the )?partner|what.*waiting|who owes|waiting for/, a:function(){ var raw=this.raw, w=agCases().filter(function(c){return c.st==='waiting'}); return {a:w.length?nn(w.length,'case')+' wait'+(w.length===1?'s':'')+' on a partner: '+w.map(function(c){return c.t+' ('+(BOOK.filter(function(b){return b.k===c.k})[0]||{n:c.k}).n+')'}).join(', ')+'.':'No case is waiting on a partner.', do:[askDo('Cases waiting on partners', function(){ SCENE.caseWho='all'; SCENE.caseSeg='waiting'; SCENE.caseFrom=raw; go('cases') })]} }},
+   {m:/which partners are (live|onboarding|certifying)|(live|onboarding|certifying) partners/, a:function(){ var q=this.q, raw=this.raw, seg=/live/.test(q)?'live':/certif/.test(q)?'cert':'onb', L={live:'Live',cert:'Certifying',onb:'Onboarding'}, list=BOOK.filter(function(b){ var s=bookStage(b); return seg==='live'?s==='Live':seg==='cert'?s==='Certifying':s!=='Live'&&s!=='Certifying' });
+     return {a:nn(list.length,'partner')+' '+(list.length===1?'is':'are')+' '+L[seg].toLowerCase()+': '+list.map(function(b){return b.n}).join(', ')+'.', do:[askDo(L[seg]+' partners', function(){ SCENE.bookSeg=seg; SCENE.bookFrom=raw; go('book') })]} }},
    {m:/overdue|late|today|what.*(need|on me|my turn)/, a:function(){ var r=turnRows().filter(function(x){return x.mine}), od=r.filter(function(x){return x.due<0}), cs=agCases().filter(function(c){return c.st==='open'&&caseDue(c)<0}); return {a:(od.length?nn(od.length,'item')+' overdue on your queue. ':'Nothing on your queue is overdue. ')+(cs.length?nn(cs.length,'reply','replies')+' overdue in Cases, oldest '+cs[0].t+'.':'No reply is overdue.'), do:[['Your turn','turn'],['Cases','cases']]} }},
    {m:/marlow|at risk|why.*risk/, a:function(){ var b=BOOK.filter(function(x){return x.k==='marlow'})[0]; return {a:'Marlow & Third is at risk: '+healthWhy(b)+'. Two reminders have gone to Devin Marlow. after 10 days the June window is reassigned.', do:[['Marlow & Third','agPartner','marlow']], how:['Open Marlow & Third and read Health.','Send a reminder from the Next card, or take the alert and call Devin Marlow.','When the letter arrives, Set up payments moves on and the window can be booked.']} }},
-   {m:/unassign|nobody|no owner|who owns/, a:function(){ var un=agCases().filter(function(c){return c.st!=='resolved'&&!c.owner}); return {a:un.length?nn(un.length,'case')+' ha'+(un.length===1?'s':'ve')+' no owner: '+un.map(function(c){return c.t}).join(', ')+'. Routing suggests an owner by area.':'Every open case has an owner.', do:[['Cases','cases']]} }},
+   {m:/unassign|nobody|no owner|who owns/, a:function(){ var raw=this.raw, un=agCases().filter(function(c){return c.st!=='resolved'&&!c.owner}); return {a:un.length?nn(un.length,'case')+' ha'+(un.length===1?'s':'ve')+' no owner: '+un.map(function(c){return c.t}).join(', ')+'. Routing suggests an owner by area.':'Every open case has an owner.', do:[askDo('Unassigned cases', function(){ SCENE.caseWho='un'; SCENE.caseSeg='open'; SCENE.caseFrom=raw; go('cases') })]} }},
    {m:/hand ?off|operations|steady state|close.*project/, a:function(){ return {a:'A live partner is handed to operations from its page once four items are done: live operation cleared, the record complete, support contacts sent and the review cadence set.', do:[['Brightline','agPartner','brightline']], how:['Open the partner and scroll to Handoff to operations.','Clear live operation after the first hour and mark the two items done.','Choose Hand off to operations and confirm. Operations support runs alerts, releases and access from that day.']} }},
    {m:/attest|pci|audit|due this month|compliance/, a:function(){ var soon=ATTEST.filter(function(a){ return a.st!=='received' && daysLeft(a.due)>=0 && daysLeft(a.due)<30 }); return {a:soon.length?nn(soon.length,'attestation')+' due within 30 days: '+soon.map(function(a){ return (BOOK.filter(function(b){return b.k===a.k})[0]||{}).n+' by '+a.due }).join(', ')+'.':'No attestation is due within 30 days.', do:[['Compliance','releases']]} }},
    {m:/release|mandate|acknowledg|v9/, a:function(){ var r=RELEASES[0], not=BOOK.filter(function(b){ return !relAcked(r,b) }); return {a:not.length+' of '+BOOK.length+' partners have not acknowledged '+r.t+', due '+r.by+': '+not.map(function(b){return b.n}).join(', ')+'.', do:[['Compliance','releases']]} }},
@@ -5839,7 +5882,10 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    {m:/risk review|clear|six areas|documents/, a:function(){ return {a:'The risk review is a decision page per partner: three documents received, six areas each cleared or held. Then One decision that issues the agreement the same day.', do:[['Brightline','agPartner','brightline']], how:['Open the partner and the Risk review from its Documents.','Clear or hold each of the six areas.','Choose Clear the risk review once all six are cleared.']} }}
   ]
  };
- var ASK_FN=[]; /* the actions an answer offers, run by index; every answer starts a new list */
+ var ASK_FN=[];
+/* the page a question opened says so, with what matched and the way back to the whole page */
+function askMatch(n, one, many){ return nn(n, one, many)+(n===1?' matches':' match') }
+function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">From your question: “'+esc(q)+'”. '+(note?note+'. ':'')+'<span class="gn-link" data-act="'+clearAct+'">'+esc(clearLabel||'Show everything')+'</span></div>' } /* the actions an answer offers, run by index; every answer starts a new list */
  function askDo(label, fn){ ASK_FN.push(fn); return [label, 'askfn', String(ASK_FN.length-1)] }
  /* what a question names: a merchant, an outcome, a period, card not present */
  function askParse(q){ var o={};
@@ -5968,7 +6014,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
      return '<div class="gn-doc-r"><span class="gn-doc-l">'+esc(p[0])+'</span><span class="gn-doc-v">'+p[1]+'</span>'+(p[2]?'<span class="gn-doc-p">'+esc(p[2])+'</span>':'')+'</div>' }).join('')+'</div>';
  }
  function secH(t, r){ if(r && /^[a-z]/.test(r) && !/^v\d/.test(r) && r.charAt(0)!=='<') r=r.charAt(0).toUpperCase()+r.slice(1); return '<div class="gn-section"><h2>'+t+'</h2>'+(r?'<span>'+r+'</span>':'')+'</div>' }
- function figs(list, cls){ return '<div class="gn-figs'+(cls?' '+cls:'')+'">'+list.map(function(f){ return '<div class="gn-fig"><b>'+esc(f[1])+'</b><span>'+esc(f[0])+'</span>'+(f[2]?'<small>'+esc(f[2])+'</small>':'')+'</div>' }).join('')+'</div>' }
+ function figs(list, cls){ /* every figure row is a row of cards; compact only sets the smaller value size */ return '<div class="gn-figs gn-figs--cards'+(cls?' '+cls:'')+'">'+list.map(function(f){ return '<div class="gn-fig"><b>'+esc(f[1])+'</b><span>'+esc(f[0])+'</span>'+(f[2]?'<small>'+esc(f[2])+'</small>':'')+'</div>' }).join('')+'</div>' }
  function ink(code, cls){ return '<pre class="gn-code gn-code--ink '+(cls||'')+'">'+esc(code)+'</pre>' }
  function tabs(key, list, def){
    var cur=tab(key,def);
@@ -6959,7 +7005,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    if(e==='sandbox'){ var mine=(SCENE.log||[]).slice().reverse(), seeded=(SCENE.sandbox||STAGE>=3)?SBX_LOG:[]; return mine.concat(seeded).map(function(r,i){ return {id:'req_'+(0x9f2a+i*37).toString(16), t:r[0], m:'POST', p:'/acceptance/v1/authorizations', st:r[2]==='failed'?0:(r[2]==='declined'?402:200), ms:r[4], card:r[1], out:r[2], code:r[3]} }) }
    if(e==='cert'){ return CERT_RUNS.slice(0,3).map(function(r,i){ return {id:'req_c'+(0x4a0+i).toString(16), t:r[0], m:'POST', p:'/certification/v1/runs', st:200, ms:118+i*7, out:r[3]==='pass'?'approved':'failed', code:r[3]==='pass'?'00':'—'} }) }
    var ts=['6:04:12 AM','6:04:09 AM','6:04:07 AM','6:04:03 AM','6:03:58 AM','6:03:51 AM','6:03:44 AM','6:03:40 AM','6:03:31 AM','6:03:22 AM','6:03:15 AM','6:03:02 AM'];
-   return ts.map(function(t,i){ var dec=i===4?402:i===9?422:200; return {id:'req_p'+(0x71ab00+i*3).toString(16), t:'June 2, '+t, m:i===7?'POST':i===10?'GET':'POST', p:i===7?'/acceptance/v1/captures':i===10?'/money/v1/settlements/2026-06-01':'/acceptance/v1/authorizations', st:dec, ms:[41,44,39,43,40,46,42,38,45,52,61,44][i], out:dec===402?'declined':dec===422?'invalid_amount':'approved', code:dec===402?'51':dec===422?'—':'00'} });
+   var night=[{id:'req_p71a9f0', t:'June 2, 2:41:07 AM', m:'POST', p:'/acceptance/v1/authorizations', st:200, ms:483, out:'stand-in', code:'00'},{id:'req_p71a9c2', t:'June 2, 2:18:51 AM', m:'POST', p:'/acceptance/v1/authorizations', st:200, ms:471, out:'stand-in', code:'00'}];
+   return ts.map(function(t,i){ var dec=i===4?402:i===9?422:200; return {id:'req_p'+(0x71ab00+i*3).toString(16), t:'June 2, '+t, m:i===7?'POST':i===10?'GET':'POST', p:i===7?'/acceptance/v1/captures':i===10?'/money/v1/settlements/2026-06-01':'/acceptance/v1/authorizations', st:dec, ms:[41,44,39,43,40,46,42,38,45,52,61,44][i], out:dec===402?'declined':dec===422?'invalid_amount':'approved', code:dec===402?'51':dec===422?'—':'00'} }).concat(night);
  }
  function reqDetail(r){ var body = r.p.indexOf('settlements')>-1 ? 'GET '+r.p : r.m+' '+r.p+'\nIdempotency-Key: 7c9e6679-…\n\n{ "amount": 5820, "currency": "USD",\n  "merchant_id": "mch_halcyon",\n  "pan_token": "'+(r.card?r.card.replace(/ /g,''):'tok_4f9a…')+'",\n  "entry_mode": "contactless" }';
    var res = r.st===0 ? 'TLS handshake failed\nmissing intermediate certificate' : r.st===422 ? '422\n{ "type": "invalid_amount",\n  "detail": "amount must be a positive integer in minor units",\n  "id": "'+r.id+'" }' : (r.st===402?'402':'200')+'\n{ "id": "auth_'+r.id.slice(4)+'",\n  "decision": "'+(r.out==='declined'?'declined':r.out==='partial'?'partial':r.out==='stand-in'?'stand_in':'approved')+'",\n  "response_code": "'+r.code+'",\n  "round_trip_ms": '+r.ms+' }';
@@ -7024,8 +7071,22 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function healthFigs(cls){ var e=envSel(), log=reqLog(), errs=log.filter(function(r){return r.st===0||r.st>=400});
    return figs([['Requests, 24 hours', e==='prod'?'48,211':String(log.length), ''],['Errors', e==='prod'?'1,543':String(errs.length), e==='prod'?'3.2%':log.length?Math.round(100*errs.length/log.length)+'%':''],['p50 latency', (e==='prod'?44:(log.length?log.map(function(r){return r.ms}).sort(function(a,b){return a-b})[Math.floor(log.length/2)]:0))+' ms', e==='prod'?'p99 210 ms':''],['Webhook deliveries', e==='prod'?'48,402':STAGE>=4?'12':String((SCENE.tests||[]).length), e==='prod'?'1 failed':'']], cls) }
  /* ── Overview ── */
+ /* the report from the question: yesterday's latency by hour, the hour that explains the p99, the endpoints, the slow requests */
+ function devLatencyReport(){
+   var H=DEV_HOURS, hrs=[], i; for(i=0;i<=24;i++) hrs.push(i%24===0?'12 AM':i<12?i+' AM':i===12?'12 PM':(i-12)+' PM');
+   var worst=0; H.p99.forEach(function(v,k){ if(v>H.p99[worst]) worst=k }); var si=H.standin.reduce(function(a,v){return a+v},0);
+   var head=ph('Latency, yesterday', 'From your question: “'+esc(SCENE.devRepQ||'latency')+'”. Production, June 2, by hour.', '<span class="gn-link" data-act="devRepClear">Overview</span>');
+   var f=figs([['p50', '44 ms', 'level with seven days ago'],['p99', '210 ms', '+50 ms on seven days ago'],['Slowest hour', hrs[worst]+' to '+hrs[worst+1], 'p99 '+H.p99[worst]+' ms'],['Answered under stand-in', si.toLocaleString('en-US'), '0.3% of the day, every one settled']]);
+   var ch=secH('Issuer answer by hour', 'Solid p99, dotted p50')+chart('line',{labels:hrs.slice(0,24), series:[{name:'p99', values:H.p99}], prev:H.p50, min:0, max:500, fmt:'ms'});
+   var byP=DEV_ENDPOINTS.slice().sort(function(a,b){return b[4]-a[4]});
+   var eps=secH('By endpoint', 'Ranked by p99')+tbl2([['Endpoint'],['Requests',1],['p50',1],['p99',1],['Errors',1]], byP.map(function(x){ var epi=-1; API.forEach(function(e,k){ if(e.p.split('{')[0]===x[1].split('{')[0] && e.m===x[0]) epi=k }); return {c:['<span class="gn-mono">'+esc(x[0]+' '+x[1])+'</span>', x[2].toLocaleString('en-US'), x[3]+' ms', x[4]+' ms', x[5].toLocaleString('en-US')], act:epi>=0?'refOpen':'noopRow', k:String(epi)} }));
+   var why=secH('What explains it')+'<article class="gn-notice"><div class="gn-notice-h">'+word('Resolved')+'<span>Network operations</span></div><h3>One issuer answered slowly between 2:04 and 2:51 AM</h3><p>The network answered '+si+' authorizations under stand-in, all settled.</p><div class="gn-notice-f">'+av('marcus','a24')+'<span>Network operations, June 2, 3:10 AM</span></div></article>';
+   var acts='<div class="gn-actions inset">'+goLink('Requests over 400 ms, in Logs','data-act="askLogs" data-k="slow"')+goLink('Stand-in, in the reference','data-go2="spec"')+'</div>';
+   return head+f+ch+eps+why+acts;
+ }
  DEV.overview=function(sk,c){
    var S=devState(), a=envAvail(), e=envSel(), log=reqLog();
+   if(!c && SCENE.devRep==='latency' && live()) return devLatencyReport();
    if(c) return '<div class="rec-h"><b>'+ENVN[e]+'</b><span>'+(a.sandbox?ENVH[e]+', key issued':'provisioning')+'</span></div>'+checklist(S);
    if(!live()) return DEV.start(sk,c);
    var head=ph('Overview', 'Live since May 14.')+toolbar(envSwitch(), '<span class="l2-mode">'+esc(modeLine())+'</span>');
@@ -7129,7 +7190,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var ok=dl.filter(function(d){return d[3]==='200'}).length, pend=dl.filter(function(d){return d[5]}).length;
    var f=figs([['Deliveries, 7 days', String(dl.length), ''],['Delivered', dl.length?Math.round(100*ok/dl.length)+'%':'—', ''],['Failed', String(dl.length-ok), pend?pend+' retrying':''],['Median response', dl.length?'61 ms':'—', 'your server']]);
    var types=[['all','All types']].concat(EVENTS.filter(function(x){return ep.events.indexOf(x[0])>-1}).map(function(x){ return [x[0], x[0]] }));
-   var filt=toolbar(tabs('df',[['all','All',String(dl.length)],['ok','Delivered',String(ok)],['fail','Failed',String(dl.length-ok)]],'all')+'<select class="gn-in gn-in--sm" data-sel="dt">'+types.map(function(t){ return '<option value="'+esc(t[0])+'"'+(ft===t[0]?' selected':'')+'>'+esc(t[1])+'</option>' }).join('')+'</select>', '<span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var filt=(SCENE.whFrom?askFrom(SCENE.whFrom, askMatch(shown.length,'delivery','deliveries'), 'whFromClear'):'')+toolbar(tabs('df',[['all','All',String(dl.length)],['ok','Delivered',String(ok)],['fail','Failed',String(dl.length-ok)]],'all')+'<select class="gn-in gn-in--sm" data-sel="dt">'+types.map(function(t){ return '<option value="'+esc(t[0])+'"'+(ft===t[0]?' selected':'')+'>'+esc(t[1])+'</option>' }).join('')+'</select>', '<span class="gn-link" data-act="noopRefresh">Refresh</span>');
    var t=tbl2([['Event'],['Type'],['Created'],['Status']], shown.map(function(d){ return {c:['<span class="gn-mono">'+esc(d[0])+'</span>', '<span class="gn-mono">'+esc(d[1])+'</span>', '<span class="nw">'+esc(d[2])+'</span>', d[3]==='200'?word('Delivered'):d[5]?sw('Retrying','wa'):sw('Failed','no')], act:'delSel', k:d[0], cls:sel&&sel[0]===d[0]?'is-sel':''} }));
    var detail='';
    if(sel){ var at=ATTEMPTS[sel[0]]||[[sel[2],sel[3],sel[3]==='200'?'61 ms':'—',sel[3]==='200'?'ok':'']];
@@ -7164,8 +7225,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  DEV.logs=function(){
    var e=envSel(), a=envAvail(), all=reqLog(), f=tab('lf','all'), m=tab('lm','all'), q=(SCENE.q||'').toLowerCase();
    var keyF=SCENE.logKey||'';
-   var log=all.filter(function(r){ return (f==='all'||(f==='ok'&&r.st===200)||(f==='err'&&(r.st===0||r.st>=400))) && (m==='all'||r.m===m) && (!q||r.id.toLowerCase().indexOf(q)>-1||r.p.indexOf(q)>-1) });
-   var head=ph('Logs', 'Requests and responses for this mode.')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var log=all.filter(function(r){ return (f==='all'||(f==='ok'&&r.st===200)||(f==='err'&&(r.st===0||r.st>=400))||(f==='slow'&&r.ms>=400)) && (m==='all'||r.m===m) && (!q||r.id.toLowerCase().indexOf(q)>-1||r.p.indexOf(q)>-1) });
+   var head=ph('Logs', 'Requests and responses for this mode.')+(SCENE.logFrom?askFrom(SCENE.logFrom, askMatch(log.length,'request'), 'logFromClear'):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
    if(!a.sandbox) return head+'<p class="para">Requests appear here once the sandbox is provisioned.</p>';
    var sel=log.filter(function(r){return r.id===SCENE.logId})[0]||log[0];
    var lfoot=(f==='all'&&m==='all'&&!q&&!keyF&&e==='prod')?'<div class="gn-table-foot">Newest '+log.length+' of 48,211 today. Search by request id or path for the rest.</div>':'';
@@ -7528,7 +7589,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var bq=(SCENE.bookQ||'').toLowerCase(), seg=tab('bookSeg','all');
    var found=BOOK.filter(function(b){ var st=bookStage(b); return (!bq || b.n.toLowerCase().indexOf(bq)>-1) && (seg==='all' || (seg==='live'?st==='Live':seg==='cert'?st==='Certifying':st!=='Live'&&st!=='Certifying')) });
    var view=tab('bookView','table');
-   var segs=toolbar(tabs('bookSeg',[['all','All',String(BOOK.length)],['onb','Onboarding',ct(BOOK.filter(function(b){var s=bookStage(b); return s!=='Live'&&s!=='Certifying'}).length)],['cert','Certifying',ct(BOOK.filter(function(b){return bookStage(b)==='Certifying'}).length)],['live','Live',String(live_)]],'all'), tabs('bookView',[['table','Table'],['board','Board']],'table'));
+   var segs=(SCENE.bookFrom?askFrom(SCENE.bookFrom, askMatch(found.length,'partner'), 'bookFromClear'):'')+toolbar(tabs('bookSeg',[['all','All',String(BOOK.length)],['onb','Onboarding',ct(BOOK.filter(function(b){var s=bookStage(b); return s!=='Live'&&s!=='Certifying'}).length)],['cert','Certifying',ct(BOOK.filter(function(b){return bookStage(b)==='Certifying'}).length)],['live','Live',String(live_)]],'all'), tabs('bookView',[['table','Table'],['board','Board']],'table'));
    var chip=bq?toolbar('<span class="gn-chip">Search '+esc(SCENE.bookQ)+' <span class="gn-link" data-act="bookClear" style="color:inherit">Clear</span></span>', found.length+' of '+BOOK.length):'';
    if(bq&&!found.length) return head+segs+chip+'<div class="emp"><b>No partners match '+esc(SCENE.bookQ)+'.</b><span>Check the name, or clear the search.</span></div>';
    /* longest waiting first, then live partners by name */
@@ -7656,7 +7717,20 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var acts = st==='open' ? '<div class="gn-actions inset"><button class="gn-btn gn-btn--primary" data-act="reqApprove">Approve</button><button class="gn-btn" data-act="reqDecline">Decline</button></div>' : st==='approved' ? '<div class="just ok"><b>Approved.</b><span>Token program activates for Ostrand on August 1.</span></div>' : '<div class="just"><b>Declined.</b><span>Your note was sent to Ines Ostrand.</span></div>';
    return head+ans+risk+acts;
  };
+ /* the report from the question: who is behind the plan they confirmed, by how much, and the step that holds each */
+ function planReport(){
+   var onb=BOOK.filter(function(b){ return bookStage(b)!=='Live' && BOOK_PLAN[b.k] }).map(function(b){ return Object.assign({b:b}, BOOK_PLAN[b.k]) }).sort(function(x,y){ return y.slip-x.slip });
+   var behind=onb.filter(function(x){return x.slip>0}), lost=behind.reduce(function(a,x){return a+x.slip},0);
+   var head=ph('Partners against plan', 'From your question: “'+esc(SCENE.agRepQ||'plan')+'”. '+nn(onb.length,'partner')+' before go-live, '+behind.length+' behind.', '<span class="gn-link" data-act="agRepClear">Book report</span>');
+   var f=figs([['Before go-live', String(onb.length), 'of '+BOOK.length+' in the book'],['Behind plan', String(behind.length), behind.map(function(x){return x.b.n.split(' ')[0]+' '+x.slip}).join(', ')+' days'],['Days lost', String(lost), 'against confirmed targets'],['Median to live, this year', '74 days', 'target 78']]);
+   var ch=secH('Days behind plan', 'Longest first')+chart('lollipop',{items:onb.map(function(x){ return {name:x.b.n, value:x.slip, tone:x.slip>14?'bad':x.slip>0?'warn':'good'} }), fmt:'days', max:30});
+   var t=secH('Before go-live', 'Ranked by the slip')+tbl2([['Partner'],['Stage'],['Target',1],['Lands now',1],['Behind',1],['Holding step'],['Whose move']], onb.map(function(x){ return {c:['<span class="nw">'+esc(x.b.n)+'</span>', esc(bookStage(x.b)), esc(x.target), esc(x.now), x.slip?sw(x.slip+' days', x.slip>14?'no':'wa'):word('On plan'), esc(x.step), esc(x.move)], act:'agPartner', k:x.b.k} }));
+   var why=behind.length?secH('What holds them')+doc(behind.map(function(x){ return [x.b.n, esc(x.why), x.move==='The network'?'Your move':'Their move'] })):'';
+   var acts='<div class="gn-actions inset">'+goLink('Onboarding partners','data-act="askBook" data-k="onb"')+goLink('Cases waiting on partners','data-act="askCases" data-k="waiting"')+'</div>';
+   return head+f+ch+t+why+acts;
+ }
  AGENT.bookrep=function(){
+   if(SCENE.agRep==='plan') return planReport();
    var R=BOOK_REPORT;
    var head=ph('Book report', 'How your partners are doing, side by side.', '<span class="gn-link" data-act="dl">Export</span>');
    var liveN=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
@@ -7727,7 +7801,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
    var head=ph('Cases', open_.length+' open across the book'+(late.length?', '+nn(late.length,'reply','replies')+' overdue':'')+(un.length?', '+nn(un.length,'case')+' unassigned.':'.'));
    var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
-   var bar=toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
+   var bar=(SCENE.caseFrom?askFrom(SCENE.caseFrom, askMatch(list.length,'case'), 'caseFromClear'):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
    var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
    var pane='', ctx='';
    if(sel){ var bb=BOOK.filter(function(x){return x.k===sel.k})[0], ownr=PEOPLE[sel.owner]||null, mode=tab('caseMode','reply'), canned=CANNED.filter(function(a){ return true });
@@ -8044,6 +8118,16 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); keep('#booked'); toast('Window booked'); taskDone('A3') },
    /* a reminder leaves the portal, so the dialog says who gets it and what it carries before it goes */
    repClear:function(){ SCENE.repFocus=null; SCENE.repFocusQ=null; drawApp(VIEW, true); focusMain() },
+   devRepClear:function(){ SCENE.devRep=null; SCENE.devRepQ=null; drawApp(VIEW, true); focusMain() },
+   agRepClear:function(){ SCENE.agRep=null; SCENE.agRepQ=null; drawApp(VIEW, true); focusMain() },
+   logFromClear:function(){ SCENE.logFrom=null; SCENE.lf='all'; SCENE.lm='all'; SCENE.q=''; drawApp(VIEW); focusMain() },
+   whFromClear:function(){ SCENE.whFrom=null; SCENE.df='all'; drawApp(VIEW); focusMain() },
+   epBackFrom:function(){ SCENE.whFrom=null; SCENE.df='all'; SCENE.epId=null; drawApp(VIEW, true); focusMain() },
+   bookFromClear:function(){ SCENE.bookFrom=null; SCENE.bookSeg='all'; drawApp(VIEW); focusMain() },
+   caseFromClear:function(){ SCENE.caseFrom=null; SCENE.caseWho='mine'; SCENE.caseSeg='open'; drawApp(VIEW); focusMain() },
+   askLogs:function(b){ SCENE.lf=b.dataset.k; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=b.dataset.k==='slow'?'requests over 400 ms':'errors'; go('logs') },
+   askBook:function(b){ SCENE.bookSeg=b.dataset.k; SCENE.bookFrom={onb:'onboarding partners',cert:'certifying partners',live:'live partners'}[b.dataset.k]||b.dataset.k; go('book') },
+   askCases:function(b){ var k=b.dataset.k; if(k==='un'){ SCENE.caseWho='un'; SCENE.caseSeg='open' } else { SCENE.caseWho='all'; SCENE.caseSeg=k } SCENE.caseFrom=k==='un'?'unassigned cases':'cases waiting on partners'; go('cases') },
    txFromClear:function(){ SCENE.txFrom=null; SCENE.txMerchant=''; SCENE.txCode=''; SCENE.txDay=''; SCENE.txs='all'; SCENE.txp='all'; drawApp(VIEW); focusMain() },
    mFromClear:function(){ SCENE.mFrom=null; SCENE.msort='vol'; SCENE.mrisk='all'; drawApp(VIEW); focusMain() },
    dspFromClear:function(){ SCENE.dspFrom=null; SCENE.df2='open'; drawApp(VIEW); focusMain() },
