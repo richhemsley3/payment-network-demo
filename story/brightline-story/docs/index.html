@@ -5815,10 +5815,10 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  };
  function askAnswer(P, v){ var q=v.toLowerCase(), list=ASK[P]||[]; for(var i=0;i<list.length;i++){ var it=list[i]; if(it.live && P==='partner' && !live()) continue; if(it.m.test(q)){ var r=it.a.call({q:q}); if(r) return r } } return null }
  function askPanel(P, r, v){ var ri=900;
-   var doH = r.do&&r.do.length ? '<div class="ask-do">'+r.do.map(function(d){ var act=d.length>2?d[1]:'go:'+d[1]; return '<button type="button" role="option" id="res'+(ri++)+'" data-res="'+esc(act)+'" data-k="'+esc(d[2]||'')+'" class="ask-go"><b>'+esc(d[0])+'</b></button>' }).join('')+'</div>' : '';
+   var doH = r.do&&r.do.length ? '<div class="ask-do">'+r.do.map(function(d){ var act=d.length>2?d[1]:'go:'+d[1]; return '<button type="button" role="option" id="res'+(ri++)+'" data-res="'+esc(act)+'" data-k="'+esc(d[2]||'')+'" class="ask-go" tabindex="-1"><b>'+esc(d[0])+'</b></button>' }).join('')+'</div>' : '';
    var how = r.how ? '<div class="gn-menu-h">How</div><ol class="ask-how">'+r.how.map(function(s){ return '<li>'+esc(s)+'</li>' }).join('')+'</ol>' : '';
    return '<div class="ask"><div class="gn-menu-h">Answer</div><p class="ask-a">'+esc(r.a)+'</p>'+doH+how+'</div>' }
- function askSuggest(P){ return '<div class="ask"><div class="gn-menu-h">Ask about your '+(P==='agent'?'book':'services')+'</div>'+(ASK_SUGGEST[P]||[]).map(function(s,i){ return '<button type="button" role="option" id="res'+(950+i)+'" data-ask="'+esc(s)+'"><b>'+esc(s)+'</b></button>' }).join('')+'</div>' }
+ function askSuggest(P){ return '<div class="ask"><div class="gn-menu-h">Ask about your '+(P==='agent'?'book':'services')+'</div>'+(ASK_SUGGEST[P]||[]).map(function(s,i){ return '<button type="button" role="option" tabindex="-1" id="res'+(950+i)+'" data-ask="'+esc(s)+'"><b>'+esc(s)+'</b></button>' }).join('')+'</div>' }
 
  function topCount(P){
    if(P==='partner'){ if(!live()) return 0; return DISPUTE_CASES.filter(function(c){return dspStatus(c)==='needs_response'}).length + noticesOpen().filter(function(n){return ntKind(n)==='action'&&!(SCENE.ntAck||{})[n.k]}).length }
