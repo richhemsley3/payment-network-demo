@@ -1510,6 +1510,7 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 .hdr-res .ask-do{display:flex; flex-wrap:wrap; gap:4px 16px; padding:0 12px 6px}
 .hdr-res .ask-do .ask-go{width:auto; display:inline; padding:2px 0; color:var(--navy)} .hdr-res .ask-do .ask-go b{color:var(--navy)}
 .hdr-res .ask-how{margin:4px 12px 6px 28px; padding:0; font-size:13px; color:var(--g650); line-height:1.5} .hdr-res .ask-how li{margin-top:4px}
+.askfrom{margin-top:16px; padding:10px 12px; background:var(--g025); border-radius:var(--r-part); font-size:13px; color:var(--g650)}
 /* the caught card carries its own action */
 .al-a{margin-top:20px}
 
@@ -4564,6 +4565,8 @@ body.mode-prep #prepbar{display:flex}
      var st = r<0.86?'approved':r<0.93?'declined':r<0.97?'partial':'stand_in'; var code=st==='approved'?'00':st==='declined'?(rnd()<0.6?'51':'05'):st==='partial'?'10':'00';
      var day=days[Math.floor(i/3)]||'May 27'; var hh=6+Math.floor(rnd()*13), mm=Math.floor(rnd()*60); var t=day+', '+(hh>12?hh-12:hh)+':'+(mm<10?'0':'')+mm+' '+(hh>=12?'PM':'AM');
      out.push({id:'auth_'+(0x6a0000+i*4093).toString(16), t:t, day:day, m:m, amt:amt, mode:mode, st:st, code:code, ms:36+Math.floor(rnd()*20), risk:Math.floor(60+rnd()*250), avs:mode==='ecommerce'?(rnd()<0.8?'street Y, postal Y':'street N, postal Y'):'—', tok:'tok_'+(0x1000+i*97).toString(16), cycle:day==='June 2'?null:day, captured:st!=='declined'}) }
+   /* yesterday's card-not-present drop sits in the rows: one gateway, mostly Cedar Books, declined 51 and 05 */
+   [[0,'Cedar Books','51',9,14],[1,'Cedar Books','05',9,52],[2,'Cedar Books','51',10,31],[4,'Halcyon Home','05',11,8],[5,'Marlow Goods','51',8,47]].forEach(function(p){ var x=out[p[0]]; x.m=p[1]; x.st='declined'; x.code=p[2]; x.mode='ecommerce'; x.day='June 2'; x.t='June 2, '+p[3]+':'+(p[4]<10?'0':'')+p[4]+' AM'; x.avs='street Y, postal Y'; x.captured=false; x.cycle=null });
    out[3].id='auth_71ab3c'; out[3].m='Halcyon Home'; out[3].amt=5820; out[3].st='approved'; out[3].code='00'; out[3].t='June 2, 6:04 AM'; out[3].day='June 2'; out[3].mode='contactless';
    out[7].id='auth_6e02a1'; out[7].m='Cedar Books'; out[7].amt=31000; out[7].st='approved'; out[7].mode='ecommerce'; out[7].t='May 22, 9:41 PM'; out[7].day='May 22'; out[7].cycle='May 23'; out[7].dispute='dsp_41e'; out[7].avs='street N, postal Y';
    out[11].id='auth_6f20a1'; out[11].m='Halcyon Home'; out[11].amt=12400; out[11].st='approved'; out[11].mode='ecommerce'; out[11].t='May 9, 2:12 PM'; out[11].day='May 9'; out[11].cycle='May 10'; out[11].dispute='dsp_41c';
@@ -4585,6 +4588,9 @@ body.mode-prep #prepbar{display:flex}
   {k:'mch_northgate', n:'Northgate Cycles', mcc:'5940 Bicycle shops', since:'May 20', vol:'$219k', auths:1410, appr:94.1, cnp:73, disputes:3, risk:'elevated', gw:'Direct', city:'Denver, CO'},
   {k:'mch_fern', n:'Fern & Co', mcc:'5992 Florists', since:'May 21', vol:'$44k', auths:2870, appr:97.8, cnp:64, disputes:0, risk:'normal', gw:'Direct', city:'Seattle, WA'}
  ];
+ /* card-not-present approval by merchant, yesterday against its seven-day rate. Cedar Books moved gateway on June 1 and fell. */
+ var CNP_MERCH = {mch_cedar:{y:93.8, w:95.2, gw:'Changed June 1'}, mch_halcyon:{y:95.9, w:95.8, gw:'Direct'}, mch_marlow:{y:96.4, w:96.3, gw:'Direct'}, mch_tallow:{y:96.0, w:96.1, gw:'Direct'}, mch_northgate:{y:92.8, w:92.9, gw:'Direct'}, mch_fern:{y:97.2, w:97.1, gw:'Direct'}};
+ var CNP_CEDAR = [95.0,95.3,95.1,95.4,95.2,95.0,95.3,95.2,95.4,95.1,95.3,95.2,95.1,93.8];
  var PRODUCT_SETTINGS = {
   disp:[['Auto-accept below','$25.00','Cases under this amount are accepted automatically. Dispute fee applies.'],['Evidence template','Physical goods, shipped','Pre-fills step 2 of a counter'],['Deadline reminders','7, 3 and 1 day before','To the dispute contact and the case inbox'],['Dispute contact','Mara Lindqvist','disputes@brightline.example']],
   accept:[['Retry after soft decline','Once, after 24 hours','Code 51 only. Never on 05'],['Partial approvals','Accept','Approved amount is what you have'],['Stand-in','On','Your rules, ceiling $250, card present only'],['AVS mismatch','Allow, flag','Street mismatch scores higher in the network model']],
@@ -5759,13 +5765,33 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function lastDay(){ return DAILY[DAILY.length-1] }
  function dspNeed(){ return DISPUTE_CASES.filter(function(c){ return dspStatus(c)==='needs_response' }) }
  var ASK_SUGGEST={
-   partner:['How is approval doing?','What needs me today?','How do I counter a dispute?','When is the next wire?','How do I add Wallets?'],
+   partner:['Why did card-not-present approvals fall?','Show me declines at Cedar Books yesterday','Which merchants have the most disputes?','What needs me today?','How do I counter a dispute?'],
    developer:['Why did that delivery fail?','How do I rotate the production key?','Which card returns a decline?','Where does certification stand?','What is our p99?'],
    agent:['What is overdue today?','Why is Marlow at risk?','Which cases are unassigned?','How do I hand a partner to operations?','Which attestations are due this month?']
  };
  var ASK={
   partner:[
+   /* a merchant named in the question: its numbers, and its transactions filtered the way the question says */
+   {m:/./, a:function(){ var q=this.q, raw=this.raw, o=askParse(q); if(!o.m) return null; var m=o.m, what=o.st==='declined'?'declined ':o.st==='disputed'?'disputed ':'', label=(what?what.charAt(0).toUpperCase()+what.slice(1)+'transactions':'Transactions')+' at '+m.n+(o.day?', '+o.day:'')+(o.cnp?', card not present':o.cp?', card present':'');
+     return {a:m.n+' ran '+m.auths.toLocaleString('en-US')+' authorizations yesterday at '+m.appr+'% approved, '+m.cnp+'% card not present, '+nn(m.disputes,'open dispute')+', risk '+m.risk+'.'+(m.risk!=='normal'?' It is on the review list.':''),
+       do:[askDo(label, function(){ SCENE.txMerchant=m.n; SCENE.txs=o.st||'all'; SCENE.txCode=o.code||''; SCENE.txDay=o.day||''; SCENE.txp=o.cnp?'cnp':o.cp?'cp':'all'; SCENE.txFrom=raw; go('transactions') }), askDo(m.n+'’s page', function(){ ACT.mOpen({dataset:{k:m.k}}) })]} }, live:true},
+   /* the report from the question: card-not-present approvals, with the drop, where it happened and why */
+   {m:/card.?not.?present|cnp|e-?commerce|online/, a:function(){ var q=this.q, raw=this.raw, d=lastDay(), d7=DAILY30[DAILY30.length-8], drop=(d[3]-d7[3]).toFixed(1), byCnp=MERCHANTS.slice().sort(function(a,b){return b.cnp-a.cnp});
+     var c=CNP_MERCH.mch_cedar; return {a:'Card not present approved at '+d[3]+'% yesterday against '+d[2]+'% overall, level with seven days ago. The fall is at Cedar Books, '+c.y+'% against its seven-day '+c.w+'%, after a gateway change on June 1. Marcus Bell has the gateway on a call at 11:00 AM.',
+       do:[askDo('Open the report', function(){ SCENE.repFocus='cnp'; SCENE.repFocusQ=raw; go('reporting') }), askDo('Card-not-present declines, yesterday', function(){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom=raw; go('transactions') }), ['The alert','alerts']]} }, live:true},
+   /* merchants ranked the way the question asks */
+   {m:/which merchant|most disputes|by disputes|lowest approval|worst|riskiest|elevated/, a:function(){ var q=this.q, raw=this.raw, byD=MERCHANTS.slice().sort(function(a,b){return b.disputes-a.disputes}), byA=MERCHANTS.slice().sort(function(a,b){return a.appr-b.appr}), disp=/disput/.test(q), risk=/risk|elevated/.test(q);
+     var top=disp?byD[0]:byA[0]; return {a:disp?byD[0].n+' carries the most open disputes with '+byD[0].disputes+'. '+byD[1].n+' follows with '+byD[1].disputes+'. Together they hold '+Math.round(100*(byD[0].disputes+byD[1].disputes)/MERCHANTS.reduce(function(a,m){return a+m.disputes},0))+'% of your cases.':risk?MERCHANTS.filter(function(m){return m.risk!=='normal'}).map(function(m){return m.n}).join(' and ')+' are on elevated risk.':byA[0].n+' approves lowest at '+byA[0].appr+'%, '+byA[0].cnp+'% card not present.',
+       do:[askDo('Merchants, '+(disp?'by disputes':risk?'elevated risk':'lowest approval first'), function(){ if(risk){ SCENE.mrisk='elevated' } else { SCENE.msort=disp?'disp':'appr' } SCENE.mFrom=raw; go('merchants') }), askDo(top.n+'’s page', function(){ ACT.mOpen({dataset:{k:top.k}}) })]} }, live:true},
+   /* declines: the top reason, and the transactions behind it */
+   {m:/why.*declin|declines? (yesterday|today|by reason|this week)|top reason|reason for/, a:function(){ var q=this.q, raw=this.raw, o=askParse(q), tot=DECLINES.reduce(function(a,x){return a+x[1]},0);
+     return {a:DECLINES[0][1].toLocaleString('en-US')+' of '+tot.toLocaleString('en-US')+' declines yesterday were '+DECLINES[0][0].slice(3).toLowerCase()+', code '+DECLINES[0][0].slice(0,2)+'. '+DECLINES[1][0].slice(3)+' follows with '+DECLINES[1][1].toLocaleString('en-US')+'.',
+       do:[askDo('Declines by reason', function(){ SCENE.rep='auth'; go('reporting') }), askDo('Declined transactions, code 51', function(){ SCENE.txs='declined'; SCENE.txCode='51'; SCENE.txDay=o.day||''; SCENE.txFrom=raw; go('transactions') })]} }, live:true},
+   /* disputes due soon: the list filtered to what needs a response */
+   /* settlement for a day: that cycle */
+   {m:/settle(ment)? (for |on )?(june|may) \d+|cycle (for |on )?(june|may)/, a:function(){ var q=this.q, raw=this.raw, m=/(june|may) (\d+)/.exec(q), day=m?m[1].charAt(0).toUpperCase()+m[1].slice(1)+' '+m[2]:'June 2', c=CYCLES[day]; return c?{a:day+' settled '+money0(c.net)+' net on '+c.auths.toLocaleString('en-US')+' authorizations, wired '+c.posted+', reference '+c.wire+'.', do:[askDo('The '+day+' cycle', function(){ ACT.cycle({dataset:{k:day}}) })]}:{a:'No cycle on '+day+'. Cycles run every business day at 6:00 AM ET.', do:[['Settlement and fees','settlement']]} }, live:true},
    {m:/approv|approval rate|declin/, a:function(){ var y=lastDay(); return {a:'Approval was '+y[2]+'% yesterday on '+y[1].toLocaleString('en-US')+' authorizations, '+(y[2]-96.1).toFixed(1)+' points above the network. Card not present approved at '+y[3]+'%.', do:[['Reporting','reporting'],['Declines by reason','reporting']]} }, live:true},
+   {m:/disputes?( are| that| which)? (due|need|this week|open|respond|waiting)/, a:function(){ var q=this.q, raw=this.raw, n=dspNeed().sort(function(p,r){return daysLeft(p.due)-daysLeft(r.due)}); return {a:n.length?nn(n.length,'dispute')+' need'+(n.length===1?'s':'')+' a response: '+n.map(function(c){return c.id+' from '+c.merchant+' by '+c.due}).join(', ')+'.':'No dispute needs a response.', do:[askDo('Disputes needing a response', function(){ SCENE.df2='needs'; SCENE.dspFrom=raw; go('disputes') })]} }, live:true},
    {m:/need(s)? me|what.*(today|now)|my (turn|list)|to do/, a:function(){ var n=dspNeed().length, na=noticesOpen().filter(function(x){return ntKind(x)==='action'&&!(SCENE.ntAck||{})[x.k]}).length; return {a:(n?nn(n,'dispute')+' need'+(n===1?'s':'')+' a response, the soonest by '+dspNeed().sort(function(p,q){return daysLeft(p.due)-daysLeft(q.due)})[0].due+'. ':'No dispute needs a response. ')+(na?nn(na,'notice')+' need'+(na===1?'s':'')+' acknowledging.':'Nothing to acknowledge.'), do:[['Overview','overview'],['Disputes','disputes']]} }, live:true},
    {m:/dispute|chargeback|counter|represent/, a:function(){ var n=dspNeed(); return {a:n.length?nn(n.length,'dispute')+' need'+(n.length===1?'s':'')+' a response. '+n[0].id+' from '+n[0].merchant+' is due '+n[0].due+', '+daysWord(daysLeft(n[0].due))+' from now.':'No dispute needs a response. '+DISPUTE_CASES.length+' cases on file.', do:[['Disputes','disputes']], how:['Open Disputes and choose the case marked Needs response.','Choose Counter dispute. Pick the product type and the reason the claim is in error.','Attach the evidence the reason asks for and confirm the statement is final.','Submit. The issuer has 30 days to answer. the case shows In review.']} }, live:true},
    {m:/wire|settle|paid|payout|net|cycle/, a:function(){ var c=CYCLES['June 2']; return {a:'Yesterday’s cycle settled '+money0(c.net)+' net on '+c.auths.toLocaleString('en-US')+' authorizations, wired '+c.posted+' to '+c.bank+', reference '+c.wire+'. The next cycle wires tomorrow at 6:00 AM ET.', do:[['Settlement and fees','settlement']]} }, live:true},
@@ -5813,7 +5839,18 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    {m:/risk review|clear|six areas|documents/, a:function(){ return {a:'The risk review is a decision page per partner: three documents received, six areas each cleared or held. Then One decision that issues the agreement the same day.', do:[['Brightline','agPartner','brightline']], how:['Open the partner and the Risk review from its Documents.','Clear or hold each of the six areas.','Choose Clear the risk review once all six are cleared.']} }}
   ]
  };
- function askAnswer(P, v){ var q=v.toLowerCase(), list=ASK[P]||[]; for(var i=0;i<list.length;i++){ var it=list[i]; if(it.live && P==='partner' && !live()) continue; if(it.m.test(q)){ var r=it.a.call({q:q}); if(r) return r } } return null }
+ var ASK_FN=[]; /* the actions an answer offers, run by index; every answer starts a new list */
+ function askDo(label, fn){ ASK_FN.push(fn); return [label, 'askfn', String(ASK_FN.length-1)] }
+ /* what a question names: a merchant, an outcome, a period, card not present */
+ function askParse(q){ var o={};
+   MERCHANTS.forEach(function(m){ if(q.indexOf(m.n.toLowerCase())>=0 || q.indexOf(m.n.toLowerCase().split(' ')[0])>=0 && m.n.split(' ')[0].length>4) o.m=m });
+   if(/declin|insufficient|do not honor|refused/.test(q)) o.st='declined'; if(/dispute|chargeback/.test(q)) o.st=o.st||'disputed'; if(/partial|stand-?in/.test(q)) o.st=o.st||'other';
+   if(/\b51\b|insufficient/.test(q)) o.code='51'; if(/\b05\b|do not honor/.test(q)) o.code='05'; if(/\b54\b|expired/.test(q)) o.code='54';
+   if(/yesterday/.test(q)) o.day=yday()==='yesterday'?'June 2':yday(); if(/today/.test(q)) o.day='June 2';
+   if(/card.?not.?present|cnp|e-?commerce|online|remote/.test(q)) o.cnp=true; if(/card.?present|in.?store|contactless|chip|tap/.test(q) && !o.cnp) o.cp=true;
+   if(/last (7|seven) days|this week|weekly/.test(q)) o.days='7'; if(/30 days|month/.test(q)) o.days='30';
+   return o }
+ function askAnswer(P, v){ ASK_FN=[]; var q=v.toLowerCase(), list=ASK[P]||[]; for(var i=0;i<list.length;i++){ var it=list[i]; if(it.live && P==='partner' && !live()) continue; if(it.m.test(q)){ var r=it.a.call({q:q, raw:v.trim()}); if(r) return r; ASK_FN=[] } } return null }
  function askPanel(P, r, v){ var ri=900;
    var doH = r.do&&r.do.length ? '<div class="ask-do">'+r.do.map(function(d){ var act=d.length>2?d[1]:'go:'+d[1]; return '<button type="button" role="option" id="res'+(ri++)+'" data-res="'+esc(act)+'" data-k="'+esc(d[2]||'')+'" class="ask-go" tabindex="-1"><b>'+esc(d[0])+'</b></button>' }).join('')+'</div>' : '';
    var how = r.how ? '<div class="gn-menu-h">How</div><ol class="ask-how">'+r.how.map(function(s){ return '<li>'+esc(s)+'</li>' }).join('')+'</ol>' : '';
@@ -5863,7 +5900,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  function runRes(act,k,v,P){ var q=$('#topQ'); resShow(false); if(q) q.value=''; SEATS=[SEAT];
    if(act==='ref'){ SCENE.refQ=v; go('spec') } else if(act==='txq'){ SCENE.txQ=v; go('transactions') } else if(act==='bookq'){ SCENE.bookQ=v; go('book') }
    else if(act==='epGo'){ SCENE.epId=k; SCENE.ept=undefined; go('webhooks') } else if(act==='logGo'){ SCENE.logId=k; go('logs') }
-   else if(act.indexOf('go:')===0){ go(act.slice(3)) } else if(act==='agPartner'){ SCENE.bk=k; paintShell(); go('partner') } else if(ACT[act]) ACT[act]({dataset:{k:k}}) }
+   else if(act==='askfn'){ var fn=ASK_FN[+k]; if(fn) fn() } else if(act.indexOf('go:')===0){ go(act.slice(3)) } else if(act==='agPartner'){ SCENE.bk=k; paintShell(); go('partner') } else if(ACT[act]) ACT[act]({dataset:{k:k}}) }
  function paintTop(w, P){
    var t=$('#top'); if(!t) return;
    var nav=navFor().map(function(n){return n[0]});
@@ -6439,10 +6476,26 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var perf = live() ? secH('API performance', 'Production, 24 hours')+figs([['Requests','48,211',''],['Errors','3.2%','1,543 requests'],['Issuer answer, median','44 ms','p99 210 ms'],['Availability','99.98%','30 days']], 'gn-figs--compact') : '';
    return head+env+perf+cred+cert+spec+ids+keys;
  };
+ /* the card-not-present report: what a question opens. Fourteen days of the rate against the overall,
+    where the traffic sits by merchant, the declines behind it, and the alert that explains the drop. */
+ function cnpReport(){
+   var series=DAILY30.slice(-14), d=series[series.length-1], d7=series[series.length-8], drop=(d[3]-d7[3]).toFixed(1), tot=DECLINES.reduce(function(a,x){return a+x[1]},0);
+   var head=ph('Card-not-present approvals', 'From your question: “'+esc(SCENE.repFocusQ||'card not present')+'”. Fourteen days, production.', '<span class="gn-link" data-act="repClear">All reporting</span>');
+   var ced=CNP_MERCH.mch_cedar; var f=figs([['Card not present, yesterday', d[3]+'%', 'overall '+d[2]+'%, level with seven days ago'],['Cedar Books, card not present', ced.y+'%', (ced.y-ced.w).toFixed(1).replace('-','−')+' points on its seven-day rate'],['Share of authorizations', '29%', Math.round(d[1]*0.29).toLocaleString('en-US')+' yesterday'],['Declines, card not present', Math.round(tot*0.62).toLocaleString('en-US'), 'of '+tot.toLocaleString('en-US')+' yesterday']]);
+   var ch=secH('Approval, card not present', 'Cedar Books pale, overall dotted')+chart('line',{labels:series.map(function(x){return x[0]}), series:[{name:'All merchants', values:series.map(function(x){return x[3]})},{name:'Cedar Books', values:CNP_CEDAR}], prev:series.map(function(x){return x[2]}), min:89, max:98, fmt:'pct1'});
+   var byCnp=MERCHANTS.slice().sort(function(a,b){return b.cnp-a.cnp});
+   var byChg=MERCHANTS.slice().sort(function(a,b){ var x=CNP_MERCH[a.k], y=CNP_MERCH[b.k]; return (x.y-x.w)-(y.y-y.w) });
+   var where=secH('By merchant', 'Ranked by the change')+tbl2([['Merchant'],['Card not present',1],['Approved yesterday',1],['Seven-day rate',1],['Change',1],['Gateway'],['Risk']], byChg.map(function(m){ var c=CNP_MERCH[m.k], chg=c.y-c.w; return {c:['<span class="nw">'+esc(m.n)+'</span>', m.cnp+'%', c.y+'%', c.w+'%', (chg<-0.5?sw(chg.toFixed(1).replace('-','−'),'no'):'<span>'+(chg>0?'+':'')+chg.toFixed(1).replace('-','−')+'</span>'), '<span class="nw">'+esc(c.gw)+'</span>', riskWord(mRisk(m))], act:'mOpen', k:m.k} }));
+   var al=ALERTS.filter(function(a){return a.k==='cnp'})[0], why = al ? secH('What explains it')+'<article class="gn-notice is-link" data-act="alert" data-k="cnp"><div class="gn-notice-h">'+((SCENE.resolved||{}).cnp?word('Resolved'):sw('In hand','wa'))+'<span>'+esc(al.product)+'</span></div><h3>'+esc(al.t)+'</h3><p>'+esc(al.p)+'</p><div class="gn-notice-f">'+av(al.owner,'a24')+'<span>'+esc(PEOPLE[al.owner].n)+', '+esc(al.when)+'</span></div></article>' : '';
+   var dec=secH('Declines by reason', yday()+', all channels')+'<div class="rank">'+DECLINES.map(function(x){ return '<div class="rank-r is-link" data-act="txCode" data-k="'+esc(x[0].split(' ')[0])+'"><span>'+esc(x[0])+'</span><div class="rank-bar"><i style="--w:'+Math.round(100*x[1]/DECLINES[0][1])+'%"></i></div><b class="gn-num">'+x[1].toLocaleString('en-US')+'</b><span class="gn-num">'+(100*x[1]/tot).toFixed(0)+'%</span></div>' }).join('')+'</div>';
+   var acts='<div class="gn-actions inset">'+goLink('Card-not-present declines, yesterday','data-act="askTx" data-k="cnp-declined"')+goLink('Fraud rules','data-go2="fraud"')+'</div>';
+   return head+f+ch+where+why+dec+acts;
+ }
  PARTNER.reporting=function(){
    var head=ph('Reporting', live()?'Live since May 14. Fourteen days shown; the network keeps thirteen months.':'Starts with your first transaction.');
    var cat=secH('Reports you receive', REPORTS.length+' reports')+'<div class="rep-grid">'+REPORTS.map(function(r){ return '<article class="rep"><div class="rep-h"><h3>'+esc(r.t)+'</h3>'+spark(r.shape)+'</div><span class="rep-w">'+esc(r.when)+'</span><p>'+esc(r.d)+'</p></article>' }).join('')+'</div>';
    if(!live()) return ph('Reporting', 'Choose who receives reports, and how.')+secH('Set up reporting')+setup('report')+cat;
+   if(SCENE.repFocus==='cnp') return cnpReport(head);
    var m=tab('rep','auth'), days=+tab('repd','14'), cmp=SCENE.repCmp;
    var series=DAILY30.slice(-days), prevS=DAILY30.slice(-days*2, -days);
    var idx=m==='auth'?1:m==='appr'?2:4, opts=m==='auth'?{fmt:fmtK}:m==='appr'?{min:95,max:98,fmt:function(v){return v.toFixed(1)+'%'}}:{min:0.8,max:1.6,fmt:function(v){return '$'+v.toFixed(2)+'M'}};
@@ -6523,7 +6576,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var dc=open.length?'<div class="gn-chartcards">'
      +card('Days to respond', needs.length+' need a response', chart('barH',{items:needs.map(function(c){ var d=daysLeft(c.due); return {name:c.id+' · '+c.merchant, value:Math.max(0,d), tone:d<=3?'bad':d<=7?'warn':'ink'} }), fmt:'days', max:30, left:180, rowHeight:32}), 'Deadline is the issuer’s')
      +card('Open cases by reason', String(open.length), chart('donut',{items:Object.keys(byReason).map(function(k){ return {name:k, value:byReason[k]} }), center:String(open.length), centerLabel:'open', h:160}), '')+'</div>':'';
-   var filt=toolbar(tabs('df2',[['open','Open',String(open.length)],['needs','Needs response',String(needs.length)],['closed','Closed',String(cases.length-open.length)],['all','All',String(cases.length)]],'open'), '<span class="gn-link" data-act="dl">Export</span>');
+   var filt=(SCENE.dspFrom?'<div class="askfrom">From your question: “'+esc(SCENE.dspFrom)+'”. <span class="gn-link" data-act="dspFromClear">All disputes</span></div>':'')+toolbar(tabs('df2',[['open','Open',String(open.length)],['needs','Needs response',String(needs.length)],['closed','Closed',String(cases.length-open.length)],['all','All',String(cases.length)]],'open'), '<span class="gn-link" data-act="dl">Export</span>');
    var t=tbl2([['Case'],['Merchant'],['Amount',1],['Reason'],['Stage'],['Respond by'],['Status']], shown.map(function(c){ var dl=daysLeft(c.due);
      return {c:['<span class="gn-mono">'+esc(c.id)+'</span>', esc(c.merchant), '$'+(c.amount/100).toFixed(2), esc(c.reason)+'<em>'+esc((REASONS[c.reason]||'').split(':')[0])+'</em>', esc(c.stage.charAt(0).toUpperCase()+c.stage.slice(1)), c.st==='needs_response'?esc(c.due)+'<em>'+(dl<=3?'<span class="gn-status is-bad">'+daysWord(dl)+' left</span>':daysWord(dl)+' left')+'</em>':c.st==='closed'?esc(c.due)+'<em><span class="gn-status is-bad">Window closed '+agoWord(-dl)+'</span></em>':'—', dspWord(c.st)], act:'dspOpen', k:c.id} }));
    return head+figs_+dc+filt+(shown.length?t:'<div class="emp"><b>No cases match these filters.</b><span>Try a different status.</span></div>');
@@ -6592,12 +6645,13 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var codeF=SCENE.txCode||'', mF=SCENE.txMerchant||'';
    var list=TXNS.filter(function(t){ return (!mF||t.m===mF) && (!codeF||t.code===codeF) && (!q||t.id.indexOf(q)>-1||t.m.toLowerCase().indexOf(q)>-1) && (st==='all'||(st==='approved'&&t.st==='approved'&&!t.dispute)||(st==='declined'&&t.st==='declined')||(st==='disputed'&&t.dispute)||(st==='other'&&(t.st==='partial'||t.st==='stand_in'))) && (!day||t.day===day) && (prod==='all'||(prod==='cnp'&&t.mode==='ecommerce')||(prod==='cp'&&t.mode!=='ecommerce')) });
    var head=ph('Transactions', 'Every authorization from the last 14 days.', '<span class="gn-link" data-act="dl">Export</span>');
+   var fromQ = SCENE.txFrom ? '<div class="askfrom">From your question: “'+esc(SCENE.txFrom)+'”. '+nn(list.length,'transaction')+' match. <span class="gn-link" data-act="txFromClear">Show everything</span></div>' : '';
    var tb=toolbar(tabs('txs',[['all','All',String(TXNS.length)],['approved','Approved',String(TXNS.filter(function(t){return t.st==='approved'&&!t.dispute}).length)],['declined','Declined',String(TXNS.filter(function(t){return t.st==='declined'}).length)],['other','Partial and stand-in',String(TXNS.filter(function(t){return t.st==='partial'||t.st==='stand_in'}).length)],['disputed','Disputed',String(TXNS.filter(function(t){return t.dispute}).length)]],'all')+tabs('txp',[['all','All channels'],['cp','Card present'],['cnp','Card not present']],'all')+(day?'<span class="chip">'+esc(day)+' <span class="gn-link" data-act="txDayClear">Clear</span></span>':'')+(codeF?'<span class="chip">Code '+esc(codeF)+' <span class="gn-link" data-act="txCodeClear">Clear</span></span>':'')+(mF?'<span class="chip">'+esc(mF)+' <span class="gn-link" data-act="txMerchantClear">Clear</span></span>':''),
      '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="txQ" value="'+esc(SCENE.txQ||'')+'" placeholder="Authorization id or merchant"><button class="gn-btn gn-btn--sm" data-act="txSearch">Search</button>'+(SCENE.txQ?'<span class="gn-link" data-act="txClear">Clear</span>':'')+'</form>');
    var t=tbl2([['When'],['Authorization'],['Merchant'],['Amount',1],['Channel'],['Code'],['Status']], list.map(function(x){ return {c:['<span class="nw">'+esc(x.t)+'</span>', '<span class="gn-mono">'+esc(x.id)+'</span>', esc(x.m), '$'+(x.amt/100).toFixed(2), esc(x.mode==='ecommerce'?'Card not present':'Card present, '+x.mode), '<span class="gn-mono">'+esc(x.code)+'</span>', txnWord(x)], act:'txOpen', k:x.id} }));
    var filtered=!!(q||codeF||mF||day||st!=='all'||prod!=='all');
    var foot=list.length?'<div class="gn-table-foot">'+(filtered?nn(list.length,'match','matches')+' of 635,121 in 14 days':'Newest '+list.length+' of 635,121 in 14 days. Search by id or merchant, or export.')+'</div>':'';
-   return head+tb+(list.length?t+foot:'<div class="emp"><b>No transactions match.</b><span>Clear a filter or try another id.</span></div>');
+   return head+fromQ+tb+(list.length?t+foot:'<div class="emp"><b>No transactions match.</b><span>Clear a filter or try another id.</span></div>');
  };
  PARTNER.transaction=function(){
    var x=TXNS.filter(function(t){return t.id===SCENE.txId})[0]||TXNS[0], rf=(SCENE.refunded||{})[x.id], frd=(SCENE.fraudRep||{})[x.id];
@@ -6648,7 +6702,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    var mc='<div class="gn-chartcards">'
      +card('Volume by merchant, 30 days', '$1.4M', chart('treemap',{items:(function(){ var s=MERCHANTS.slice().sort(function(a,b){return num(b.vol)-num(a.vol)}); return s.slice(0,7).map(function(m){ return {name:m.n, value:num(m.vol)} }).concat([{name:'All others', value:s.slice(7).reduce(function(a,m){return a+num(m.vol)},0)+420}]) })(), fmt:'k$', h:200}), '4,212 merchants', goLink('Export','data-act="dl"'))
      +card('Disputes against volume', MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length+' elevated', chart('scatter',{points:MERCHANTS.map(function(m){ return {name:m.n, x:num(m.vol), y:m.disputes, r:4+Math.round((100-m.appr)*1.5), label:m.disputes>=5||num(m.vol)>=380, series:mRisk(m)==='elevated'?1:0} }), xfmt:'k$', yfmt:'int', xmin:0, ymin:0, h:200, xlabel:'Volume, 30 days'}), 'Size is decline rate. Elevated risk in the second hue')+'</div>';
-   var tb=toolbar(tabs('msort',[['vol','By volume'],['disp','By disputes'],['appr','Lowest approval'],['name','A to Z']],'vol')+tabs('mrisk',[['all','All'],['normal','Normal'],['elevated','Elevated'],['paused','Paused']],'all'), '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="mQ" value="'+esc(SCENE.mQ||'')+'" placeholder="Merchant name or id"><button class="gn-btn gn-btn--sm" data-act="mSearch">Search</button>'+(SCENE.mQ?'<span class="gn-link" data-act="mClear">Clear</span>':'')+'</form>');
+   var fromM = SCENE.mFrom ? '<div class="askfrom">From your question: “'+esc(SCENE.mFrom)+'”. <span class="gn-link" data-act="mFromClear">Show everything</span></div>' : '';
+   var tb=fromM+toolbar(tabs('msort',[['vol','By volume'],['disp','By disputes'],['appr','Lowest approval'],['name','A to Z']],'vol')+tabs('mrisk',[['all','All'],['normal','Normal'],['elevated','Elevated'],['paused','Paused']],'all'), '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="mQ" value="'+esc(SCENE.mQ||'')+'" placeholder="Merchant name or id"><button class="gn-btn gn-btn--sm" data-act="mSearch">Search</button>'+(SCENE.mQ?'<span class="gn-link" data-act="mClear">Clear</span>':'')+'</form>');
    var t=tbl2([['Merchant'],['Category'],['Volume, 30 days',1],['Approved',1],['Card not present',1],['Disputes',1],['Risk']], list.map(function(m){ return {c:[esc(m.n)+'<em>'+esc(m.k)+'</em>', esc(m.mcc), esc(m.vol), m.appr+'%', m.cnp+'%', String(m.disputes), riskWord(mRisk(m))], act:'mOpen', k:m.k} }));
    return head+f+mc+tb+(list.length?t:'<div class="emp"><b>No merchants match.</b><span>Clear the search, or try the merchant id.</span></div>');
  };
@@ -7988,6 +8043,11 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
    agAlert:function(){ go('alerts') },
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); keep('#booked'); toast('Window booked'); taskDone('A3') },
    /* a reminder leaves the portal, so the dialog says who gets it and what it carries before it goes */
+   repClear:function(){ SCENE.repFocus=null; SCENE.repFocusQ=null; drawApp(VIEW, true); focusMain() },
+   txFromClear:function(){ SCENE.txFrom=null; SCENE.txMerchant=''; SCENE.txCode=''; SCENE.txDay=''; SCENE.txs='all'; SCENE.txp='all'; drawApp(VIEW); focusMain() },
+   mFromClear:function(){ SCENE.mFrom=null; SCENE.msort='vol'; SCENE.mrisk='all'; drawApp(VIEW); focusMain() },
+   dspFromClear:function(){ SCENE.dspFrom=null; SCENE.df2='open'; drawApp(VIEW); focusMain() },
+   askTx:function(b){ if(b.dataset.k==='cnp-declined'){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom='card-not-present declines, yesterday' } go('transactions') },
    agCase:function(b){ SCENE.caseSel=b.dataset.k; go('cases') },
    agCaseReply:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; var me=agSeat().who; SCENE.caseReplies=SCENE.caseReplies||{}; (SCENE.caseReplies[b.dataset.k]=SCENE.caseReplies[b.dataset.k]||[]).push([me, 'Just now', v]); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]=b.dataset.close?'resolved':'waiting'; SCENE.caseOwner=SCENE.caseOwner||{}; if(!(agCases().filter(function(c){return c.id===b.dataset.k})[0]||{}).owner) SCENE.caseOwner[b.dataset.k]=me; paintShell(); drawApp(VIEW); keep('#agReply, .inbox-i.is-on'); toast(b.dataset.close?'Reply sent and case resolved':'Reply sent') },
    agCaseNote:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; SCENE.caseNotes=SCENE.caseNotes||{}; (SCENE.caseNotes[b.dataset.k]=SCENE.caseNotes[b.dataset.k]||[]).push([agSeat().who, 'Just now', v]); drawApp(VIEW); keep('#agReply'); toast('Note added') },
