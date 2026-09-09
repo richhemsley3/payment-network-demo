@@ -1510,7 +1510,23 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 .hdr-res .ask-do{display:flex; flex-wrap:wrap; gap:4px 16px; padding:0 12px 6px}
 .hdr-res .ask-do .ask-go{width:auto; display:inline; padding:2px 0; color:var(--navy)} .hdr-res .ask-do .ask-go b{color:var(--navy)}
 .hdr-res .ask-how{margin:4px 12px 6px 28px; padding:0; font-size:13px; color:var(--g650); line-height:1.5} .hdr-res .ask-how li{margin-top:4px}
-.askfrom{margin-top:16px; padding:10px 12px; background:var(--g025); border-radius:var(--r-part); font-size:13px; color:var(--g650)}
+/* the assistant's reading on a page a question opened: the system's insight surface (fill, radius, the edge in the tone), set wide and tight. The eyebrow names the assistant and quotes the question; beneath it two columns, the reading at the left and the figures at the right, with the title at body size and everything else at label size. */
+.askin{margin-top:12px; padding:14px 24px 14px 28px}
+.askin-e{display:flex; gap:10px; align-items:baseline; font-size:13px; color:var(--g550); margin-bottom:6px}
+.askin-e b{font-weight:600; color:var(--navy)}
+.askin-e .gn-link{margin-left:auto; font-size:13px}
+.askin-b{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 48px; align-items:start}
+.askin .gn-insight-h{gap:12px}
+.askin .gn-insight-h b{font-size:15px}
+.askin .gn-insight-h .gn-status{font-size:13px; margin-left:0}
+.askin p{font-size:13px; margin-top:2px; max-width:none}
+.askin .gn-figs{display:flex; gap:32px; margin:2px 0 0; padding:0; flex-wrap:wrap; justify-content:flex-end}
+.askin .gn-fig{display:block; padding:0; background:none; border-radius:0; min-width:0}
+.askin .gn-fig b{font-size:15px; letter-spacing:0}
+.askin .gn-fig span{font-size:13px; margin-top:2px}
+.askin .gn-fig small{font-size:13px; margin-top:0}
+.askin .gn-actions{margin-top:8px; font-size:13px}
+@media (max-width:1100px){ .askin-b{grid-template-columns:1fr} .askin .gn-figs{justify-content:flex-start} }
 /* figures as cards: one toned surface each, the label above the value, the note beneath; compact rows keep the smaller value. Inside a frame the cards go back to inline, a card in a card stacks surfaces. Prototype-only until the system carries .gn-figs--cards (review.md 10). */
 .gn-figs--cards{gap:16px}
 .gn-figs--cards .gn-fig{display:flex; flex-direction:column; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface); min-width:0}
@@ -5611,7 +5627,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -5816,7 +5832,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
        do:[askDo('Declines by reason', function(){ SCENE.rep='auth'; go('reporting') }), askDo('Declined transactions, code 51', function(){ SCENE.txs='declined'; SCENE.txCode='51'; SCENE.txDay=o.day||''; SCENE.txFrom=raw; go('transactions') })]} }, live:true},
    /* disputes due soon: the list filtered to what needs a response */
    /* settlement for a day: that cycle */
-   {m:/settle(ment)? (for |on )?(june|may) \d+|cycle (for |on )?(june|may)/, a:function(){ var q=this.q, raw=this.raw, m=/(june|may) (\d+)/.exec(q), day=m?m[1].charAt(0).toUpperCase()+m[1].slice(1)+' '+m[2]:'June 2', c=CYCLES[day]; return c?{a:day+' settled '+money0(c.net)+' net on '+c.auths.toLocaleString('en-US')+' authorizations, wired '+c.posted+', reference '+c.wire+'.', do:[askDo('The '+day+' cycle', function(){ ACT.cycle({dataset:{k:day}}) })]}:{a:'No cycle on '+day+'. Cycles run every business day at 6:00 AM ET.', do:[['Settlement and fees','settlement']]} }, live:true},
+   {m:/settle(ment)? (for |on )?(june|may) \d+|cycle (for |on )?(june|may)/, a:function(){ var q=this.q, raw=this.raw, m=/(june|may) (\d+)/.exec(q), day=m?m[1].charAt(0).toUpperCase()+m[1].slice(1)+' '+m[2]:'June 2', c=CYCLES[day]; return c?{a:day+' settled '+money0(c.net)+' net on '+c.auths.toLocaleString('en-US')+' authorizations, wired '+c.posted+', reference '+c.wire+'.', do:[askDo('The '+day+' cycle', function(){ SCENE.cycFrom=raw; ACT.cycle({dataset:{k:day}}) })]}:{a:'No cycle on '+day+'. Cycles run every business day at 6:00 AM ET.', do:[['Settlement and fees','settlement']]} }, live:true},
    {m:/approv|approval rate|declin/, a:function(){ var y=lastDay(); return {a:'Approval was '+y[2]+'% yesterday on '+y[1].toLocaleString('en-US')+' authorizations, '+(y[2]-96.1).toFixed(1)+' points above the network. Card not present approved at '+y[3]+'%.', do:[['Reporting','reporting'],['Declines by reason','reporting']]} }, live:true},
    {m:/disputes?( are| that| which)? (due|need|this week|open|respond|waiting)/, a:function(){ var q=this.q, raw=this.raw, n=dspNeed().sort(function(p,r){return daysLeft(p.due)-daysLeft(r.due)}); return {a:n.length?nn(n.length,'dispute')+' need'+(n.length===1?'s':'')+' a response: '+n.map(function(c){return c.id+' from '+c.merchant+' by '+c.due}).join(', ')+'.':'No dispute needs a response.', do:[askDo('Disputes needing a response', function(){ SCENE.df2='needs'; SCENE.dspFrom=raw; go('disputes') })]} }, live:true},
    {m:/need(s)? me|what.*(today|now)|my (turn|list)|to do/, a:function(){ var n=dspNeed().length, na=noticesOpen().filter(function(x){return ntKind(x)==='action'&&!(SCENE.ntAck||{})[x.k]}).length; return {a:(n?nn(n,'dispute')+' need'+(n===1?'s':'')+' a response, the soonest by '+dspNeed().sort(function(p,q){return daysLeft(p.due)-daysLeft(q.due)})[0].due+'. ':'No dispute needs a response. ')+(na?nn(na,'notice')+' need'+(na===1?'s':'')+' acknowledging.':'Nothing to acknowledge.'), do:[['Overview','overview'],['Disputes','disputes']]} }, live:true},
@@ -5885,7 +5901,17 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  var ASK_FN=[];
 /* the page a question opened says so, with what matched and the way back to the whole page */
 function askMatch(n, one, many){ return nn(n, one, many)+(n===1?' matches':' match') }
-function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">From your question: “'+esc(q)+'”. '+(note?note+'. ':'')+'<span class="gn-link" data-act="'+clearAct+'">'+esc(clearLabel||'Show everything')+'</span></div>' } /* the actions an answer offers, run by index; every answer starts a new list */
+/* the assistant's reading at the top of the page a question opened: what the filtered data shows, why, and the next thing. o: {q, tone, head, st:[word,tone], p, figs:[[label,value,note]], acts:[[label,attr]], clear:act, clearLabel} */
+function askInsight(o){
+  var e='<div class="askin-e"><b>Assistant</b><span>from “'+esc(o.q)+'”</span>'+(o.clear?'<span class="gn-link" data-act="'+o.clear+'">'+esc(o.clearLabel||'Show everything')+'</span>':'')+'</div>';
+  var h='<div class="gn-insight-h"><b>'+esc(o.head)+'</b>'+(o.st?sw(o.st[0],o.st[1]):'')+'</div>';
+  var f=o.figs&&o.figs.length?'<div class="gn-figs gn-figs--3">'+o.figs.map(function(x){ return '<div class="gn-fig"><b>'+esc(x[1])+'</b><span>'+esc(x[0])+'</span>'+(x[2]?'<small>'+esc(x[2])+'</small>':'')+'</div>' }).join('')+'</div>':'';
+  var a=o.acts&&o.acts.length?'<div class="gn-actions">'+o.acts.map(function(x){ return goLink(x[0], x[1]) }).join('')+'</div>':'';
+  return '<section class="gn-insight askin'+(o.tone?' is-'+o.tone:'')+'" aria-label="Assistant">'+e+'<div class="askin-b"><div class="askin-l">'+h+(o.p?'<p>'+o.p+'</p>':'')+a+'</div>'+f+'</div></section>' }
+function codeName(c){ var d=DECLINES.filter(function(x){return x[0].split(' ')[0]===c})[0]; return d?d[0].slice(3).toLowerCase():'' }
+function clockMin(t){ var m=String(t).match(/(\d+):(\d+)(?::\d+)? (AM|PM)/); if(!m) return null; var h=+m[1]%12+(m[3]==='PM'?12:0); return h*60+(+m[2]) }
+function clockSpan(list){ var ms=list.map(function(r){return clockMin(r.t)}).filter(function(x){return x!==null}); if(ms.length<2) return ''; var a=Math.min.apply(null,ms), b=Math.max.apply(null,ms); var w=function(m){ var h=Math.floor(m/60), mm=m%60; return (h%12||12)+':'+(mm<10?'0':'')+mm+' '+(h>=12?'PM':'AM') }; return 'between '+w(a)+' and '+w(b) }
+function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the actions an answer offers, run by index; every answer starts a new list */
  function askDo(label, fn){ ASK_FN.push(fn); return [label, 'askfn', String(ASK_FN.length-1)] }
  /* what a question names: a merchant, an outcome, a period, card not present */
  function askParse(q){ var o={};
@@ -6526,7 +6552,8 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
     where the traffic sits by merchant, the declines behind it, and the alert that explains the drop. */
  function cnpReport(){
    var series=DAILY30.slice(-14), d=series[series.length-1], d7=series[series.length-8], drop=(d[3]-d7[3]).toFixed(1), tot=DECLINES.reduce(function(a,x){return a+x[1]},0);
-   var head=ph('Card-not-present approvals', 'From your question: “'+esc(SCENE.repFocusQ||'card not present')+'”. Fourteen days, production.', '<span class="gn-link" data-act="repClear">All reporting</span>');
+   var head=ph('Card-not-present approvals', 'Fourteen days, production.', '<span class="gn-link" data-act="repClear">All reporting</span>');
+   var cm=CNP_MERCH.mch_cedar; head+=askInsight({q:SCENE.repFocusQ||'card not present', tone:'warn', head:'The fall is at Cedar Books, not the portfolio', st:[(SCENE.resolved||{}).cnp?'Resolved':'In hand', (SCENE.resolved||{}).cnp?'ok':'wa'], p:'Card not present approved at '+d[3]+'% yesterday, level with seven days ago. Cedar Books fell to '+cm.y+'% from its seven-day '+cm.w+'% after moving gateway on June 1. Its transactions carry the wrong e-commerce indicator and score higher risk. Marcus Bell has the gateway on a call at 11:00 AM.', acts:[['The alert','data-act="alert" data-k="cnp"'],['Cedar Books’s page','data-act="mOpen" data-k="mch_cedar"']]});
    var ced=CNP_MERCH.mch_cedar; var f=figs([['Card not present, yesterday', d[3]+'%', 'overall '+d[2]+'%, level with seven days ago'],['Cedar Books, card not present', ced.y+'%', (ced.y-ced.w).toFixed(1).replace('-','−')+' points on its seven-day rate'],['Share of authorizations', '29%', Math.round(d[1]*0.29).toLocaleString('en-US')+' yesterday'],['Declines, card not present', Math.round(tot*0.62).toLocaleString('en-US'), 'of '+tot.toLocaleString('en-US')+' yesterday']]);
    var ch=secH('Approval, card not present', 'Cedar Books pale, overall dotted')+chart('line',{labels:series.map(function(x){return x[0]}), series:[{name:'All merchants', values:series.map(function(x){return x[3]})},{name:'Cedar Books', values:CNP_CEDAR}], prev:series.map(function(x){return x[2]}), min:89, max:98, fmt:'pct1'});
    var byCnp=MERCHANTS.slice().sort(function(a,b){return b.cnp-a.cnp});
@@ -6607,6 +6634,12 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
  /* a case that needed a response and whose window has passed is closed: it leaves the queue and the counts */
  function dspStatus(c){ var o=(SCENE.dsp||{})[c.id], st=o||c.status; if(st==='needs_response' && daysLeft(c.due)<0) return 'closed'; return st }
  function dspWord(st){ return st==='needs_response'?sw('Needs response','wa'):st==='under_review'?sw('In review','wa'):st==='won'?word('won'):st==='lost'?sw('Lost','no'):st==='closed'?sw('Lost','no'):sw('Accepted','') }
+ function dspInsight(needs){
+   var RW={'4837':'the cardholder does not recognize the charge','4853':'goods not as described','4855':'goods not received'}, n=needs.slice().sort(function(a,b){return daysLeft(a.due)-daysLeft(b.due)});
+   var head=n.length?nn(n.length,'dispute')+' need'+(n.length===1?'s':'')+' a response, the nearest due '+n[0].due:'No dispute needs a response';
+   var p=n.map(function(c){ return c.id+' from '+c.merchant+', $'+(c.amount/100).toFixed(2)+', '+(RW[c.reason]||'reason '+c.reason)+', due '+c.due+' in '+nn(daysLeft(c.due),'day') }).join('. ')+(n.length?'. Physical goods, shipped is the evidence template on file and pre-fills step 2 of a counter.':'');
+   return askInsight({q:SCENE.dspFrom, tone:n.length?'warn':'good', head:head, p:p, figs:n.slice(0,3).map(function(c){ return [c.merchant, nn(daysLeft(c.due),'day'), '$'+(c.amount/100).toFixed(2)] }), acts:n.length?[['Counter '+n[0].id,'data-act="dspOpen" data-k="'+n[0].id+'"']]:[], clear:'dspFromClear', clearLabel:'All disputes'});
+ }
  PARTNER.disputes=function(){
    if(!live()){
      var head0=ph('Disputes', 'Who handles cases once they arrive at activation.');
@@ -6622,7 +6655,7 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    var dc=open.length?'<div class="gn-chartcards">'
      +card('Days to respond', needs.length+' need a response', chart('barH',{items:needs.map(function(c){ var d=daysLeft(c.due); return {name:c.id+' · '+c.merchant, value:Math.max(0,d), tone:d<=3?'bad':d<=7?'warn':'ink'} }), fmt:'days', max:30, left:180, rowHeight:32}), 'Deadline is the issuer’s')
      +card('Open cases by reason', String(open.length), chart('donut',{items:Object.keys(byReason).map(function(k){ return {name:k, value:byReason[k]} }), center:String(open.length), centerLabel:'open', h:160}), '')+'</div>':'';
-   var filt=(SCENE.dspFrom?'<div class="askfrom">From your question: “'+esc(SCENE.dspFrom)+'”. <span class="gn-link" data-act="dspFromClear">All disputes</span></div>':'')+toolbar(tabs('df2',[['open','Open',String(open.length)],['needs','Needs response',String(needs.length)],['closed','Closed',String(cases.length-open.length)],['all','All',String(cases.length)]],'open'), '<span class="gn-link" data-act="dl">Export</span>');
+   var filt=(SCENE.dspFrom?dspInsight(needs):'')+toolbar(tabs('df2',[['open','Open',String(open.length)],['needs','Needs response',String(needs.length)],['closed','Closed',String(cases.length-open.length)],['all','All',String(cases.length)]],'open'), '<span class="gn-link" data-act="dl">Export</span>');
    var t=tbl2([['Case'],['Merchant'],['Amount',1],['Reason'],['Stage'],['Respond by'],['Status']], shown.map(function(c){ var dl=daysLeft(c.due);
      return {c:['<span class="gn-mono">'+esc(c.id)+'</span>', esc(c.merchant), '$'+(c.amount/100).toFixed(2), esc(c.reason)+'<em>'+esc((REASONS[c.reason]||'').split(':')[0])+'</em>', esc(c.stage.charAt(0).toUpperCase()+c.stage.slice(1)), c.st==='needs_response'?esc(c.due)+'<em>'+(dl<=3?'<span class="gn-status is-bad">'+daysWord(dl)+' left</span>':daysWord(dl)+' left')+'</em>':c.st==='closed'?esc(c.due)+'<em><span class="gn-status is-bad">Window closed '+agoWord(-dl)+'</span></em>':'—', dspWord(c.st)], act:'dspOpen', k:c.id} }));
    return head+figs_+dc+filt+(shown.length?t:'<div class="emp"><b>No cases match these filters.</b><span>Try a different status.</span></div>');
@@ -6685,13 +6718,21 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
      +'<div class="gn-form-act">'+(tested?'<button class="gn-btn gn-btn--primary" data-act="ruleSave" data-k="'+(ed?ed.id:'')+'">'+(ed?'Save rule':'Add rule')+'</button>':'<button class="gn-btn gn-btn--primary" data-act="ruleTest">Test rule</button>')+'<span class="gn-link cancel" data-act="ruleCancel">Cancel</span></div></form></section>' }
  /* ── Transactions: from any number to the authorization behind it ── */
  function txnWord(t){ var rf=(SCENE.refunded||{})[t.id]; if(rf) return sw('Refunded',''); if(t.dispute) return sw('Disputed','wa'); return t.st==='approved'?word('Approved'):t.st==='declined'?sw('Declined','no'):t.st==='partial'?sw('Partial','wa'):sw('Stand-in','wa') }
+ function txInsight(list, mF, day, prod){
+   var n=list.length, dec=list.filter(function(t){return t.st==='declined'}), cnp=list.filter(function(t){return t.mode==='ecommerce'}), codes={}; dec.forEach(function(t){ codes[t.code]=(codes[t.code]||0)+1 });
+   var cs=Object.keys(codes).sort(function(a,b){return codes[b]-codes[a]}), ced=list.some(function(t){return t.m==='Cedar Books'&&t.mode==='ecommerce'&&t.st==='declined'});
+   var head=!n?'Nothing matches':dec.length===n?nn(n,'decline')+(mF?' at '+mF:'')+(day?', '+(day==='June 2'?'yesterday':day):'')+(cnp.length===n?', all card not present':''):nn(n,'transaction')+(mF?' at '+mF:'')+(day?', '+(day==='June 2'?'yesterday':day):'')+(dec.length?', '+dec.length+' declined':'');
+   var p=n?(cs.length?cs.map(function(c){ return codes[c]+' on '+c+' '+codeName(c) }).join(' and ')+(clockSpan(dec.length?dec:list)?', '+clockSpan(dec.length?dec:list):'')+'. ':'')+(ced?'Cedar Books moved gateway on June 1 and its card-not-present transactions have scored higher risk since. Marcus Bell has the gateway on a call at 11:00 AM.':dec.length?'A decline is the issuer’s answer. Retry rules are yours.':''):'Try a wider day or another merchant.';
+   var acts=[]; if(ced) acts.push(['The alert','data-act="alert" data-k="cnp"']); if(mF){ var m=MERCHANTS.filter(function(x){return x.n===mF})[0]; if(m) acts.push([mF+'’s page','data-act="mOpen" data-k="'+m.k+'"']) }
+   return askInsight({q:SCENE.txFrom, tone:dec.length?'warn':'', head:head, st:ced?['In hand','wa']:null, p:p, figs:n?[['Matching',String(n),''],['Declined',String(dec.length),''],['Card not present',String(cnp.length),'']]:null, acts:acts, clear:'txFromClear'});
+ }
  PARTNER.transactions=function(){
    if(!live()) return ph('Transactions', 'Search authorizations by id or merchant.')+'<div class="emp"><b>No transactions yet.</b><span>Transactions appear after your first live authorization.</span></div>';
    var q=(SCENE.txQ||'').toLowerCase(), st=tab('txs','all'), day=SCENE.txDay||'', prod=tab('txp','all');
    var codeF=SCENE.txCode||'', mF=SCENE.txMerchant||'';
    var list=TXNS.filter(function(t){ return (!mF||t.m===mF) && (!codeF||t.code===codeF) && (!q||t.id.indexOf(q)>-1||t.m.toLowerCase().indexOf(q)>-1) && (st==='all'||(st==='approved'&&t.st==='approved'&&!t.dispute)||(st==='declined'&&t.st==='declined')||(st==='disputed'&&t.dispute)||(st==='other'&&(t.st==='partial'||t.st==='stand_in'))) && (!day||t.day===day) && (prod==='all'||(prod==='cnp'&&t.mode==='ecommerce')||(prod==='cp'&&t.mode!=='ecommerce')) });
    var head=ph('Transactions', 'Every authorization from the last 14 days.', '<span class="gn-link" data-act="dl">Export</span>');
-   var fromQ = SCENE.txFrom ? '<div class="askfrom">From your question: “'+esc(SCENE.txFrom)+'”. '+nn(list.length,'transaction')+' match. <span class="gn-link" data-act="txFromClear">Show everything</span></div>' : '';
+   var fromQ = SCENE.txFrom ? txInsight(list, mF, day, prod) : '';
    var tb=toolbar(tabs('txs',[['all','All',String(TXNS.length)],['approved','Approved',String(TXNS.filter(function(t){return t.st==='approved'&&!t.dispute}).length)],['declined','Declined',String(TXNS.filter(function(t){return t.st==='declined'}).length)],['other','Partial and stand-in',String(TXNS.filter(function(t){return t.st==='partial'||t.st==='stand_in'}).length)],['disputed','Disputed',String(TXNS.filter(function(t){return t.dispute}).length)]],'all')+tabs('txp',[['all','All channels'],['cp','Card present'],['cnp','Card not present']],'all')+(day?'<span class="chip">'+esc(day)+' <span class="gn-link" data-act="txDayClear">Clear</span></span>':'')+(codeF?'<span class="chip">Code '+esc(codeF)+' <span class="gn-link" data-act="txCodeClear">Clear</span></span>':'')+(mF?'<span class="chip">'+esc(mF)+' <span class="gn-link" data-act="txMerchantClear">Clear</span></span>':''),
      '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="txQ" value="'+esc(SCENE.txQ||'')+'" placeholder="Authorization id or merchant"><button class="gn-btn gn-btn--sm" data-act="txSearch">Search</button>'+(SCENE.txQ?'<span class="gn-link" data-act="txClear">Clear</span>':'')+'</form>');
    var t=tbl2([['When'],['Authorization'],['Merchant'],['Amount',1],['Channel'],['Code'],['Status']], list.map(function(x){ return {c:['<span class="nw">'+esc(x.t)+'</span>', '<span class="gn-mono">'+esc(x.id)+'</span>', esc(x.m), '$'+(x.amt/100).toFixed(2), esc(x.mode==='ecommerce'?'Card not present':'Card present, '+x.mode), '<span class="gn-mono">'+esc(x.code)+'</span>', txnWord(x)], act:'txOpen', k:x.id} }));
@@ -6737,6 +6778,15 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
  /* ── Merchants: the portfolio, and one merchant's page ── */
  function mRisk(m){ var o=(SCENE.mRisk||{})[m.k]; return o||m.risk }
  function riskWord(r){ return r==='normal'?word('Normal'):r==='elevated'?sw('Elevated','wa'):r==='paused'?sw('Paused','no'):sw('High','no') }
+ function mInsight(){
+   var sort=tab('msort','vol'), risk=tab('mrisk','all'), tot=MERCHANTS.reduce(function(a,m){return a+m.disputes},0), auths=MERCHANTS.reduce(function(a,m){return a+m.auths},0), rate=function(m){ return (10000*m.disputes/m.auths).toFixed(1) }, book=(10000*tot/auths).toFixed(1);
+   var o={q:SCENE.mFrom, clear:'mFromClear', acts:[]};
+   if(risk==='elevated'){ var el=MERCHANTS.filter(function(m){return mRisk(m)!=='normal'}); o.tone='warn'; o.head=nn(el.length,'merchant')+' on elevated risk'; o.p=el.map(function(m){ return m.n+' approves at '+m.appr+'% with '+nn(m.disputes,'open dispute')+' on '+m.cnp+'% card-not-present traffic' }).join('. ')+'. Elevated risk adds review rules, it does not hold funds.'; o.figs=el.slice(0,3).map(function(m){ return [m.n, m.appr+'%', rate(m)+' disputes per 10k'] }); o.acts.push(['Fraud rules','data-go2="fraud"']) }
+   else if(sort==='disp'){ var byD=MERCHANTS.slice().sort(function(a,b){return b.disputes-a.disputes}), share=Math.round(100*(byD[0].disputes+byD[1].disputes)/tot); o.tone='warn'; o.head=byD[0].n+' and '+byD[1].n+' hold '+share+'% of open disputes'; o.p=byD[0].n+' carries '+byD[0].disputes+' at '+rate(byD[0])+' per 10k authorizations, on '+byD[0].cnp+'% card-not-present traffic. '+byD[1].n+' carries '+byD[1].disputes+' at '+rate(byD[1])+' per 10k. The book runs at '+book+' per 10k.'; o.figs=[[byD[0].n, String(byD[0].disputes), rate(byD[0])+' per 10k'],[byD[1].n, String(byD[1].disputes), rate(byD[1])+' per 10k'],['The book', book+' per 10k', tot+' open']]; o.acts.push(['Disputes needing a response','data-act="askDsp"'],[byD[0].n+'’s page','data-act="mOpen" data-k="'+byD[0].k+'"']) }
+   else if(sort==='appr'){ var byA=MERCHANTS.slice().sort(function(a,b){return a.appr-b.appr}), lo=byA[0], y=lastDay(); o.tone='warn'; o.head=lo.n+' approves lowest at '+lo.appr+'%'; o.p=lo.cnp+'% of its traffic is card not present, which approves at '+y[3]+'% across the book against '+y[2]+'% overall. '+(lo.n==='Cedar Books'?'It moved gateway on June 1 and the alert on the drop is in hand.':'Its risk is '+mRisk(lo)+'.'); o.figs=[[lo.n, lo.appr+'%', lo.cnp+'% card not present'],[byA[1].n, byA[1].appr+'%', byA[1].cnp+'% card not present'],['The book', y[2]+'%', 'card not present '+y[3]+'%']]; o.acts.push([lo.n+'’s page','data-act="mOpen" data-k="'+lo.k+'"']); if(lo.n==='Cedar Books') o.acts.push(['The alert','data-act="alert" data-k="cnp"']) }
+   else { o.head=MERCHANTS.length+' merchants, '+MERCHANTS.filter(function(m){return mRisk(m)!=='normal'}).length+' on elevated risk'; o.p='Sorted by volume this month.' }
+   return askInsight(o);
+ }
  PARTNER.merchants=function(){
    if(!live()) return ph('Merchants', 'Every merchant on your connection.')+'<div class="emp"><b>No merchants yet.</b><span>Merchants appear after your first live authorizations.</span></div>';
    var q=(SCENE.mQ||'').toLowerCase(), srt=tab('msort','vol'), rf=tab('mrisk','all');
@@ -6748,7 +6798,7 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    var mc='<div class="gn-chartcards">'
      +card('Volume by merchant, 30 days', '$1.4M', chart('treemap',{items:(function(){ var s=MERCHANTS.slice().sort(function(a,b){return num(b.vol)-num(a.vol)}); return s.slice(0,7).map(function(m){ return {name:m.n, value:num(m.vol)} }).concat([{name:'All others', value:s.slice(7).reduce(function(a,m){return a+num(m.vol)},0)+420}]) })(), fmt:'k$', h:200}), '4,212 merchants', goLink('Export','data-act="dl"'))
      +card('Disputes against volume', MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length+' elevated', chart('scatter',{points:MERCHANTS.map(function(m){ return {name:m.n, x:num(m.vol), y:m.disputes, r:4+Math.round((100-m.appr)*1.5), label:m.disputes>=5||num(m.vol)>=380, series:mRisk(m)==='elevated'?1:0} }), xfmt:'k$', yfmt:'int', xmin:0, ymin:0, h:200, xlabel:'Volume, 30 days'}), 'Size is decline rate. Elevated risk in the second hue')+'</div>';
-   var fromM = SCENE.mFrom ? '<div class="askfrom">From your question: “'+esc(SCENE.mFrom)+'”. <span class="gn-link" data-act="mFromClear">Show everything</span></div>' : '';
+   var fromM = SCENE.mFrom ? mInsight() : '';
    var tb=fromM+toolbar(tabs('msort',[['vol','By volume'],['disp','By disputes'],['appr','Lowest approval'],['name','A to Z']],'vol')+tabs('mrisk',[['all','All'],['normal','Normal'],['elevated','Elevated'],['paused','Paused']],'all'), '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="mQ" value="'+esc(SCENE.mQ||'')+'" placeholder="Merchant name or id"><button class="gn-btn gn-btn--sm" data-act="mSearch">Search</button>'+(SCENE.mQ?'<span class="gn-link" data-act="mClear">Clear</span>':'')+'</form>');
    var t=tbl2([['Merchant'],['Category'],['Volume, 30 days',1],['Approved',1],['Card not present',1],['Disputes',1],['Risk']], list.map(function(m){ return {c:[esc(m.n)+'<em>'+esc(m.k)+'</em>', esc(m.mcc), esc(m.vol), m.appr+'%', m.cnp+'%', String(m.disputes), riskWord(mRisk(m))], act:'mOpen', k:m.k} }));
    return head+f+mc+tb+(list.length?t:'<div class="emp"><b>No merchants match.</b><span>Clear the search, or try the merchant id.</span></div>');
@@ -6971,7 +7021,9 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    var k=SCENE.ck||'June 2', c=CYCLES[k];
    var inCycle=TXNS.filter(function(t){return t.cycle===k});
    var head=backTo('Settlement and fees','data-go2="settlement"')+ph('Settlement, '+esc(k), 'Posted '+esc(c.posted)+' to '+esc(c.bank)+'. Wire '+esc(c.wire)+'.', '<button class="gn-btn" data-act="noop">Download the file</button>');
-   var f=figs([['Net settled',money0(c.net),'wired '+c.posted],['Gross',money0(c.gross),c.auths.toLocaleString('en-US')+' authorizations'],['Network fees',money0(c.assess+c.authfee+c.disp),'assessment, per authorization and per dispute'],['Adjustments',money0(c.adj),c.adj<0?'reversals and chargebacks':'credits']]);
+   var ins=''; if(SCENE.cycFrom){ var days=Object.keys(CYCLES), pi=days.indexOf(k)+1, pv=CYCLES[days[pi]], fees=c.assess+c.authfee+c.disp, d=pv?((c.net-pv.net)/pv.net*100):null;
+     ins=askInsight({q:SCENE.cycFrom, tone:'good', head:k+' settled '+money0(c.net)+' net'+(d!==null?', '+(d<0?d.toFixed(1).replace('-','−'):'+'+d.toFixed(1))+'% on '+days[pi]:''), st:['Paid','ok'], p:'Wired '+c.posted+' to '+c.bank+' as '+c.wire+'. Gross '+money0(c.gross)+' on '+c.auths.toLocaleString('en-US')+' approved authorizations, fees '+money0(fees)+' ('+(100*fees/c.gross).toFixed(2)+'% of gross), adjustments '+money0(c.adj)+(c.adj<0?' for reversals and chargebacks.':' in credits.')+(pv?' Volume '+(c.auths>pv.auths?'rose':'fell')+' '+Math.abs(c.auths-pv.auths).toLocaleString('en-US')+' authorizations on the cycle before.':''), figs:[['Net', money0(c.net), 'wired '+c.posted],['Fees', money0(fees), (100*fees/c.gross).toFixed(2)+'% of gross'],['Adjustments', money0(c.adj), c.adj<0?'reversals and chargebacks':'credits']], acts:[['All transactions for '+k,'data-act="txDay" data-k="'+esc(k)+'"']], clear:'cycFromClear', clearLabel:'Settlement and fees'}) }
+   var f=ins+figs([['Net settled',money0(c.net),'wired '+c.posted],['Gross',money0(c.gross),c.auths.toLocaleString('en-US')+' authorizations'],['Network fees',money0(c.assess+c.authfee+c.disp),'assessment, per authorization and per dispute'],['Adjustments',money0(c.adj),c.adj<0?'reversals and chargebacks':'credits']]);
    var t=secH('Breakdown')+tbl2([['Line'],['Basis'],['Amount',1]], [
      ['Gross authorizations', c.auths.toLocaleString('en-US')+' approved', money0(c.gross)],
      ['Assessment', '0.11% of gross', '−'+money0(c.assess)],
@@ -7075,7 +7127,8 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
  function devLatencyReport(){
    var H=DEV_HOURS, hrs=[], i; for(i=0;i<=24;i++) hrs.push(i%24===0?'12 AM':i<12?i+' AM':i===12?'12 PM':(i-12)+' PM');
    var worst=0; H.p99.forEach(function(v,k){ if(v>H.p99[worst]) worst=k }); var si=H.standin.reduce(function(a,v){return a+v},0);
-   var head=ph('Latency, yesterday', 'From your question: “'+esc(SCENE.devRepQ||'latency')+'”. Production, June 2, by hour.', '<span class="gn-link" data-act="devRepClear">Overview</span>');
+   var head=ph('Latency, yesterday', 'Production, June 2, by hour.', '<span class="gn-link" data-act="devRepClear">Overview</span>');
+   head+=askInsight({q:SCENE.devRepQ||'latency', tone:'good', head:'One slow hour explains the p99', st:['Resolved','ok'], p:'p99 was 210 ms yesterday against 160 ms seven days ago. Between 2:04 and 2:51 AM one issuer’s host answered in 400 to 500 ms and the network answered '+si+' of your authorizations under stand-in, each one settled. Every other hour sat between 158 and 176 ms and your p50 held at 44 ms.', acts:[['Requests over 400 ms','data-act="askLogs" data-k="slow"']]});
    var f=figs([['p50', '44 ms', 'level with seven days ago'],['p99', '210 ms', '+50 ms on seven days ago'],['Slowest hour', hrs[worst]+' to '+hrs[worst+1], 'p99 '+H.p99[worst]+' ms'],['Answered under stand-in', si.toLocaleString('en-US'), '0.3% of the day, every one settled']]);
    var ch=secH('Issuer answer by hour', 'Solid p99, dotted p50')+chart('line',{labels:hrs.slice(0,24), series:[{name:'p99', values:H.p99}], prev:H.p50, min:0, max:500, fmt:'ms'});
    var byP=DEV_ENDPOINTS.slice().sort(function(a,b){return b[4]-a[4]});
@@ -7162,6 +7215,12 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    return head+form+secH('Endpoints', eps.length+' in '+ENVN[e])+list+local;
  };
  DEV.events_old=null;
+ function whInsight(shown, dl){
+   var f=shown.filter(function(d){return d[3]!=='200'}), x=f[0], ok=dl.length-dl.filter(function(d){return d[3]!=='200'}).length;
+   var head=f.length?nn(f.length,'delivery','deliveries')+' failing, '+x[4]+' attempts, '+x[3]+' from your endpoint':'Every delivery returned 200';
+   var p=f.length?x[0]+' ('+x[1]+') failed '+x[2]+' with '+x[3]+' on every attempt. Next retry '+x[5]+', and retries stop after 3 days. The other '+ok+' deliveries this week returned 200.':'';
+   return askInsight({q:SCENE.whFrom, tone:f.length?'bad':'good', head:head, st:f.length?['Action needed','wa']:null, p:p, figs:f.length?[['Attempts', x[4], x[3]+' each'],['Next retry', x[5].replace('June 1, ',''), 'June 1'],['Delivered', ok+' of '+dl.length, '7 days']]:null, acts:[['Event reference','data-go2="events"']], clear:'whFromClear'});
+ }
  function epPage(ep){
    var tabk=tab('ept', epDeliveries(ep).length?'del':'set'), e=envSel();
    var head=backTo('Webhooks','data-act="epBack"')+'<div class="l2 obj"><h1 class="gn-mono">'+esc(ep.url)+'</h1>'+(ep.on?word('Active'):sw('Disabled',''))+(ep.d?'<span class="l2-mode">'+esc(ep.d)+'</span>':'')+'</div><nav class="ltabs">'+[['del','Deliveries'],['set','Settings'],['test','Test']].map(function(t){ return '<a data-tab="ept:'+t[0]+'" class="'+(tabk===t[0]?'on':'')+'">'+t[1]+'</a>' }).join('')+'</nav>';
@@ -7190,7 +7249,7 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    var ok=dl.filter(function(d){return d[3]==='200'}).length, pend=dl.filter(function(d){return d[5]}).length;
    var f=figs([['Deliveries, 7 days', String(dl.length), ''],['Delivered', dl.length?Math.round(100*ok/dl.length)+'%':'—', ''],['Failed', String(dl.length-ok), pend?pend+' retrying':''],['Median response', dl.length?'61 ms':'—', 'your server']]);
    var types=[['all','All types']].concat(EVENTS.filter(function(x){return ep.events.indexOf(x[0])>-1}).map(function(x){ return [x[0], x[0]] }));
-   var filt=(SCENE.whFrom?askFrom(SCENE.whFrom, askMatch(shown.length,'delivery','deliveries'), 'whFromClear'):'')+toolbar(tabs('df',[['all','All',String(dl.length)],['ok','Delivered',String(ok)],['fail','Failed',String(dl.length-ok)]],'all')+'<select class="gn-in gn-in--sm" data-sel="dt">'+types.map(function(t){ return '<option value="'+esc(t[0])+'"'+(ft===t[0]?' selected':'')+'>'+esc(t[1])+'</option>' }).join('')+'</select>', '<span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var filt=(SCENE.whFrom?whInsight(shown, dl):'')+toolbar(tabs('df',[['all','All',String(dl.length)],['ok','Delivered',String(ok)],['fail','Failed',String(dl.length-ok)]],'all')+'<select class="gn-in gn-in--sm" data-sel="dt">'+types.map(function(t){ return '<option value="'+esc(t[0])+'"'+(ft===t[0]?' selected':'')+'>'+esc(t[1])+'</option>' }).join('')+'</select>', '<span class="gn-link" data-act="noopRefresh">Refresh</span>');
    var t=tbl2([['Event'],['Type'],['Created'],['Status']], shown.map(function(d){ return {c:['<span class="gn-mono">'+esc(d[0])+'</span>', '<span class="gn-mono">'+esc(d[1])+'</span>', '<span class="nw">'+esc(d[2])+'</span>', d[3]==='200'?word('Delivered'):d[5]?sw('Retrying','wa'):sw('Failed','no')], act:'delSel', k:d[0], cls:sel&&sel[0]===d[0]?'is-sel':''} }));
    var detail='';
    if(sel){ var at=ATTEMPTS[sel[0]]||[[sel[2],sel[3],sel[3]==='200'?'61 ms':'—',sel[3]==='200'?'ok':'']];
@@ -7222,11 +7281,18 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
  /* ── Logs ── */
  function logTable(log, sel, compact){ var cols=[['Time'],['Request'],['Status'],['Latency',1]]; if(!compact) cols.push(['Request id']);
    return tbl2(cols, log.map(function(r){ var c=['<span class="nw">'+esc(r.t)+'</span>', '<span class="gn-mono">'+esc(r.m)+' '+esc(r.p)+'</span>', r.st===0?sw('Failed','no'):r.st>=400?sw(String(r.st),'no'):word('200'), r.ms?r.ms+' ms':'—']; if(!compact) c.push('<span class="gn-mono">'+esc(r.id)+'</span>'); return {c:c, act:'logSel', k:r.id, cls:sel===r.id?'is-sel':''} })) }
+ function logInsight(log, f, q){
+   var n=log.length, o={q:SCENE.logFrom, clear:'logFromClear', acts:[]};
+   if(f==='slow'){ var si=DEV_HOURS.standin.reduce(function(a,v){return a+v},0); o.tone='good'; o.head=nn(n,'request')+' over 400 ms'+(clockSpan(log)?', '+clockSpan(log):''); o.st=['Resolved','ok']; o.p='One issuer’s host answered slowly for 47 minutes overnight. The network answered these under stand-in and each one settled in the June 2 cycle. Your p50 held at 44 ms.'; o.figs=[['Slowest', Math.max.apply(null,log.map(function(r){return r.ms||0}))+' ms', ''],['Under stand-in', String(si), 'yesterday'],['p50', '44 ms', 'held']]; o.acts.push(['Latency, yesterday','data-act="askDevRep" data-k="latency"']) }
+   else if(f==='err'){ var by={}; log.forEach(function(r){ var k=r.st===0?'failed handshake':String(r.st); by[k]=(by[k]||0)+1 }); var ks=Object.keys(by); o.tone=by['422']||by['failed handshake']?'warn':''; o.head=n?nn(n,'error')+(q?' on '+q+'s':'')+': '+ks.map(function(k){return by[k]+' × '+k}).join(', '):'No errors'+(q?' on '+q+'s':''); var parts=[]; if(by['402']) parts.push('A 402 is the issuer’s answer, a decline with its response code, and retry rules are yours'); if(by['422']) parts.push('A 422 is yours to fix, the body names the field'); if(by['failed handshake']) parts.push('A failed handshake is the certificate chain, see Certification'); o.p=parts.length?parts.join('. ')+'.':''; o.figs=ks.slice(0,3).map(function(k){ return [k, String(by[k]), ''] }); o.acts.push(['Error reference','data-go2="spec"']) }
+   else { o.head=nn(n,'request')+' match'; o.p='' }
+   return askInsight(o);
+ }
  DEV.logs=function(){
    var e=envSel(), a=envAvail(), all=reqLog(), f=tab('lf','all'), m=tab('lm','all'), q=(SCENE.q||'').toLowerCase();
    var keyF=SCENE.logKey||'';
    var log=all.filter(function(r){ return (f==='all'||(f==='ok'&&r.st===200)||(f==='err'&&(r.st===0||r.st>=400))||(f==='slow'&&r.ms>=400)) && (m==='all'||r.m===m) && (!q||r.id.toLowerCase().indexOf(q)>-1||r.p.indexOf(q)>-1) });
-   var head=ph('Logs', 'Requests and responses for this mode.')+(SCENE.logFrom?askFrom(SCENE.logFrom, askMatch(log.length,'request'), 'logFromClear'):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var head=ph('Logs', 'Requests and responses for this mode.')+(SCENE.logFrom?logInsight(log, f, q):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
    if(!a.sandbox) return head+'<p class="para">Requests appear here once the sandbox is provisioned.</p>';
    var sel=log.filter(function(r){return r.id===SCENE.logId})[0]||log[0];
    var lfoot=(f==='all'&&m==='all'&&!q&&!keyF&&e==='prod')?'<div class="gn-table-foot">Newest '+log.length+' of 48,211 today. Search by request id or path for the rest.</div>':'';
@@ -7583,13 +7649,20 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
            ['Review cadence set','Quarterly, first review in September', !!ho_.review, 'review']] }
  /* after an action redraws the page, the reader lands on the next thing to do rather than on the body */
  function agKeep(sel){ var e=null; String(sel||'').split(', ').forEach(function(s){ if(!e && s) e=$(s) }); if(!e){ focusMain(); return } if(!/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(e.tagName) && !e.hasAttribute('tabindex')) e.setAttribute('tabindex','-1'); e.focus({preventScroll:true}) } /* selectors are tried in the order given */
+ function bookInsight(found, seg){
+   var o={q:SCENE.bookFrom, clear:'bookFromClear', acts:[]}, n=found.length;
+   if(seg==='onb'||seg==='cert'){ var pl=found.filter(function(b){return BOOK_PLAN[b.k]}), behind=pl.filter(function(b){return BOOK_PLAN[b.k].slip>0}); o.tone=behind.length?'warn':'good'; o.head=nn(n,'partner')+' '+(seg==='cert'?'certifying':'onboarding')+', '+behind.length+' behind plan'; o.p=pl.map(function(b){ var p=BOOK_PLAN[b.k]; return b.n+(p.slip?' is '+p.slip+' days behind at '+p.step.charAt(0).toLowerCase()+p.step.slice(1)+', '+(p.move==='The network'?'your move':'their move'):' is on plan for '+p.target) }).join('. ')+'.'; o.figs=pl.slice(0,3).map(function(b){ var p=BOOK_PLAN[b.k]; return [b.n, p.slip?p.slip+' days':'On plan', p.slip?'lands '+p.now:p.target] }); o.acts.push(['Partners against plan','data-act="askRep" data-k="plan"']) }
+   else if(seg==='live'){ var nxt=function(b){ return typeof b.next==='string'?b.next:(b.next||{})[STAGE]||'' }, nx=found.filter(function(b){return nxt(b)&&nxt(b)!=='—'}), lr=BOOK_REPORT.live.filter(function(x){return x[3]!=='—'}); o.tone='good'; o.head=nn(n,'live partner')+', '+nx.length+' with something open'; o.p=nx.map(function(b){ var x=nxt(b); return b.n+': '+x.charAt(0).toLowerCase()+x.slice(1)+(b.turn==='You'?', your move':'') }).join('. ')+'. Approval across live acquirers runs '+ (lr.reduce(function(a,x){return a+parseFloat(x[3])},0)/lr.length).toFixed(1)+'% against the network’s 96.1%.'; o.figs=[['Live', String(n), 'of '+BOOK.length],['With your move', String(found.filter(function(b){return b.turn==='You'}).length), ''],['Approval', (lr.reduce(function(a,x){return a+parseFloat(x[3])},0)/lr.length).toFixed(1)+'%', 'network 96.1%']]; o.acts.push(['Book report','data-go2="bookrep"']) }
+   else { o.head=nn(n,'partner')+' match'; o.p='' }
+   return askInsight(o);
+ }
  AGENT.book=function(){
    var live_=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
    var head=ph('Partners', BOOK.length+' in your book. '+live_+' live, '+(BOOK.length-live_)+' onboarding.');
    var bq=(SCENE.bookQ||'').toLowerCase(), seg=tab('bookSeg','all');
    var found=BOOK.filter(function(b){ var st=bookStage(b); return (!bq || b.n.toLowerCase().indexOf(bq)>-1) && (seg==='all' || (seg==='live'?st==='Live':seg==='cert'?st==='Certifying':st!=='Live'&&st!=='Certifying')) });
    var view=tab('bookView','table');
-   var segs=(SCENE.bookFrom?askFrom(SCENE.bookFrom, askMatch(found.length,'partner'), 'bookFromClear'):'')+toolbar(tabs('bookSeg',[['all','All',String(BOOK.length)],['onb','Onboarding',ct(BOOK.filter(function(b){var s=bookStage(b); return s!=='Live'&&s!=='Certifying'}).length)],['cert','Certifying',ct(BOOK.filter(function(b){return bookStage(b)==='Certifying'}).length)],['live','Live',String(live_)]],'all'), tabs('bookView',[['table','Table'],['board','Board']],'table'));
+   var segs=(SCENE.bookFrom?bookInsight(found, seg):'')+toolbar(tabs('bookSeg',[['all','All',String(BOOK.length)],['onb','Onboarding',ct(BOOK.filter(function(b){var s=bookStage(b); return s!=='Live'&&s!=='Certifying'}).length)],['cert','Certifying',ct(BOOK.filter(function(b){return bookStage(b)==='Certifying'}).length)],['live','Live',String(live_)]],'all'), tabs('bookView',[['table','Table'],['board','Board']],'table'));
    var chip=bq?toolbar('<span class="gn-chip">Search '+esc(SCENE.bookQ)+' <span class="gn-link" data-act="bookClear" style="color:inherit">Clear</span></span>', found.length+' of '+BOOK.length):'';
    if(bq&&!found.length) return head+segs+chip+'<div class="emp"><b>No partners match '+esc(SCENE.bookQ)+'.</b><span>Check the name, or clear the search.</span></div>';
    /* longest waiting first, then live partners by name */
@@ -7721,7 +7794,9 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
  function planReport(){
    var onb=BOOK.filter(function(b){ return bookStage(b)!=='Live' && BOOK_PLAN[b.k] }).map(function(b){ return Object.assign({b:b}, BOOK_PLAN[b.k]) }).sort(function(x,y){ return y.slip-x.slip });
    var behind=onb.filter(function(x){return x.slip>0}), lost=behind.reduce(function(a,x){return a+x.slip},0);
-   var head=ph('Partners against plan', 'From your question: “'+esc(SCENE.agRepQ||'plan')+'”. '+nn(onb.length,'partner')+' before go-live, '+behind.length+' behind.', '<span class="gn-link" data-act="agRepClear">Book report</span>');
+   var head=ph('Partners against plan', nn(onb.length,'partner')+' before go-live, '+behind.length+' behind.', '<span class="gn-link" data-act="agRepClear">Book report</span>');
+   var yours=behind.filter(function(x){return x.move==='The network'}), h=behind.filter(function(x){return x.b.k==='halcyon'})[0];
+   head+=askInsight({q:SCENE.agRepQ||'plan', tone:behind.length?'warn':'good', head:behind.length?behind.length+' of '+onb.length+' partners before go-live are behind, '+lost+' days lost':'Every partner before go-live is on plan', st:yours.length?['Your move','wa']:null, p:behind.map(function(x){ return x.b.n+' is '+x.slip+' days behind at '+x.step.charAt(0).toLowerCase()+x.step.slice(1)+', '+(x.move==='The network'?'your move':'their move')+'.' }).join(' ')+(h?' Booking Halcyon into June 1 to 5 recovers most of its slip and is the one move that is yours.':''), acts:(h?[['Windows','data-go2="certs"']]:[]).concat(behind.filter(function(x){return x.b.k!=='halcyon'}).slice(0,1).map(function(x){ return [x.b.n+'’s page','data-act="agPartner" data-k="'+x.b.k+'"'] }))});
    var f=figs([['Before go-live', String(onb.length), 'of '+BOOK.length+' in the book'],['Behind plan', String(behind.length), behind.map(function(x){return x.b.n.split(' ')[0]+' '+x.slip}).join(', ')+' days'],['Days lost', String(lost), 'against confirmed targets'],['Median to live, this year', '74 days', 'target 78']]);
    var ch=secH('Days behind plan', 'Longest first')+chart('lollipop',{items:onb.map(function(x){ return {name:x.b.n, value:x.slip, tone:x.slip>14?'bad':x.slip>0?'warn':'good'} }), fmt:'days', max:30});
    var t=secH('Before go-live', 'Ranked by the slip')+tbl2([['Partner'],['Stage'],['Target',1],['Lands now',1],['Behind',1],['Holding step'],['Whose move']], onb.map(function(x){ return {c:['<span class="nw">'+esc(x.b.n)+'</span>', esc(bookStage(x.b)), esc(x.target), esc(x.now), x.slip?sw(x.slip+' days', x.slip>14?'no':'wa'):word('On plan'), esc(x.step), esc(x.move)], act:'agPartner', k:x.b.k} }));
@@ -7793,6 +7868,14 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
      : '<p class="gn-empty">'+(!docsIn?'The review opens when the three documents are received.':mayDecide?'Clear all six areas to clear the review.':agWho('riskArea'))+'</p>';
    return head+docs+secH('Six areas', okN+' of 6 cleared')+rowsT+decide;
  };
+ function caseInsight(list, who, seg){
+   var o={q:SCENE.caseFrom, clear:'caseFromClear', acts:[]}, n=list.length, c=list[0], pname=function(k){ return (BOOK.filter(function(b){return b.k===k})[0]||{n:k}).n };
+   if(who==='un'){ o.tone=n?'warn':'good'; o.head=n?nn(n,'case')+' without an owner'+(n===1?', '+c.sev.toLowerCase()+', '+slaWordText(caseDue(c)):''):'Every open case has an owner'; var rk=CASE_ROUTE[c&&c.area]||'marcus', me=agSeat().who, rn=rk===me?'you':PEOPLE[rk].n; o.p=n?c.t+' from '+c.by+' at '+pname(c.k)+', opened '+c.opened+'. Routing sends '+c.area+' cases to '+rn+'.':''; o.figs=n?[['Open', c.opened.split(',')[0], c.area],['Severity', c.sev, c.sev==='High'?'reply the same day':'reply next day'],['Suggested owner', rk===me?'You':PEOPLE[rk].n.split(' ')[0], c.area]]:null; if(n) o.acts.push(['Open the case','data-act="agCase" data-k="'+c.id+'"']) }
+   else if(seg==='waiting'){ o.tone=''; o.head=n?nn(n,'case')+' waiting on a partner':'No case is waiting on a partner'; o.p=list.map(function(x){ return x.t+', waiting on '+x.by+' at '+pname(x.k)+' since '+x.opened.split(',')[0] }).join('. ')+(n?'. Nothing is due from you until they answer.':''); o.figs=list.slice(0,3).map(function(x){ return [pname(x.k), x.by.split(' ')[0], x.opened.split(',')[0]] }); if(n) o.acts.push(['Open the case','data-act="agCase" data-k="'+c.id+'"']) }
+   else { o.head=nn(n,'case')+' match'; o.p='' }
+   return askInsight(o);
+ }
+ function slaWordText(d){ return d<0?'overdue '+nn(-d,'day'):d===0?'reply due today':'reply due in '+nn(d,'day') }
  AGENT.cases=function(){
    var all=agCases(), who=tab('caseWho','mine'), seg=tab('caseSeg','open');
    var me=agSeat().who;
@@ -7801,7 +7884,7 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
    var head=ph('Cases', open_.length+' open across the book'+(late.length?', '+nn(late.length,'reply','replies')+' overdue':'')+(un.length?', '+nn(un.length,'case')+' unassigned.':'.'));
    var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
-   var bar=(SCENE.caseFrom?askFrom(SCENE.caseFrom, askMatch(list.length,'case'), 'caseFromClear'):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
+   var bar=(SCENE.caseFrom?caseInsight(list, who, seg):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
    var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
    var pane='', ctx='';
    if(sel){ var bb=BOOK.filter(function(x){return x.k===sel.k})[0], ownr=PEOPLE[sel.owner]||null, mode=tab('caseMode','reply'), canned=CANNED.filter(function(a){ return true });
@@ -8125,6 +8208,10 @@ function askFrom(q, note, clearAct, clearLabel){ return '<div class="askfrom">Fr
    epBackFrom:function(){ SCENE.whFrom=null; SCENE.df='all'; SCENE.epId=null; drawApp(VIEW, true); focusMain() },
    bookFromClear:function(){ SCENE.bookFrom=null; SCENE.bookSeg='all'; drawApp(VIEW); focusMain() },
    caseFromClear:function(){ SCENE.caseFrom=null; SCENE.caseWho='mine'; SCENE.caseSeg='open'; drawApp(VIEW); focusMain() },
+   cycFromClear:function(){ SCENE.cycFrom=null; go('settlement') },
+   askDsp:function(){ SCENE.df2='needs'; SCENE.dspFrom='disputes needing a response'; go('disputes') },
+   askDevRep:function(b){ SCENE.devRep=b.dataset.k; SCENE.devRepQ='latency overnight'; SCENE.env='prod'; go('overview') },
+   askRep:function(b){ SCENE.agRep=b.dataset.k; SCENE.agRepQ='partners behind plan'; go('bookrep') },
    askLogs:function(b){ SCENE.lf=b.dataset.k; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=b.dataset.k==='slow'?'requests over 400 ms':'errors'; go('logs') },
    askBook:function(b){ SCENE.bookSeg=b.dataset.k; SCENE.bookFrom={onb:'onboarding partners',cert:'certifying partners',live:'live partners'}[b.dataset.k]||b.dataset.k; go('book') },
    askCases:function(b){ var k=b.dataset.k; if(k==='un'){ SCENE.caseWho='un'; SCENE.caseSeg='open' } else { SCENE.caseWho='all'; SCENE.caseSeg=k } SCENE.caseFrom=k==='un'?'unassigned cases':'cases waiting on partners'; go('cases') },
