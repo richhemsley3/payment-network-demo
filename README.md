@@ -1,4 +1,4 @@
-# The Story of Brightline — demo
+# The Story of Brightline Bank — demo
 
 A packaged, static copy of the demo: the ten-panel story prototype, the public
 developer site it links to, and the stylesheet both run on. Open `index.html`,
