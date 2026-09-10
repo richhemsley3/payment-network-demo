@@ -7267,8 +7267,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      : SCENE.share
        ? '<form class="sbx-f" onsubmit="return false"><input class="gn-in" id="shareTo" placeholder="priya@brightline.example"><button class="gn-btn gn-btn--sm" data-act="shareSend">Send</button></form>'
        : '<span class="gn-link" data-act="shareOpen">Share with your team</span>';
-   var sandbox='<div class="sbx-c"><div><b>Explore the sandbox</b><span>Send a test authorization and read the response. Open to your team now, no account required.</span></div>'
-     +'<div class="sbx-a"><button class="gn-btn" data-act="openSbx">Explore the sandbox</button>'+share+'</div></div>';
+   var sandbox='<div class="sbx-c"><div><b>Your sandbox is open</b><span>Send a test authorization and read the response. Open to your team now, no account required.</span></div>'
+     +'<div class="sbx-a"><button class="gn-btn" data-act="openSbx">Open the sandbox</button>'+share+'</div></div>';
    var fit=secH('Recommended products')+rows(DEAL.fit.map(function(f){
      var on=inDeal(f);
      /* Learn more is not wired yet, by request; the button adds or removes */
@@ -7579,7 +7579,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      var vals=series.slice().reverse().map(function(d){ return HWt.map(function(w){ return Math.round(d[1]*w/hSum) }) });
      body=chart('heatmap',{rows:series.slice().reverse().map(function(d){return d[0]}), cols:hrs, values:vals, fmt:'k'})+'<p class="para chart-key">Authorizations by hour and day.</p>'+tbl2([['Part of the day'],['Authorizations',1],['Share',1],['Approved',1],['Slowest issuer answer',1]], [['night','Overnight, 12 to 6 AM',0,6,95.9],['morning','Morning, 6 AM to noon',6,12,96.9],['afternoon','Afternoon, noon to 6 PM',12,18,96.8],['evening','Evening, 6 PM to midnight',18,24,96.6]].map(function(p){ var w=HWt.slice(p[2],p[3]).reduce(function(a,v){return a+v},0), f=function(t){return t.h>=p[2]&&t.h<p[3]}, l=N.filter(f); return {c:[esc(p[1]), Math.round(tot*w/hSum).toLocaleString('en-US'), (100*w/hSum).toFixed(0)+'%', p[4].toFixed(1)+'%', (l.length?Math.max.apply(null,l.map(function(t){return t.ms})):0)+' ms'], act:'txByHour', k:p[0]} })) }
    else { var tokN=Math.round(tot*0.29); body=chart('bar',{horizontal:true, items:[{name:'On the card',value:tot-tokN},{name:'On a network token',value:tokN}], fmt:'k', left:180})+tbl2([['Credential'],['Authorizations',1],['Share',1],['Approved',1],['Disputes per 10k',1]], [{c:['On the card', (tot-tokN).toLocaleString('en-US'), '71%', '96.6%', '3.6'], act:'txByTok', k:'card'},{c:['On a network token', tokN.toLocaleString('en-US'), '29%', '97.4%', '2.1'], act:'txByTok', k:'token'}]) }
-   return secH('Transaction history', 'Five readings of one period')+segs+body;
+   return secH('Transaction history', 'Five measures')+segs+body;
  }
  PARTNER.settlement=function(){
    var fees=secH('Fee schedule', goLink('Agreements','data-go2="agreement"'))+figs([['Assessment','0.11%','of settled volume'],['Authorization','$0.0035','each'],['Dispute','$4.50','per case'],['Gateway','$0','direct connection']]);
@@ -8992,7 +8992,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ]);
  };
  function agAlertCard(a){ var taken=(SCENE.taken||{})[a.k], done=(SCENE.resolved||{})[a.k];
-   return '<article class="gn-notice"><div class="gn-notice-h">'+(done?word('Resolved'):taken?sw('Yours','wa'):a.kind==='action'?sw('Action needed','wa'):sw('For information',''))+'<span>'+esc(a.p)+'</span></div><h3>'+esc(agAlertT(a))+'</h3><p>'+esc(a.what)+'</p><div class="gn-notice-f">'+(done?'<span>Resolved '+since('agr:'+a.k)+((SCENE.resNote||{})[a.k]?': '+esc(SCENE.resNote[a.k]):'')+'</span>':taken?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>':(SCENE.assigned||{})[a.k]?'<span>Handed to '+esc((SCENE.assigned||{})[a.k])+'</span>':a.kind==='action'?'<button class="gn-btn gn-btn--sm" data-act="agTake" data-k="'+a.k+'">Take it</button>'+menu('al:'+a.k, [['Hand to Ana Okafor','agHand',a.k+'|Ana Okafor'],['Hand to Theo Marchetti','agHand',a.k+'|Theo Marchetti']]):'')+'</div></article>' }
+   return '<article class="gn-notice"><div class="gn-notice-h">'+(done?word('Resolved'):taken?sw('Yours','wa'):a.kind==='action'?sw('Action needed','wa'):sw('For information',''))+'<span>'+esc(a.p)+'</span></div><h3>'+esc(agAlertT(a))+'</h3><p>'+esc(a.what)+'</p><div class="gn-notice-f">'+(done?'<span>Resolved '+since('agr:'+a.k)+((SCENE.resNote||{})[a.k]?': '+esc(SCENE.resNote[a.k]):'')+'</span>':taken?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>':(SCENE.assigned||{})[a.k]?'<span>Handed to '+esc((SCENE.assigned||{})[a.k])+'</span>':a.kind==='action'?'<button class="gn-btn gn-btn--sm" data-act="agTake" data-k="'+a.k+'">Take the alert</button>'+menu('al:'+a.k, [['Hand to Ana Okafor','agHand',a.k+'|Ana Okafor'],['Hand to Theo Marchetti','agHand',a.k+'|Theo Marchetti']]):'')+'</div></article>' }
  AGENT.alerts=function(){
    var open=AG_ALERTS.filter(function(a){ return STAGE>=a.from && STAGE<=a.until });
    var head=ph('Alerts', 'Open issues across every partner in your book.');
@@ -9454,7 +9454,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* the results for a query: the rows, or what the field takes when it is empty, or the miss */
  function agfResults(q){
    if(!q.trim()){ var ex=[['A name, or part of one','halcyon'],['An identifier or a BIN range','601186'],['A contact’s name or email','devin'],['A case, a transaction or a request','case_1182'],['A wire reference or an API key','FW-20260602-7741']];
-     return secH('What the field takes', 'Press any key to start')+doc(ex.map(function(e){ return [e[0], '<span class="gn-link is-link" data-agf="'+esc(e[1])+'">'+esc(e[1])+'</span>', ''] })) }
+     return secH('What the field takes', 'Examples')+doc(ex.map(function(e){ return [e[0], '<span class="gn-link is-link" data-agf="'+esc(e[1])+'">'+esc(e[1])+'</span>', ''] })) }
    var R=agfFind(q);
    if(!R.length) return '<div class="emp"><b>No participant matches “'+esc(q)+'”.</b><span>Try part of a name, or an identifier without its spaces.</span></div>';
    var rows=tbl2([['Partner'],['Matched'],['Stage'],['Health'],['Waiting'],['']], R.map(function(r){ var b=r.b, x=BOOKX[b.k], hits=r.hits.slice(0,2);
@@ -10505,7 +10505,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* what it is expected to unlock: three figures, then the working under them */
  function xpWorth(){
    var y=xpYear();
-   return secH('What Wallets is expected to unlock', 'One estimate, from your own volume')
+   return secH('What Wallets is expected to unlock', 'Estimated from your own volume')
     +figs([['Wallet authorizations, first year', 'About '+nn2(y), 'Estimated from your card-not-present volume'],
            ['Merchants that can take a wallet', '4,200', 'No new merchant certification'],
            ['New certification cases', '0', 'The token arrives in the message you send today']], 'gn-figs--3')
@@ -10526,7 +10526,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      : '';
    var bulk = '<div class="xp-bulk">'
      +(freshLeft
-       ? '<button class="gn-btn" data-act="xpAll">Confirm the '+freshLeft+' answers below</button><span>Open any answer to read where it came from, or to correct it.</span>'
+       ? '<button class="gn-btn" data-act="xpAll">Confirm '+freshLeft+' answers</button><span>Open any answer to read where it came from, or to correct it.</span>'
        : word('confirmed')+'<span>'+nn(fresh.length,'answer')+' confirmed as they stand.</span>')
      +'</div>';
    var groups=xpGroups().map(function(g){
@@ -10578,7 +10578,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
  /* the two tracks, each against the same track the first time */
  function xpNext(){
-   return secH('What happens next', 'Two steps on each side')
+   return secH('What happens next', 'Two steps each side')
     +'<div class="xp-tracks">'+XP_TRACK.map(function(t){
       return '<section class="xp-t"><div class="gn-section gn-section--h3"><h3>'+esc(t.t)+'</h3><span>'+nn(t.now.length,'step')+'</span></div>'
        +'<div class="xp-steps">'+t.now.map(function(s){ return '<div class="xp-step"><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div>'
