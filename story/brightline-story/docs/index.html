@@ -5989,7 +5989,7 @@ window.GNChart=(function(){
    $('#siteTalk').onclick=talk; $('#siteTalk2').onclick=talk;
    /* the second action opens the sandbox, not a scroll to further down the
       same page: an evaluating engineer wants to try it, not read more */
-   var tryIt=function(){ location.href=devHref()+'api/index.html'+devQ() }; /* Try it out lands on the API reference: the path is the reference, then the sandbox to test, then the hook (Rich, September 9) */
+   var tryIt=function(){ location.href=devHref()+'docs/testing.html'+devQ()+'#console' }; /* Try it out lands on the sandbox console itself, not the reference and not the top of the cards page (Rich, September 10) */
    $('#siteTry').onclick=tryIt; $('#siteTry2').onclick=tryIt;
    $$('#siteBody [data-res]').forEach(function(a){ a.onclick=function(){
      if(a.dataset.res==='dev'){ location.href=devHref()+'docs/index.html'+devQ(); return }
