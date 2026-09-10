@@ -2825,14 +2825,14 @@ body.nonav .mn{max-width:none; padding:0 48px 64px}
    labels. Hairlines and filled surfaces run the full column. Copy under a
    heading takes 8 of the column's 12 parts — a measure derived from the
    layout rather than a character count guessed per element. */
-.gn-section,.gn-page-head,.para,.deal-m,.deal-h,.deal-p,.gn-figs{padding-left:24px; padding-right:24px}
+.gn-section,.gn-page-head,.gn-open,.para,.deal-m,.deal-h,.deal-p,.gn-figs{padding-left:24px; padding-right:24px}
 .tl2-h,.tl2-r{padding-left:24px; padding-right:24px}
 .tl2-k{padding-left:24px}
 /* product, not marketing: copy runs 10 of 12 parts. In the 880px deal column
    that is 733px — about 57 characters at the 22px deck, 80 at body size. */
 .gn-page-head p,.deal-p,.para,.nc > p,.dt-b p{max-width:calc(100% * 10 / 12)}
 .deal-c > div span{max-width:none}
-.fr .gn-section,.fr .gn-page-head,.fr .para,.fr .gn-figs,.dside .gn-section{padding-left:0; padding-right:0}
+.fr .gn-section,.fr .gn-page-head,.fr .gn-open,.fr .para,.fr .gn-figs,.dside .gn-section{padding-left:0; padding-right:0}
 
 
 /* the offer answers the switches */
@@ -3479,7 +3479,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 
 /* Assist: the assistant's reading on a page a question opened. Owned by the assist track; appended after base.css. */
 /* the assistant's reading on a page a question opened. Not a card: it is read rather than scanned, so it takes neither the fill nor a bar down its left, and closes on a hairline instead. One column, one left edge: the eyebrow names the assistant, quotes the question and carries the follow-up field; then the finding at 22, the argument at 15, the actions, and the figures on the page's own grid beneath. */
-.askin{margin-top:12px; padding:0 0 20px; background:none; border-radius:0; border-bottom:1px solid var(--g150)}
+.askin{margin-top:12px; padding:0 24px 20px; background:none; border-radius:0; border-bottom:1px solid var(--g150)}
 .askin::before{display:none}
 .askin-e{display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; color:var(--g550); min-height:28px}
 .askin-e b{font-weight:600; color:var(--navy)}
@@ -3543,7 +3543,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
    with an edge that matters — a figure card, a chart card, a row opened in place — and spending it here
    too would mean it marks nothing. State is said once, as the status word beside the finding.
    A hairline underneath closes the band and ties it to the page opening above. */
-.pgin{margin-top:12px; padding:0 0 20px; background:none; border-radius:0; border-bottom:1px solid var(--g150)}
+.pgin{margin-top:12px; padding:0 24px 20px; background:none; border-radius:0; border-bottom:1px solid var(--g150)}
 .pgin::before{display:none}
 .pgin-e{display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; font-size:13px; color:var(--g550)}
 .pgin-e b{font-weight:600; color:var(--navy)}
@@ -9169,7 +9169,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    txDay:function(b){ SCENE.txDay=b.dataset.k; SCENE.txs='all'; go('transactions') },
    txDayClear:function(){ SCENE.txDay=''; drawApp(VIEW); },
    txOpen:function(b){ var x=TXNS.filter(function(t){return t.id===b.dataset.k})[0]; if(!x) return;
-     if(VIEW==='transactions'){ SCENE.txId=x.id; SCENE.txRow=(SCENE.txRow===x.id?null:x.id); drawApp(VIEW); return }
+     if(VIEW==='transactions'){ SCENE.txId=x.id; var want=(SCENE.txRow===x.id?null:x.id); SCENE.txRow=want; drawApp(VIEW);
+       if(!want || document.querySelector('tr.is-expand .txin')) return;
+       SCENE.txRow=null; drawApp(VIEW) }
      SCENE.txId=x.id; openPanel(txPanel(x), b.closest?b.closest('tr'):b) },
    txPage:function(b){ closePanel(); SCENE.txId=b.dataset.k; if(b.dataset.r==='refund') SCENE.refundOpen=b.dataset.k; go('transaction') },
    pnlClose:function(){ closePanel() },
