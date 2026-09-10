@@ -81,7 +81,7 @@ document.getElementById('tcSend').addEventListener('click',function(){ if(!dvAcc
 <script src="../shared/site.js"></script>
 <script>
 (function(){ var el=document.getElementById('acctStrip'); if(!el||typeof dvAccountStrip!=='function') return;
-  if(typeof dvAccount==='function' && dvAccount()) el.innerHTML=dvAccountStrip(); else el.remove(); })();
+  el.innerHTML=(typeof dvAccount==='function' && dvAccount()) ? dvAccountStrip() : ''; })();
 </script>
 </body>
 </html>
