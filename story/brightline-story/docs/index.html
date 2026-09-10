@@ -1598,7 +1598,7 @@ input.gn-in, textarea.gn-in, select.gn-in{font-family:var(--ui); font-weight:400
 .heat-r i{display:block; height:14px; border-radius:3px; background:var(--g150)}
 .heat i.is-ok{background:var(--good)} .heat i.is-late{background:var(--warn)} .heat i.is-missing{background:var(--bad)}
 .heat-r.is-link{cursor:pointer} .heat-r.is-link:hover > span:first-child{color:var(--navy)}
-.heat-k{display:flex; gap:20px; padding-top:10px; font-size:13px; color:var(--g550)} .heat-k span{display:flex; align-items:center; gap:6px} .heat-k i{width:14px; height:14px; border-radius:3px; display:inline-block}
+.heat-k{display:flex; gap:20px; margin-top:16px; padding-top:12px; font-size:13px; color:var(--g550)} .heat-k span{display:flex; align-items:center; gap:6px} .heat-k i{width:14px; height:14px; border-radius:3px; display:inline-block}
 /* the plan strip marks the week the plan is in */
 .tl2-h .tl2-w span.is-now{color:var(--navy); font-weight:600}
 
@@ -3463,6 +3463,11 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .txin-g span{display:block; font-size:15px; margin-top:4px}
 .txin .gn-actions{margin-top:20px}
 @media (max-width:900px){ .txin-g{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* notices stack with air between them. The class had been used in markup since the first pass with no
+   rule behind it, so two cards sat edge to edge and read as one. */
+.nt-grid{display:grid; gap:12px; margin-top:16px}
+@media (min-width:1100px){ .nt-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))} }
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
