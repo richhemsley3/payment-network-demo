@@ -8,10 +8,11 @@
 <link rel="stylesheet" href="../design-system/tokens/typography.css">
 <link rel="stylesheet" href="../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../design-system/gn.css">
-<link rel="stylesheet" href="shared/site.css">
+<link rel="stylesheet" href="shared/site.css"><link rel="stylesheet" href="shared/share.css">
 <script src="../design-system/shared/icons.js"></script>
 <script src="../design-system/gn-charts.js"></script>
 <script src="shared/data.js"></script>
+<script src="shared/share.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--1"><main class="dv-body">
@@ -33,7 +34,7 @@
   function minor(){ var v=amt.value.trim(); return /^\d+(\.\d{1,2})?$/.test(v)&&parseFloat(v)>0?Math.round(parseFloat(v)*100):null }
   function paint(){ var s=DV.sample(DV.body(+sel.value, minor()||5820, 'contactless')); document.getElementById('hmCurl').textContent=s.curl; document.getElementById('hmNode').textContent=s.node; document.getElementById('hmPython').textContent=s.python }
   sel.addEventListener('change',paint); amt.addEventListener('input',paint); amt.addEventListener('dv-restored',paint); paint();
-  document.getElementById('hmSend').addEventListener('click',function(){ var m=minor(); if(!dvErr(amt, m?'':'Enter an amount in dollars, like 58.20.')){ amt.focus(); return } if(dvOffline()){ rs.innerHTML=''; out.textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var r=DV.respond(+sel.value, m); rs.innerHTML='<b'+(r.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+r.round_trip_ms+' ms'; out.textContent=JSON.stringify(r,null,2) });
+  document.getElementById('hmSend').addEventListener('click',function(){ var m=minor(); if(!dvErr(amt, m?'':'Enter an amount in dollars, like 58.20.')){ amt.focus(); return } if(dvOffline()){ rs.innerHTML=''; out.textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var r=DV.respond(+sel.value, m); rs.innerHTML='<b'+(r.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+r.round_trip_ms+' ms'; out.textContent=JSON.stringify(r,null,2); if(window.dvSent) dvSent(r); if(window.dvWon) dvWon(out,'home') });
 })();
 </script>
 

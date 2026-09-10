@@ -1,0 +1,6 @@
+/* the share dialog: the system's modal with the fields set wide, the sandbox record under its checkbox, and the confirmation. Loaded with share.js by the pages that open it. */
+.dv-share .gn-modal-b .gn-field{margin-top:16px} .dv-share .gn-modal-b .gn-field:first-of-type{margin-top:20px} .dv-share .gn-in{max-width:none}
+.dv-share-inc{margin-top:20px; align-items:flex-start} .dv-share-inc .gn-check{margin-top:2px} .dv-share-inc small{display:block; margin-top:2px}
+.dv-share-sent{margin-top:16px} .dv-share-sent:focus{outline:none} .dv-share-sent b{display:block; font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead); font-weight:600} .dv-share-sent p{color:var(--gn-text-secondary); margin-top:8px; line-height:1.5}
+@media print{ .dv-share,.gn-scrim{display:none} }
+.dv-won{margin-top:16px} /* the hook after a successful test sits under the console that answered */

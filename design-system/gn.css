@@ -80,8 +80,9 @@ b.gn-num{font-size:var(--gn-type-body); color:var(--gn-text)}
 
 /* ── 4 · surfaces: white and one tone, hairlines inside, shadows only on things that float ── */
 .gn-surface{background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface); padding:24px}
+/* a surface that needs the reader says so in its own words and takes the signal on its action; the
+   3px rail it used to wear is retired, because four components wearing it made it mean nothing */
 .gn-surface--marked{position:relative}
-.gn-surface--marked::before{content:""; position:absolute; left:0; top:24px; bottom:24px; width:3px; background:var(--gn-signal); border-radius:0 2px 2px 0}
 .gn-card{background:var(--gn-bg-page); border:1px solid var(--gn-outline); border-radius:var(--gn-radius-surface); padding:20px 24px}
 .gn-card.is-link{cursor:pointer; transition:border-color var(--gn-duration) ease}
 .gn-card.is-link:hover{border-color:var(--gn-gray-400)}
@@ -411,8 +412,7 @@ select.gn-in--auto{width:auto; max-width:none}
 /* a note the screen makes: what happened, or what someone said */
 .gn-note{margin-top:24px; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-part); font-size:var(--gn-type-body); line-height:1.5}
 .gn-note b{font-weight:600; display:block} .gn-note span{display:block; color:var(--gn-text-secondary); margin-top:4px}
-.gn-note--marked{position:relative; border-radius:var(--gn-radius-surface)}
-.gn-note--marked::before{content:""; position:absolute; left:0; top:20px; bottom:20px; width:3px; background:var(--gn-interactive); border-radius:0 2px 2px 0}
+.gn-note--marked{border-radius:var(--gn-radius-surface)}
 /* notice card: kind, effective date, title, what it means to you. Openable. */
 .gn-notice{padding:20px 24px; border:1px solid var(--gn-outline); border-radius:var(--gn-radius-surface); background:var(--gn-bg-page)}
 .gn-notice.is-link{cursor:pointer} .gn-notice.is-link:hover{border-color:var(--gn-gray-400)}
@@ -876,9 +876,10 @@ select.gn-in--auto{width:auto; max-width:none}
 .gn-chartcards{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:24px}
 .gn-chartcards--3{grid-template-columns:repeat(3,minmax(0,1fr))}
 /* insight: a finding in one sentence, why, and one action. Marked on the left by what it means. */
-.gn-insight{padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface); position:relative; padding-left:28px}
-.gn-insight::before{content:""; position:absolute; left:0; top:20px; bottom:20px; width:3px; border-radius:0 2px 2px 0; background:var(--gn-interactive)}
-.gn-insight.is-warn::before{background:var(--gn-warn)} .gn-insight.is-bad::before{background:var(--gn-bad)} .gn-insight.is-good::before{background:var(--gn-good)}
+.gn-insight{padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface)}
+/* no rail and no tinted heading: the status word on the right of the head already says what this means,
+   and a second coloured thing on the same line says it twice. A finding whose state matters carries that
+   word; one that does not is neutral, and neutral is a legitimate thing for a finding to be. */
 .gn-insight-h{display:flex; align-items:baseline; gap:16px}
 .gn-insight-h b{font-weight:600; font-size:var(--gn-type-body)} .gn-insight-h .gn-status{margin-left:auto}
 .gn-insight p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:4px; line-height:1.5; max-width:var(--gn-measure-body)}
@@ -1031,3 +1032,122 @@ select.gn-in--auto{width:auto; max-width:none}
 .gn-color-strip{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px}
 .gn-color-strip span{display:inline-flex; align-items:center; gap:8px; font-size:var(--gn-type-label); color:var(--gn-text-caption)}
 .gn-color-strip i{width:20px; height:20px; border-radius:var(--gn-radius-small)}
+
+/* ── 25 · assist: what the network read, and the offer to read more ────
+   Three parts, and the difference between them is who started it. The reading
+   is on the page before anyone asks. The answer arrives because someone asked.
+   The explain trigger sits on one number and opens a reading of that number
+   alone. None of the three is a conversation, so none of them has a transcript,
+   an avatar or a name. Each says where it read, because a derived sentence the
+   reader cannot check is a sentence the reader cannot use.
+   All three obey the page's own grid: one column of argument on the measure,
+   and any figures on the same card grid and at the same size as the page's own,
+   never a second scatter of small numbers flush to the right edge. */
+
+/* the reading: on the page, before the question. It is read, not scanned, so it takes neither a fill
+   nor a rail — a coloured bar down the left of a rounded card is the one shape every AI feature in the
+   market now wears, and a fill spent here is a fill that means less everywhere it is earned. State is
+   said once, as the status word beside the finding. A hairline underneath closes the band,
+   so the reading belongs to the page opening above it rather than floating between two things. */
+.gn-reading{padding:0 0 20px; border-bottom:1px solid var(--gn-rule)}
+.gn-reading-e{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; font-size:var(--gn-type-label); color:var(--gn-text-caption)}
+.gn-reading-e b{font-weight:var(--gn-weight-semibold); color:var(--gn-interactive-text)}
+.gn-reading-e i{font-style:normal; color:var(--gn-text-quiet)}   /* the middot between eyebrow parts */
+/* tone is a word, and it appears once: the status word beside the finding. Tinting the eyebrow as well
+   says the same thing twice and tints a label that carries no meaning of its own. A reading whose tone is
+   anything but neutral must name that state in its head, which forces the copy to say it rather than
+   colour it. */
+.gn-reading-h{display:flex; align-items:baseline; gap:16px; margin-top:8px}
+.gn-reading-h b{font-weight:var(--gn-weight-semibold); font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead); line-height:var(--gn-leading-subhead); text-wrap:balance}
+.gn-reading p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:8px; line-height:var(--gn-leading-body); max-width:var(--gn-measure-body)}
+.gn-reading .gn-actions{margin-top:12px}
+/* figures only where they exist nowhere else on the page: the page's own grid, the page's own size */
+.gn-reading .gn-figs{margin-top:20px}
+.gn-reading .gn-fig b{font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead)}
+/* the prose variant: the finding is the emphasised clause inside the sentence rather than a heading
+   above it. Use it where something else on the page already leads — a figure row, a page opening, a
+   record name — and the reading is the explanation under it. */
+.gn-reading--prose .gn-reading-h{display:none}
+.gn-reading--prose p{color:var(--gn-text); margin-top:8px; max-width:var(--gn-measure-body)}
+.gn-reading--prose p b,.gn-reading--prose p strong{font-weight:var(--gn-weight-semibold)}
+.gn-reading--prose p + p{margin-top:8px}
+/* where the reading sits above a section rather than under the page opening, the hairline goes on top */
+.gn-reading--over{border-bottom:0; border-top:1px solid var(--gn-rule); padding:20px 0 0}
+
+/* the answer: the same reading, reached by asking. It floats under the field,
+   so it is the one assist surface that carries a shadow. One surface, not three
+   bands: the question is an eyebrow and the records are a hairline foot. */
+.gn-answer{background:var(--gn-white); border-radius:var(--gn-radius-surface); box-shadow:var(--gn-shadow-menu); padding:20px 24px}
+.gn-answer-q{font-size:var(--gn-type-label); color:var(--gn-text-caption)}
+.gn-answer-q b{font-weight:var(--gn-weight-regular); color:var(--gn-text-secondary)}
+.gn-answer-a > b{font-weight:var(--gn-weight-semibold); font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead); line-height:var(--gn-leading-subhead); display:block; margin-top:8px; text-wrap:balance}
+.gn-answer-a p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:8px; line-height:var(--gn-leading-body); max-width:var(--gn-measure-body)}
+.gn-answer-a .gn-figs{margin-top:16px; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px 24px}
+.gn-answer-a .gn-fig b{font-size:var(--gn-type-subhead); letter-spacing:var(--gn-tracking-subhead)}
+.gn-answer-a .gn-actions{margin-top:16px}
+/* what it read, named so the reader can open it and disagree */
+.gn-answer-src{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:12px; border-top:1px solid var(--gn-rule); font-size:var(--gn-type-label); color:var(--gn-text-caption)}
+.gn-answer-src a{color:var(--gn-interactive-text); text-decoration:none}
+.gn-answer-src a:hover{text-decoration:underline}
+/* the questions offered before anything is typed: rows, not chips */
+.gn-answer-o{margin:8px -24px -20px}
+.gn-answer-o button{display:block; width:100%; text-align:left; padding:8px 24px; border:0; background:none; font:inherit; font-size:var(--gn-type-body); color:var(--gn-text); cursor:pointer}
+.gn-answer-o button:hover{background:var(--gn-bg-hover)}
+.gn-answer-o button:focus-visible{outline:2px solid var(--gn-focus); outline-offset:-2px}
+.gn-answer-o button:last-child{border-radius:0 0 var(--gn-radius-surface) var(--gn-radius-surface)}
+
+/* the explain trigger: one number, read aloud. Always present and always quiet: a
+   trigger that appears only on hover cannot be found by the reader who needs it most,
+   and cannot be reached at all by touch. In a figure card it sits in the corner, which
+   is where a container's own control belongs; beside prose it takes the word instead. */
+.gn-explain{display:inline-grid; place-items:center; width:24px; height:24px; padding:0; border:0; border-radius:var(--gn-radius-small); background:none; color:var(--gn-text-quiet); cursor:pointer; transition:color var(--gn-duration) var(--gn-ease)}
+.gn-explain i{width:16px; height:16px}
+.gn-explain:hover{background:var(--gn-bg-hover); color:var(--gn-interactive-text)}
+.gn-explain.is-on{background:var(--gn-bg-selected); color:var(--gn-interactive-text)}
+.gn-explain:focus-visible{outline:2px solid var(--gn-focus); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){ .gn-explain{transition:none} }
+/* in a card the trigger is a corner control, so the number keeps its own baseline */
+.gn-figs--cards .gn-fig{position:relative}
+.gn-figs--cards .gn-fig .gn-explain{position:absolute; top:12px; right:12px; margin:0}
+/* what it opens: under the thing it explains, never over it. The cards above are already filled, so a
+   second fill here would merge the two into one grey mass; a hairline and space separate them instead. */
+.gn-explained{padding:16px 0 0; margin-top:16px; border-top:1px solid var(--gn-rule)}
+.gn-explained b{font-weight:var(--gn-weight-semibold); font-size:var(--gn-type-body)}
+.gn-explained p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:4px; line-height:var(--gn-leading-body); max-width:var(--gn-measure-body)}
+.gn-explained .gn-actions{margin-top:12px}
+
+/* ── The filled surface, and what it is for ───────────────────────────
+   --gn-bg-tone is the system's only fill, so what it marks has to stay narrow or it marks nothing.
+   Three jobs, and no fourth:
+     1 · a discrete object scanned or acted on as a unit — a figure card, a chart card, a tile;
+     2 · a container that holds input — a form block, a setup block, a lookup, a code block;
+     3 · a surface standing in for something absent, inert or lifted out — an empty state, a skeleton,
+         a row opened in place, a segment track.
+   A passage of prose is none of these. A reading, an explanation and a note are read rather than
+   scanned, and they take a hairline and space instead. When in doubt, the question is whether the
+   reader's eye needs to find the edge of the thing: a card has an edge that matters, a paragraph
+   does not. ───────────────────────────────────────────────────────────── */
+
+/* ── 26 · figures as cards, and the parts the layouts pass needs ───────
+   A figure row on a page is a row of cards: one toned surface each, the label
+   above the value, the note beneath. Inside a frame or a card they go back to
+   inline, because a card in a card stacks surfaces for nothing. */
+.gn-figs--cards{gap:16px}
+.gn-figs--cards .gn-fig{display:flex; flex-direction:column; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface); min-width:0}
+.gn-figs--cards .gn-fig span{order:-1; margin:0 0 12px}
+.gn-figs--cards .gn-fig small{margin-top:8px}
+.gn-figs--cards .gn-fig b.gn-status{font-size:var(--gn-type-heading)}
+/* the filter sentence: every condition on a list in one editable line */
+.gn-filterline{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
+.gn-filterline > span{font-size:var(--gn-type-body); padding:8px 16px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-part)}
+.gn-filterline u{text-decoration:none; border-bottom:1px dashed var(--gn-text-quiet); cursor:pointer; color:var(--gn-text)}
+.gn-filterline u:hover{border-bottom-color:var(--gn-interactive); color:var(--gn-interactive-text)}
+.gn-filterline u:focus-visible{outline:2px solid var(--gn-focus); outline-offset:2px; border-radius:2px}
+/* a row in a row-list that needs the reader, matching the table's tr.is-hot */
+.gn-row.is-hot{box-shadow:inset 3px 0 0 var(--gn-signal)}
+/* the page opening: the page name as an eyebrow, the state of the day as the headline */
+.gn-open{padding:44px 0 0}
+.gn-open .gn-eyebrow{color:var(--gn-text-caption)}
+.gn-open h1{font-size:var(--gn-type-heading); letter-spacing:var(--gn-tracking-heading); line-height:var(--gn-leading-heading); text-wrap:balance; margin-top:8px; max-width:24ch}
+.gn-open p{font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:8px; max-width:var(--gn-measure-body)}
+.gn-open .gn-actions{margin-top:16px}

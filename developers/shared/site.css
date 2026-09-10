@@ -117,11 +117,13 @@
 .dv-cards td:first-child,.dv-cards td:last-child{white-space:nowrap} .dv-cards td:nth-child(4),.dv-cards td:nth-child(5){min-width:160px}
 
 .dv-sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap} th .dv-sr,td .dv-sr{position:static; display:inline-block}   /* inside a table an absolute span escapes the scroll wrap and widens the page */
+/* the share: the ask under the reference toolbar when the reader reaches for certification or production (the dialog is in share.css) */
+.dv-gate{margin-top:16px} .dv-gate .gn-actions{margin-top:12px}
 .skip{position:absolute; left:8px; top:-48px; z-index:100; background:var(--gn-bg-page); color:var(--gn-interactive); padding:8px 12px; border-radius:var(--gn-radius-small); box-shadow:var(--gn-shadow-float)}
 .skip:focus{top:8px}
 
 /* print: the guide, not the site. No top bar, side tree, contents column, footer or buttons; code keeps its tone. */
-@media print{
+@media print{ .dv-gate .gn-actions{display:none} 
   .dv-top,.dv-side,.dv-toc,.dv-foot,.skip,.gn-btn,.gn-seg,.dv-code-bar,.dv-code-h .gn-link,.gn-toolbar,.gn-search,.gn-inline,.gn-form-act,.gn-field,.gn-console,.dv-build-bar,.dv-done,.dv-qs,.gn-banner,.gn-toast,.dv-cards th:last-child,.dv-cards td:last-child{display:none!important}
   .dv-body a:not(.gn-btn):not(.gn-link):not(.gn-tag){color:inherit}
   .gn-code{white-space:pre-wrap; word-break:break-word}
@@ -137,3 +139,8 @@
   a[href^="http"]::after{content:" (" attr(href) ")"; font-size:11px; color:#696A75}
   .dv-body a{color:inherit}
 }
+/* the story bar: the demo's own chrome on the public site, so the panel controls are never lost */
+.dv-story{position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; align-items:center; gap:16px; padding:12px 24px; background:var(--gn-bg-tone); border-top:1px solid var(--gn-rule-strong); font-size:var(--gn-type-label); color:var(--gn-text-caption)}
+.dv-story .gn-link{margin-left:auto}
+body.has-story{padding-bottom:56px}
+@media print{ .dv-story{display:none} body.has-story{padding-bottom:0} }

@@ -9,10 +9,12 @@
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
 <link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/share.css">
 <link rel="stylesheet" href="../shared/guides.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
+<script src="../shared/share.js"></script>
 <script src="../shared/guides.js"></script>
 </head>
 <body class="dv">
@@ -50,7 +52,7 @@
 <p>In the order they happen. Tick each one as it is done on your side. The ticks stay on this browser.</p>
 <div id="gdCheck"></div>
 <script>GD.checklist('gdCheck','gd-cert-ready',[
- {t:'Sign the participation agreement',d:'In the Partner Portal. Certification and production both need it.',a:'Partner Portal'},
+ {t:'Sign the participation agreement',d:'In the Partner Portal. Certification and production both need it.',a:'Partner Portal',share:true},
  {t:'Confirm your configuration',d:'BIN range, settlement account and dispute routing are pre-filled from the agreement. You add the callback endpoint and the stand-in ceiling.',a:'Developer Portal'},
  {t:'Upload the staging certificate chain',d:'Leaf, intermediate, root. A chain one link short is the usual first failure, and the network checks it on request.',a:'Developer Portal'},
  {t:'Register a certification endpoint',d:'Its own URL and signing secret, for the cases the network delivers.',href:'webhooks.html#register',a:'Receive events'},

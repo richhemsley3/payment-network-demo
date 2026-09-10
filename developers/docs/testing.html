@@ -8,10 +8,11 @@
 <link rel="stylesheet" href="../../design-system/tokens/typography.css">
 <link rel="stylesheet" href="../../design-system/tokens/spacing.css">
 <link rel="stylesheet" href="../../design-system/gn.css">
-<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="../shared/site.css"><link rel="stylesheet" href="../shared/share.css">
 <script src="../../design-system/shared/icons.js"></script>
 <script src="../../design-system/gn-charts.js"></script>
 <script src="../shared/data.js"></script>
+<script src="../shared/share.js"></script>
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
@@ -42,7 +43,7 @@ document.getElementById('tcPick').innerHTML=DV.cards.map(function(c,i){ var tone
 document.getElementById('tcPick').addEventListener('click',function(e){ var b=e.target.closest('.gn-testcard'); if(b) select(+b.getAttribute('data-card')) });
 document.getElementById('tcEntry').innerHTML=DV.entry.map(function(m){ return '<option value="'+m+'">'+m+'</option>' }).join('');
 document.getElementById('tcEntry').addEventListener('change',paintReq); document.getElementById('tcAmt').addEventListener('input',paintReq); document.getElementById('tcAmt').addEventListener('dv-restored',paintReq);
-function send(){ var a=document.getElementById('tcAmt'), n=parseFloat(a.value); if(!dvErr(a, !a.value.trim()?'Enter an amount in dollars, like 58.20.':!(n>0)||!/^\d+(\.\d{1,2})?$/.test(a.value.trim())?'Enter an amount in dollars, like 58.20.':'')){ a.focus(); return } if(dvOffline()){ document.getElementById('tcRs').innerHTML=''; document.getElementById('tcOut').textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var amt=Math.round(parseFloat(a.value)*100), body=DV.body(cur, amt, document.getElementById('tcEntry').value), res=DV.respond(cur, amt); document.getElementById('tcRs').innerHTML='<b'+(res.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+res.round_trip_ms+' ms'; document.getElementById('tcOut').textContent=JSON.stringify(body,null,2)+'\n\n// response\n'+JSON.stringify(res,null,2) }
+function send(){ var a=document.getElementById('tcAmt'), n=parseFloat(a.value); if(!dvErr(a, !a.value.trim()?'Enter an amount in dollars, like 58.20.':!(n>0)||!/^\d+(\.\d{1,2})?$/.test(a.value.trim())?'Enter an amount in dollars, like 58.20.':'')){ a.focus(); return } if(dvOffline()){ document.getElementById('tcRs').innerHTML=''; document.getElementById('tcOut').textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var amt=Math.round(parseFloat(a.value)*100), body=DV.body(cur, amt, document.getElementById('tcEntry').value), res=DV.respond(cur, amt); document.getElementById('tcRs').innerHTML='<b'+(res.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+res.round_trip_ms+' ms'; document.getElementById('tcOut').textContent=JSON.stringify(body,null,2)+'\n\n// response\n'+JSON.stringify(res,null,2); if(window.dvSent) dvSent(res); if(window.dvWon) dvWon(document.getElementById('tcOut'),'sandbox') }
 document.getElementById('tcSend').addEventListener('click',send);
 /* a link can arrive with a card chosen: testing.html?card=2#console */
 (function(){ var m=location.search.match(/card=(\d)/); select(m&&DV.cards[+m[1]]?+m[1]:0) })();
