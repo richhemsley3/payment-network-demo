@@ -157,3 +157,4 @@ body.has-story{padding-bottom:56px}
 .dv-gate b{font-weight:600; color:var(--gn-text)}
 .dv-gate a{margin-left:8px}
 .dv-gate span{display:block; font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-top:4px}
+.rf-try .rf-gate .dv-gate{margin-top:0}

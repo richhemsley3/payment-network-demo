@@ -76,7 +76,7 @@ window.DV={
   ['Ask for another card.','authorization.decisioned within a second.']
  ],
  envs:[
-  ['Sandbox','https://sandbox.api.dgn.com','The demo credentials, or your own from a free account.','Test cards. Nothing is charged.'],
+  ['Sandbox','https://sandbox.api.dgn.com','The your own sandbox key, from a free account.','Test cards. Nothing is charged.'],
   ['Certification','https://cert.api.dgn.com','The same credentials, promoted by the network.','Your certification cases, sent by your host.'],
   ['Production','https://api.dgn.com','The same credentials, promoted at activation.','Live cards. A test card is declined with 14.']
  ],
