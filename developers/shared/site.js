@@ -80,9 +80,15 @@ var top=document.createElement('header'); top.className='dv-top';
   var st=null;
   try{ var sq=/[?&]story=(\d+)/.exec(location.search); st=sq?sq[1]:sessionStorage.getItem('dv.story') }catch(e){ st=null }
   if(st){ try{ sessionStorage.setItem('dv.story', st) }catch(e){}
+    var P=(typeof DV_PANELS!=='undefined')?DV_PANELS:null, home=root+'../story/brightline-story/docs/index.html';
+    var cur=P&&P.filter(function(x){ return String(x.n)===String(st) })[0];
     var bar=document.createElement('div'); bar.className='dv-story'; bar.setAttribute('role','navigation'); bar.setAttribute('aria-label','The story');
-    bar.innerHTML='<span>Panel '+st+' of ten. You are on the public developer site.</span>'
-      +'<a class="gn-link" href="'+root+'../story/brightline-story/docs/index.html#resume">Back to the story</a>';
+    bar.innerHTML=(cur
+        ? '<span class="dv-story-n">'+cur.n+' \u00b7 '+String(cur.t).replace(/[<>&]/g,'')+'</span><span class="dv-story-w">On the public developer site</span>'
+        : '<span class="dv-story-n">Panel '+st+'</span><span class="dv-story-w">On the public developer site</span>')
+      +(P ? '<span class="dv-story-p">'+P.map(function(x){
+            return '<a href="'+home+'#panel='+x.n+'"'+(String(x.n)===String(st)?' class="is-on" aria-current="true"':'')+' aria-label="Panel '+x.n+', '+String(x.t).replace(/[<>&"]/g,'')+'">'+x.n+'</a>' }).join('')+'</span>' : '')
+      +'<a class="gn-link dv-story-b" href="'+home+'#resume">Back to the story</a>';
     document.body.appendChild(bar); document.body.classList.add('has-story');
     /* every link that stays on this site carries the panel, so the bar survives the walk */
     document.addEventListener('click', function(e){ var a=e.target.closest('a[href]'); if(!a) return; var h=a.getAttribute('href')||'';

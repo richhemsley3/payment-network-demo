@@ -165,3 +165,14 @@ body.has-story{padding-bottom:56px}
 .gn-dialog--wide{width:560px; max-height:86vh; overflow-y:auto}
 .dv-acct-two{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px}
 @media (max-width:560px){ .dv-acct-two{grid-template-columns:1fr} }
+
+/* the demo frame on the public site: the same panels the story's own rail carries, so following a link
+   off the prototype does not drop the reader out of the demo */
+.dv-story-n{font-weight:600; color:var(--gn-text); white-space:nowrap}
+.dv-story-w{color:var(--gn-text-caption); white-space:nowrap}
+.dv-story-p{display:flex; gap:2px; align-items:center; margin-left:8px; overflow-x:auto; scrollbar-width:none}
+.dv-story-p::-webkit-scrollbar{display:none}
+.dv-story-p a{display:grid; place-items:center; min-width:22px; height:22px; padding:0 4px; border-radius:var(--gn-radius-small); font-size:var(--gn-type-label); color:var(--gn-text-caption); text-decoration:none}
+.dv-story-p a:hover{background:var(--gn-bg-hover); color:var(--gn-text)}
+.dv-story-p a.is-on{background:var(--gn-bg-selected); color:var(--gn-interactive-text); font-weight:600}
+.dv-story-b{margin-left:auto; white-space:nowrap}

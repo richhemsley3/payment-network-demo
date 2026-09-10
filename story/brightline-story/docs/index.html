@@ -9978,7 +9978,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ['3:34 PM','Opened the API reference','From the marketing page. Authorize a transaction, Capture and Refund.'],
    ['3:42 PM','Read Errors and idempotency','Retries, and the key that makes a retry safe.'],
    ['3:51 PM','Opened Test cards and sandbox','The card that approves, and the amounts that decline.'],
-   ['3:55 PM','Created a free account','priya.raghavan@brightline.example. Her own sandbox key. The first the network knew of Brightline Bank.'],
+   ['3:55 PM','Created a preview account','priya.raghavan@brightline.example. Her own sandbox key. The first the network knew of Brightline Bank.'],
    ['4:07 PM','Sent one authorization','$58.20, card present, on her own key. Approved in 41 ms.'],
    ['4:12 PM','Shared the page with Dana Iverson','The request she sent went with it.']
   ],
@@ -10003,7 +10003,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* ── the page ── */
  AGENT.inbound=function(){
   var I=INBOUND, taken=inTaken(), sharer=PEOPLE[I.by], signer=PEOPLE[I.to];
-  var head=ph('Inbound', 'A free account on the public developer site, and what followed.',
+  var head=ph('Inbound', 'One company signed up on the public developer site.',
     taken?sw('In your book','ok'):sw('Not in the book',''));
 
   /* 1 · what is next, and the one action: the same Next card the partner page uses */
@@ -10012,7 +10012,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      +'<div class="gn-actions inset">'+goLink(I.co, 'data-act="agPartner" data-k="'+I.k+'"')+'</div>'
    : secH('Next')+'<article class="gn-notice" id="inNext"><div class="gn-notice-h">'+sw('Needs you','wa')+'<span>'+esc(I.co)+'</span></div>'
      +'<h3>'+esc(signer.n)+' asked what joining involves</h3>'
-     +'<p>'+esc(sharer.n)+' created a free account on the developer site on '+esc(String(I.sent).split(',')[0])+', which is the first the network knew of them. Taking it opens a record for '+esc(I.co)+' and puts her question on you.</p>'
+     +'<p>Take it to open a record for '+esc(I.co)+' and assign '+esc(signer.n)+'\u2019s question to you.</p>'
      +'<div class="gn-notice-f"><span>Waiting since '+esc(I.asked)+'</span>'
      +agGate('<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="inTake">Take the opportunity</button>')+'</div></article>';
 
@@ -10027,7 +10027,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
   /* 3 · the opportunity itself, said honestly: no account, no agreement, nothing sent from our side */
   var who=secH('The opportunity')+doc([
    ['Company', esc(I.co), 'What she typed when she created the account'],
-   ['Account created', esc(I.account), 'A free developer account, sandbox only'],
+   ['Account created', esc(I.account), 'A preview developer account, sandbox only'],
    ['Named by', esc(sharer.n), esc(sharer.r)+', herself'],
    ['Shared with', esc(signer.n), esc(signer.r)+', named by '+esc(sharer.n)],
    ['Shared', esc(I.sent), 'From the sandbox console on the public site'],
