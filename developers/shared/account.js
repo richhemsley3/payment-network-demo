@@ -1,4 +1,4 @@
-/* the free account: what the site's own table already promises, made real. Reading the reference, the
+/* the preview account: what the site's own table already promises, made real. Reading the reference, the
    events and the guides needs nothing, and the shared demo sandbox answers one request at a time without
    an account. Your own sandbox key, your own webhook endpoint and the log of what you sent need one.
    The account is session-local — no backend, nothing sent anywhere — and it is also the moment the
@@ -111,6 +111,6 @@
   window.dvAccountStrip=function(where){
     var a=get(); var root=(location.pathname.split('/').slice(-2,-1)[0]==='docs'||location.pathname.split('/').slice(-2,-1)[0]==='api')?'../':'';
     if(a) return '<div class="dv-acct is-on"><b>'+esc(a.company)+'</b><span>Your sandbox key is <span class="gn-mono">'+esc(a.pk)+'</span></span><a class="gn-link" href="'+root+'account.html">Your account</a></div>';
-    return '<div class="dv-acct"><b>'+esc(where||'This needs a free account')+'</b><span>A sandbox key in a minute. No agreement, no card, nothing to cancel.</span><a class="gn-link" href="'+root+'support.html#signup">Create a free account</a></div>';
+    return '<div class="dv-acct"><b>'+esc(where||'This needs a preview account')+'</b><span>A sandbox key in a minute. No agreement, no card, nothing to cancel.</span><a class="gn-link" href="'+root+'support.html#signup">Create a preview account</a></div>';
   };
 })();

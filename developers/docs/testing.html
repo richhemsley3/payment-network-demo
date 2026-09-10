@@ -18,13 +18,13 @@
 <body class="dv">
 <div class="dv-shell dv-shell--2"><aside class="dv-side"></aside><main class="dv-body">
 <div class="dv-h"><div class="gn-eyebrow">Start</div><h1>Test cards and sandbox</h1><p>The sandbox answers with test responses keyed to what you send. Eight cards, each built to come back a different way. No live cards, no charges.</p></div>
-<div class="dv-pre"><b>Before you start</b><span>Nothing to install. The cards are public; the console sends on your own sandbox key, which comes with a <a href="../support.html#signup">free account</a>.</span></div>
+<div class="dv-pre"><b>Before you start</b><span>Nothing to install. The cards are public; the console sends on your own sandbox key, which comes with a <a href="../support.html#signup">preview account</a>.</span></div>
 <h2 id="cards">Test cards</h2>
 <p>Any expiry in the future, any CVC. The number picks the outcome, the outcome picks what your code does next, and one of them sends a second message later.</p>
 <div class="gn-table-wrap"><table class="gn-table gn-table--dense dv-cards"><thead><tr><th scope="col">Number</th><th scope="col">Answers</th><th scope="col">Code</th><th scope="col">Your code then</th><th scope="col">What follows</th><th scope="col"><span class="dv-sr">Try it</span></th></tr></thead><tbody id="tcBody"></tbody></table></div>
 <script>document.getElementById('tcBody').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]), a=DV.after[i]; return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td><span class="gn-status '+tone+'">'+c[2]+'</span></td><td>'+a[0]+'</td><td>'+a[1]+'</td><td class="is-num"><button class="gn-link" type="button" onclick="pick('+i+')">Try it</button></td></tr>' }).join('');</script>
 <h2 id="console">The demo console</h2>
-<p>Runs on your own sandbox key, which a free account gives you. Under the console is the same request as code, in your language, ready to copy.</p>
+<p>Runs on your own sandbox key, which a preview account gives you. Under the console is the same request as code, in your language, ready to copy.</p>
 <div id="acctStrip" data-account-strip></div>
 <div class="dv-build">
   <div>

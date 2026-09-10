@@ -14,7 +14,7 @@
 </head>
 <body class="dv">
 <div class="dv-shell dv-shell--1"><main class="dv-body">
-<div class="dv-h"><div class="gn-eyebrow">Account</div><h1 id="acH">Your account</h1><p id="acP">A free account, for keys.</p></div>
+<div class="dv-h"><div class="gn-eyebrow">Account</div><h1 id="acH">Your account</h1><p id="acP">A preview account, for keys.</p></div>
 <div id="acBody"></div>
 </main></div>
 <script src="shared/site.js"></script>
@@ -25,7 +25,7 @@
   if(!a){
     document.getElementById('acH').textContent='You do not have an account yet';
     document.getElementById('acP').textContent='The reference, the events, the guides and the shared demo sandbox are public. An account is for your own keys.';
-    b.innerHTML='<div class="gn-actions" style="margin-top:24px"><a class="gn-btn gn-btn--primary" href="support.html#signup">Create a free account</a><a class="gn-link" href="docs/testing.html">Test cards and sandbox</a></div>'
+    b.innerHTML='<div class="gn-actions" style="margin-top:24px"><a class="gn-btn gn-btn--primary" href="support.html#signup">Create a preview account</a><a class="gn-link" href="docs/testing.html">Test cards and sandbox</a></div>'
       +'<h2 id="what" style="margin-top:40px">What an account changes</h2>'+grants();
     return;
   }
@@ -46,7 +46,7 @@
   out.addEventListener('click', function(){ dvSignOut(); location.reload() });
   out.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); this.click() } });
   function row(l,v){ return '<div class="gn-doc-r"><span class="gn-doc-l">'+esc(l)+'</span><span class="gn-doc-v">'+(/key_|sk_|pk_/.test(v)?'<span class="gn-mono">'+esc(v)+'</span>':esc(v))+'</span></div>' }
-  function grants(){ return '<div class="gn-table-wrap"><table class="gn-table"><thead><tr><th>What</th><th>No account</th><th>A free account</th></tr></thead><tbody>'
+  function grants(){ return '<div class="gn-table-wrap"><table class="gn-table"><thead><tr><th>What</th><th>No account</th><th>A preview account</th></tr></thead><tbody>'
     +dvAccountGrants.map(function(g){ return '<tr><td>'+esc(g[0])+'</td><td>'+esc(g[1])+'</td><td>'+esc(g[2])+'</td></tr>' }).join('')+'</tbody></table></div>' }
 })();
 </script>
