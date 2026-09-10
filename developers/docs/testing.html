@@ -80,7 +80,8 @@ document.getElementById('tcSend').addEventListener('click',function(){ if(!dvAcc
 </main></div>
 <script src="../shared/site.js"></script>
 <script>
-(function(){ var el=document.getElementById('acctStrip'); if(el&&typeof dvAccountStrip==='function') el.innerHTML=dvAccountStrip('The console needs a free account'); })();
+(function(){ var el=document.getElementById('acctStrip'); if(!el||typeof dvAccountStrip!=='function') return;
+  if(typeof dvAccount==='function' && dvAccount()) el.innerHTML=dvAccountStrip(); else el.remove(); })();
 </script>
 </body>
 </html>
