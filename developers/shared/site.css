@@ -144,3 +144,10 @@
 .dv-story .gn-link{margin-left:auto}
 body.has-story{padding-bottom:56px}
 @media print{ .dv-story{display:none} body.has-story{padding-bottom:0} }
+
+/* the account strip: where an account is the difference between reading and doing */
+.dv-acct{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-top:16px; padding:16px 0; border-top:1px solid var(--gn-rule); border-bottom:1px solid var(--gn-rule)}
+.dv-acct b{font-weight:600; font-size:var(--gn-type-body)}
+.dv-acct span{font-size:var(--gn-type-body); color:var(--gn-text-secondary)}
+.dv-acct a{margin-left:auto; white-space:nowrap}
+.dv-acct.is-on b{color:var(--gn-good)}

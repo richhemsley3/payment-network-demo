@@ -4197,10 +4197,10 @@ body.mode-prep #prepbar{display:flex}
  var PANELS = [
   {n:1,  act:1, t:'The First Look',               seat:'priya', stage:0, view:'site',
    emo:'Curious, and quickly convinced.',
-   d:'Priya finds the public site while weighing issuer processing for Brightline Bank. No login and no invitation. She opens the reference, sends one authorization to the sandbox, and it comes back approved. Then she shares it with the person who can sign.'},
+   d:'Priya finds the public site while weighing issuer processing for Brightline Bank. No invitation and nobody to call. She opens the reference, then creates a free account for her own sandbox key, sends one authorization, and it comes back approved. Then she shares it with the person who can sign.'},
   {n:2,  act:1, t:'The Opportunity Surfaces',     seat:'marcus', stage:1, view:'inbound',
    emo:'Surprised her engineer found it first.',
-   d:'Dana asks to know more, and the network already knows what drew them. Priya’s share reaches Marcus tagged with what she read and what she ran, so neither side makes a cold call.'},
+   d:'The account Priya created is the first the network knows of Brightline Bank, and it arrives carrying what she read and what she ran. When Dana asks to know more the record is already open, so neither side makes a cold call.'},
   {n:3,  act:1, t:'Built Around Her',             seat:'dana',  stage:1, view:'deal',
    emo:'Surprised, then flattered.',
    d:'Dana opens a page built for Brightline Bank: the products that fit, what the network needs, nothing to fill in yet. The same page she will still be using years from now.'},
@@ -9971,14 +9971,15 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  var INBOUND={
   k:'brightline', co:'Brightline Bank', domain:'brightline.example',
   by:'priya', to:'dana',
-  sent:'March 5, 4:12 PM', asked:'March 6, 9:20 AM',
+  sent:'March 5, 4:12 PM', asked:'March 6, 9:20 AM', account:'March 5, 3:55 PM',
   minutes:38, pages:3, endpoints:3, requests:1, ms:41,
   /* the session, newest last, as the site recorded it */
   trail:[
    ['3:34 PM','Opened the API reference','From the marketing page. Authorize a transaction, Capture and Refund.'],
    ['3:42 PM','Read Errors and idempotency','Retries, and the key that makes a retry safe.'],
    ['3:51 PM','Opened Test cards and sandbox','The card that approves, and the amounts that decline.'],
-   ['4:07 PM','Sent one authorization','$58.20, card present, against the sandbox. Approved in 41 ms.'],
+   ['3:55 PM','Created a free account','priya.raghavan@brightline.example. Her own sandbox key. The first the network knew of Brightline Bank.'],
+   ['4:07 PM','Sent one authorization','$58.20, card present, on her own key. Approved in 41 ms.'],
    ['4:12 PM','Shared the page with Dana Iverson','The request she sent went with it.']
   ],
   /* what the sandbox returned, in the shape the public site returns */
@@ -9989,7 +9990,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ['Where','United States','Company website, read March 6'],
    ['Merchants','About 4,000','Trade press, February 2026'],
    ['Annual volume','About $1.8B','Trade press, February 2026'],
-   ['Domain','brightline.example','The address she shared from, March 5']
+   ['Domain','brightline.example','The work email on the account, March 5']
   ],
   notes:[
    ['priya','March 5, 4:12 PM','I sent one authorization to the sandbox and it came back approved in 41 ms. Certification and production need a signed agreement, which is not mine to sign.'],
@@ -10002,7 +10003,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* ── the page ── */
  AGENT.inbound=function(){
   var I=INBOUND, taken=inTaken(), sharer=PEOPLE[I.by], signer=PEOPLE[I.to];
-  var head=ph('Inbound', 'One company reached the network through the public developer site.',
+  var head=ph('Inbound', 'A free account on the public developer site, and what followed.',
     taken?sw('In your book','ok'):sw('Not in the book',''));
 
   /* 1 · what is next, and the one action: the same Next card the partner page uses */
@@ -10011,7 +10012,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      +'<div class="gn-actions inset">'+goLink(I.co, 'data-act="agPartner" data-k="'+I.k+'"')+'</div>'
    : secH('Next')+'<article class="gn-notice" id="inNext"><div class="gn-notice-h">'+sw('Needs you','wa')+'<span>'+esc(I.co)+'</span></div>'
      +'<h3>'+esc(signer.n)+' asked what joining involves</h3>'
-     +'<p>Taking it opens a record for '+esc(I.co)+' and puts her question on you.</p>'
+     +'<p>'+esc(sharer.n)+' created a free account on the developer site on '+esc(String(I.sent).split(',')[0])+', which is the first the network knew of them. Taking it opens a record for '+esc(I.co)+' and puts her question on you.</p>'
      +'<div class="gn-notice-f"><span>Waiting since '+esc(I.asked)+'</span>'
      +agGate('<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="inTake">Take the opportunity</button>')+'</div></article>';
 
@@ -10025,12 +10026,13 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
   /* 3 · the opportunity itself, said honestly: no account, no agreement, nothing sent from our side */
   var who=secH('The opportunity')+doc([
-   ['Company', esc(I.co), 'Read from the address she shared from'],
-   ['Shared by', esc(sharer.n), esc(sharer.r)+', named herself'],
+   ['Company', esc(I.co), 'What she typed when she created the account'],
+   ['Account created', esc(I.account), 'A free developer account, sandbox only'],
+   ['Named by', esc(sharer.n), esc(sharer.r)+', herself'],
    ['Shared with', esc(signer.n), esc(signer.r)+', named by '+esc(sharer.n)],
-   ['Sent', esc(I.sent), 'From the sandbox console on the public site'],
+   ['Shared', esc(I.sent), 'From the sandbox console on the public site'],
    ['Reached us', esc(I.asked), esc(signer.n)+' asked to know more'],
-   ['On the network', taken?'Taken into your book':'No account and no agreement', taken?'Opened by you':'Nothing was ever sent to this company']
+   ['On the network', taken?'Taken into your book':'No record and no agreement', taken?'Opened by you':'Nothing was ever sent to this company']
   ]);
 
   /* 4 · why there is no cold call: both of them in their own words */

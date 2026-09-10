@@ -24,6 +24,7 @@
 <script>document.getElementById('tcBody').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]), a=DV.after[i]; return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td><span class="gn-status '+tone+'">'+c[2]+'</span></td><td>'+a[0]+'</td><td>'+a[1]+'</td><td class="is-num"><button class="gn-link" type="button" onclick="pick('+i+')">Try it</button></td></tr>' }).join('');</script>
 <h2 id="console">The demo console</h2>
 <p>Runs on the shared demo sandbox with the demo credentials, one request at a time. Under the console is the same request as code, in your language, ready to copy.</p>
+<div id="acctStrip"></div>
 <div class="dv-build">
   <div>
     <span class="gn-label">Card</span><div class="gn-testcards" id="tcPick"></div>
@@ -75,6 +76,10 @@ document.getElementById('tcSend').addEventListener('click',send);
 <div class="dv-next"><h2 style="margin-top:0" id="next">Next</h2><div class="gn-card-grid gn-card-grid--3"><a class="gn-card is-link" href="../api/index.html#authorize"><h3 style="font-size:15px">The Authorize endpoint</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Every field the console just sent, and what comes back.</p></a><a class="gn-card is-link" href="authorization.html"><h3 style="font-size:15px">Accept a payment</h3><p style="color:var(--gn-text-secondary);margin-top:8px">Capture, reverse and refund what you just authorized.</p></a><a class="gn-card is-link" href="errors.html#codes"><h3 style="font-size:15px">Response codes</h3><p style="color:var(--gn-text-secondary);margin-top:8px">What each code in the table means, and what to do.</p></a></div></div>
 
 </main></div>
+<script src="../shared/account.js"></script>
 <script src="../shared/site.js"></script>
+<script>
+(function(){ var el=document.getElementById('acctStrip'); if(el&&typeof dvAccountStrip==='function') el.innerHTML=dvAccountStrip('The console runs on shared demo credentials'); })();
+</script>
 </body>
 </html>
