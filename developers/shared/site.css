@@ -152,9 +152,11 @@ body.has-story{padding-bottom:56px}
 .dv-acct a{margin-left:auto; white-space:nowrap}
 .dv-acct.is-on b{color:var(--gn-good)}
 
-/* the reason a send is disabled, beside the control rather than behind a tooltip */
-.dv-gate{display:block; margin-top:12px; font-size:var(--gn-type-body); color:var(--gn-text-secondary)}
-.dv-gate b{font-weight:600; color:var(--gn-text)}
-.dv-gate a{margin-left:8px}
-.dv-gate span{display:block; font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-top:4px}
+/* the reason a send is disabled, beside the control rather than behind a tooltip. It is a discrete
+   thing to act on, so it takes the toned surface the fill rule keeps for exactly that. */
+.dv-gate{display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-top:16px; padding:20px 24px; background:var(--gn-bg-tone); border-radius:var(--gn-radius-surface)}
+.dv-gate > div{flex:1; min-width:220px}
+.dv-gate b{display:block; font-weight:600; font-size:var(--gn-type-body); color:var(--gn-text)}
+.dv-gate span{display:block; font-size:var(--gn-type-body); color:var(--gn-text-secondary); margin-top:4px; max-width:var(--gn-measure-body)}
+.dv-gate .gn-btn{flex:none; text-decoration:none}
 .rf-try .rf-gate .dv-gate{margin-top:0}

@@ -46,15 +46,17 @@
     if(!btn) return;
     if(GATES.indexOf(btn)<0){ GATES.push(btn); GATES.push(note) }
     var a=get();
-    if(a){ btn.disabled=false; btn.removeAttribute('aria-describedby'); if(note) note.innerHTML=''; return }
-    btn.disabled=true; btn.setAttribute('aria-describedby','dvGateWhy');
+    if(a){ btn.disabled=false; btn.classList.add('gn-btn--primary'); btn.removeAttribute('aria-describedby'); if(note) note.innerHTML=''; return }
+    btn.disabled=true; btn.classList.remove('gn-btn--primary'); btn.setAttribute('aria-describedby','dvGateWhy');
     if(!note) return;
     var d=(location.pathname.split('/').slice(-2,-1)[0]);
     var root=(d==='docs'||d==='api')?'../':'';
     var back=(d==='docs'||d==='api'?d+'/':'')+(location.pathname.split('/').pop()||'index.html')+(location.hash||'');
-    note.innerHTML='<span id="dvGateWhy" class="dv-gate">'
-      +'<a class="gn-link" href="'+root+'support.html?next='+encodeURIComponent(back)+'#signup" data-account-open>Create a preview account to use the sandbox</a>'
-      +'<span>A sandbox key in a minute. No agreement, no card, nothing to cancel.</span></span>';
+    note.innerHTML='<div id="dvGateWhy" class="dv-gate">'
+      +'<div><b>The sandbox needs a preview account.</b>'
+      +'<span>It gives you your own sandbox key. No agreement, no card, nothing to cancel.</span></div>'
+      +'<a class="gn-btn gn-btn--primary" href="'+root+'support.html?next='+encodeURIComponent(back)+'#signup" data-account-open>Create a preview account</a>'
+      +'</div>';
   };
   /* every gate on the page re-reads the account, so signing up in the dialog leaves the reader exactly
      where they were with the control live */
