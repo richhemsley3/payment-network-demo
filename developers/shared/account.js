@@ -67,7 +67,7 @@
     if(get()) return;
     var wrap=document.createElement('div');
     wrap.innerHTML='<div class="gn-scrim is-on" data-account-close></div>'
-      +'<div class="gn-dialog gn-dialog--fixed" role="dialog" aria-modal="true" aria-labelledby="acDlgH">'
+      +'<div class="gn-float gn-dialog gn-dialog--fixed" role="dialog" aria-modal="true" aria-labelledby="acDlgH">'
       +'<h2 id="acDlgH">Create a preview account</h2>'
       +'<p>It gives you your own sandbox key. No agreement, no card, nothing to cancel.</p>'
       +'<form novalidate>'
