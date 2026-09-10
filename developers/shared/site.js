@@ -8,7 +8,7 @@
   var a=(typeof dvAccount==='function')&&dvAccount();
   return '<a class="gn-link" href="'+root+'../story/brightline-story/docs/index.html" aria-label="Discover Global Network home">Home</a>'
     +(a ? '<a class="gn-link" href="'+root+'account.html">'+String(a.company).replace(/[<>&"]/g,'')+'</a>'
-        : '<a class="gn-link" href="'+root+'support.html#signup" data-account-open>Create a preview account</a>');
+        : '<a class="gn-link" href="'+root+'support.html#signin">Sign in</a>');
 };
 var top=document.createElement('header'); top.className='dv-top';
   var mainEl=document.querySelector('main'); if(mainEl && !mainEl.id) mainEl.id='main';

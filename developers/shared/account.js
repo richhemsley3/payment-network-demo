@@ -20,10 +20,11 @@
   }
   window.dvAccount=get;
   window.dvSignUp=function(f){
-    var a={ email:f.email, company:f.company, domain:(String(f.email).split('@')[1]||''),
+    var a={ email:f.email, company:f.company, role:f.role||'', kind:f.kind||'', region:f.region||'',
+            domain:(String(f.email).split('@')[1]||''),
             created:'March 5, 3:55 PM',
             pk:keyFor(f.company,'pub'), sk:keyFor(f.company,'secret') };
-    set(a); return a;
+    set(a); return a;   /* whatever was typed as a password is not part of this and is not stored */
   };
   window.dvSignOut=function(){ try{ sessionStorage.removeItem(K) }catch(x){} };
 
@@ -69,23 +70,36 @@
     if(get()) return;
     var wrap=document.createElement('div');
     wrap.innerHTML='<div class="gn-scrim is-on" data-account-close></div>'
-      +'<div class="gn-float gn-dialog gn-dialog--fixed" role="dialog" aria-modal="true" aria-labelledby="acDlgH">'
+      +'<div class="gn-float gn-dialog gn-dialog--wide gn-dialog--fixed" role="dialog" aria-modal="true" aria-labelledby="acDlgH">'
       +'<h2 id="acDlgH">Create a preview account</h2>'
       +'<p>It gives you your own sandbox key. No agreement, no card, nothing to cancel.</p>'
       +'<form novalidate>'
       +'<label class="gn-field" style="margin-top:20px"><span class="gn-field-l">Work email</span><input class="gn-in" id="acDlgEmail" placeholder="you@acquirer.example" autocomplete="email"></label>'
-      +'<label class="gn-field" style="margin-top:16px"><span class="gn-field-l">Company</span><input class="gn-in" id="acDlgCo" autocomplete="organization"></label>'
+      +'<label class="gn-field" style="margin-top:16px"><span class="gn-field-l">Password</span><input class="gn-in" id="acDlgPass" type="password" autocomplete="new-password"><span class="gn-help">At least twelve characters.</span></label>'
+      +'<div class="dv-acct-two">'
+      +'<label class="gn-field"><span class="gn-field-l">Company</span><input class="gn-in" id="acDlgCo" autocomplete="organization"></label>'
+      +'<label class="gn-field"><span class="gn-field-l">Your role</span><select class="gn-in" id="acDlgRole">'
+        +['','Integration engineer','Engineering lead','Product','Partnerships','Risk or compliance','Something else'].map(function(o){ return '<option value="'+o+'">'+(o||'Choose one')+'</option>' }).join('')
+      +'</select></label>'
+      +'<label class="gn-field"><span class="gn-field-l">Kind of organisation</span><select class="gn-in" id="acDlgKind">'
+        +['','Acquirer','Issuer','Processor','Payment facilitator','Something else'].map(function(o){ return '<option value="'+o+'">'+(o||'Choose one')+'</option>' }).join('')
+      +'</select></label>'
+      +'<label class="gn-field"><span class="gn-field-l">Region</span><select class="gn-in" id="acDlgRegion">'
+        +['','United States and Canada','Latin America and the Caribbean','Europe','Middle East and Africa','Asia Pacific'].map(function(o){ return '<option value="'+o+'">'+(o||'Choose one')+'</option>' }).join('')
+      +'</select></label>'
+      +'</div>'
       +'<div class="gn-actions"><button class="gn-btn" type="button" data-account-close>Cancel</button><button class="gn-btn gn-btn--primary" type="submit">Create the account</button></div>'
       +'</form>'
       +'<p class="gn-help" style="margin-top:16px">The network holds what you type here and nothing else. An agent may reach out about certification or production.</p>'
       +'</div>';
     var nodes=[].slice.call(wrap.childNodes); nodes.forEach(function(n){ document.body.appendChild(n) });
-    var dlg=nodes[1], email=dlg.querySelector('#acDlgEmail'), co=dlg.querySelector('#acDlgCo'), was=document.activeElement;
+    var dlg=nodes[1], email=dlg.querySelector('#acDlgEmail'), pass=dlg.querySelector('#acDlgPass'), co=dlg.querySelector('#acDlgCo'),
+        role=dlg.querySelector('#acDlgRole'), kind=dlg.querySelector('#acDlgKind'), region=dlg.querySelector('#acDlgRegion'), was=document.activeElement;
     function close(){ nodes.forEach(function(n){ n.remove() }); document.removeEventListener('keydown', onKey); if(was&&was.focus) was.focus() }
     function onKey(e){
       if(e.key==='Escape'){ e.preventDefault(); close(); return }
       if(e.key!=='Tab') return;
-      var f=dlg.querySelectorAll('input,button'); if(!f.length) return;
+      var f=dlg.querySelectorAll('input,select,button'); if(!f.length) return;
       var first=f[0], last=f[f.length-1];
       if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus() }
       else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus() }
@@ -94,10 +108,16 @@
     document.body.addEventListener('click', function onClick(e){ if(e.target.closest('[data-account-close]')){ document.body.removeEventListener('click', onClick); close() } });
     dlg.querySelector('form').addEventListener('submit', function(e){
       e.preventDefault();
-      var okE = window.dvErr ? dvErr(email, !email.value.trim()?'Enter your work email.':!dvEmail(email.value)?'Enter an email address, like you@acquirer.example.':'') : !!email.value.trim();
-      var okC = window.dvErr ? dvErr(co, co.value.trim()?'':'Enter your company name.') : !!co.value.trim();
-      if(!(okE&&okC)){ (email.value.trim()?co:email).focus(); return }
-      window.dvSignUp({email:email.value.trim(), company:co.value.trim()});
+      var E=window.dvErr||function(el,m){ return !m };
+      var checks=[[email, !email.value.trim()?'Enter your work email.':(window.dvEmail&&!dvEmail(email.value))?'Enter an email address, like you@acquirer.example.':''],
+                  [pass, !pass.value?'Choose a password.':pass.value.length<12?'Use at least twelve characters.':''],
+                  [co, co.value.trim()?'':'Enter your company name.'],
+                  [role, role.value?'':'Choose your role.'],
+                  [kind, kind.value?'':'Choose the kind of organisation.'],
+                  [region, region.value?'':'Choose a region.']];
+      var bad=null; checks.forEach(function(c){ if(!E(c[0], c[1]) && !bad) bad=c[0] });
+      if(bad){ bad.focus(); return }
+      window.dvSignUp({email:email.value.trim(), company:co.value.trim(), role:role.value, kind:kind.value, region:region.value});
       close(); refresh();
       if(window.dvToast) dvToast('Preview account created. Your sandbox key is ready.');
     });
