@@ -7437,7 +7437,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    }
    /* the hub: five journeys, and what is finished kept below for review */
    var inc=GROUPS.filter(function(x){return !groupState(x,S).complete}), com=GROUPS.filter(function(x){return groupState(x,S).complete});
-   var head=ph('Getting started', 'Five parts to go live.');
+   var head=ph('Getting started', 'The five parts of going live.');
    var leadG=(S.cur&&inc.filter(function(x){ return x.k===S.cur.g })[0])||inc.filter(function(x){ return groupState(x,S).active })[0]||inc[0]; var grid=inc.length ? '<div class="gc-grid">'+inc.map(function(x){ return groupCard(x,S,GROUPS.indexOf(x), x===leadG) }).join('')+'</div>'
                        : '<div class="done"><b>Every part is done.</b><span>Brightline Bank is live on the network.</span></div>';
    var doneSec = com.length ? secH('Completed', com.length+' of '+GROUPS.length)+'<div class="gc-grid">'+com.map(function(x){ return groupCard(x,S,GROUPS.indexOf(x)) }).join('')+'</div>' : '';
@@ -7504,7 +7504,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  };
  PARTNER.integrations=function(){
    var sb=SCENE.sandbox||STAGE>=3, signed=STAGE>=4;
-   var head=ph('Integrations', 'Where your integration stands.', '<a class="gn-btn" href="mailto:priya@brightline.example">Ask Priya</a>');
+   var head=ph('Integrations', 'How far your integration has progressed.', '<a class="gn-btn" href="mailto:priya@brightline.example">Ask Priya</a>');
    var env=secH('Environments')+envTiles();
    var cred=secH('Credentials', sb?'Held by Priya Raghavan':'Issued when the sandbox opens')+doc([
      ['Held by','Priya Raghavan, lead integration engineer','Named by you, March 9'],
@@ -7541,7 +7541,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  PARTNER.reporting=function(){
    var head=ph('Reporting', live()?'Live since May 14. Fourteen days shown; the network keeps thirteen months.':'Starts with your first transaction.');
    var cat=secH('Reports you receive', REPORTS.length+' reports')+'<div class="rep-grid">'+REPORTS.map(function(r){ return '<article class="rep"><div class="rep-h"><h3>'+esc(r.t)+'</h3>'+spark(r.shape)+'</div><span class="rep-w">'+esc(r.when)+'</span><p>'+esc(r.d)+'</p></article>' }).join('')+'</div>';
-   if(!live()) return ph('Reporting', 'Choose who receives reports, and how.')+secH('Set up reporting')+setup('report')+cat;
+   if(!live()) return ph('Reporting', 'Report recipients and how each one receives them.')+secH('Set up reporting')+setup('report')+cat;
    if(SCENE.repFocus==='cnp') return cnpReport(head);
    var m=tab('rep','auth'), days=+tab('repd','14'), cmp=SCENE.repCmp;
    var series=DAILY30.slice(-days), prevS=DAILY30.slice(-days*2, -days);
@@ -7584,11 +7584,11 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  PARTNER.settlement=function(){
    var fees=secH('Fee schedule', goLink('Agreements','data-go2="agreement"'))+figs([['Assessment','0.11%','of settled volume'],['Authorization','$0.0035','each'],['Dispute','$4.50','per case'],['Gateway','$0','direct connection']]);
    if(!live()){
-     var head=ph('Settlement and fees', 'Where your money settles.');
+     var head=ph('Settlement and fees', 'Where settlement lands and on what schedule.');
      var inv=secH('Invoices')+doc([['First invoice','The first business day of the month after go-live','Monthly'],['Covers','Fees against settled volume, by product',''],['Sent to','<span class="gn-doc-x">Finance contact, once named in Reporting</span>','']]);
      return head+secH('Settlement account')+setup('bank')+secH('Daily balancing')+setup('bal')+fees+inv;
    }
-   var head=ph('Settlement and fees', 'Daily settlement to Northgate Bank ···· 4471.');
+   var head=ph('Settlement and fees', 'When settlement lands and what each cycle covers.');
    var net=DAILY.map(function(d){ return [d[0], d[4]] });
    var f=figs([['Settled, 14 days','$'+DAILY.reduce(function(a,d){return a+d[4]},0).toFixed(1)+'M',''],['Fees this month','$13,590','against $38.2M'],['Next wire, tomorrow','6:00 AM ET','$1.31M'],['Open adjustments','0','']]);
    var ch=secH('Net settled by day')+chartLine(net,{min:0.8,max:1.6,fmt:function(v){return '$'+v.toFixed(2)+'M'}});
@@ -7648,7 +7648,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var shown=cases.filter(function(c){ return f==='all' || (f==='open'&&(c.st==='needs_response'||c.st==='under_review')) || (f==='needs'&&c.st==='needs_response') || (f==='closed'&&['won','lost','accepted','closed'].indexOf(c.st)>-1) });
    var open=cases.filter(function(c){return c.st==='needs_response'||c.st==='under_review'}), needs=cases.filter(function(c){return c.st==='needs_response'});
    var won=cases.filter(function(c){return c.st==='won'}).length, decided=cases.filter(function(c){return c.st==='won'||c.st==='lost'}).length;
-   var head=ph('Disputes', 'Respond to cases before their deadline.', '<a class="gn-btn" href="mailto:disputes@brightline.example">Case inbox</a>');
+   var head=ph('Disputes', 'Disputes raised against your merchants and what each one needs.', '<a class="gn-btn" href="mailto:disputes@brightline.example">Case inbox</a>');
    var figs_=figs([['Needs response', String(needs.length), needs.length?'next due '+needs.map(function(c){return c.due}).sort()[0]:''],['In review', String(open.length-needs.length), ''],['At stake', '$'+(open.reduce(function(a,c){return a+c.amount},0)/100).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}), 'open cases'],['Won, 90 days', decided?Math.round(100*won/decided)+'%':'—', won+' of '+decided+' decided']], 'gn-figs--compact');
    var byReason={}; open.forEach(function(c){ var k=(REASONS[c.reason]||c.reason).split(':')[0]; byReason[k]=(byReason[k]||0)+1 });
    var dc=open.length?'<div class="gn-chartcards">'
@@ -7816,12 +7816,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  function mRisk(m){ var o=(SCENE.mRisk||{})[m.k]; return o||m.risk }
  function riskWord(r){ return r==='normal'?word('Normal'):r==='elevated'?sw('Elevated','wa'):r==='paused'?sw('Paused','no'):sw('High','no') }
  PARTNER.merchants=function(){
-   if(!live()) return ph('Merchants', 'Every merchant on your connection.')+'<div class="emp"><b>No merchants yet.</b><span>Merchants appear after your first live authorizations.</span></div>';
+   if(!live()) return ph('Merchants', 'Every merchant on your connection and how each is performing.')+'<div class="emp"><b>No merchants yet.</b><span>Merchants appear after your first live authorizations.</span></div>';
    var q=(SCENE.mQ||'').toLowerCase(), srt=tab('msort','vol'), rf=tab('mrisk','all');
    var list=MERCHANTS.filter(function(m){ return (!q||m.n.toLowerCase().indexOf(q)>-1||m.k.indexOf(q)>-1) && (rf==='all'||mRisk(m)===rf) });
    var num=function(v){ return parseFloat(String(v).replace(/[$k,]/g,'')) };
    list.sort(function(a,b){ return srt==='vol'?num(b.vol)-num(a.vol):srt==='disp'?b.disputes-a.disputes:srt==='appr'?a.appr-b.appr:a.n.localeCompare(b.n) });
-   var head=ph('Merchants', 'Top merchants by volume this month.', '<span class="gn-link" data-act="dl">Export</span>');
+   var head=ph('Merchants', 'Your merchants ranked by volume this month.', '<span class="gn-link" data-act="dl">Export</span>');
    var f=figs([['Merchants','4,212',''],['New this month','38',''],['Elevated risk',String(MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length),''],['Paused',String(MERCHANTS.filter(function(m){return mRisk(m)==='paused'}).length),'']]);
    var mc='<div class="gn-chartcards">'
      +card('Volume by merchant, 30 days', '$1.4M', chart('treemap',{items:(function(){ var s=MERCHANTS.slice().sort(function(a,b){return num(b.vol)-num(a.vol)}); return s.slice(0,7).map(function(m){ return {name:m.n, value:num(m.vol)} }).concat([{name:'All others', value:s.slice(7).reduce(function(a,m){return a+num(m.vol)},0)+420}]) })(), fmt:'k$', h:200}), '4,212 merchants', goLink('Export','data-act="dl"'))
@@ -7848,7 +7848,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var facts=known(), groups=[];
    facts.forEach(function(f){ var g=groups.filter(function(x){return x.g===f.g})[0]; if(!g){ g={g:f.g,f:[]}; groups.push(g) } g.f.push(f) });
    var head=c?'<div class="rec-h"><b><span data-to="'+facts.length+'" data-fmt="int">'+facts.length+'</span> on file</b><span>details</span></div>'
-     : ph(STAGE===1?'What we have on file':'Company', STAGE===1?'<b>'+facts.length+'</b> details, from your site and your call with Sonia Vega.':'<b data-to="'+facts.length+'" data-fmt="int">'+facts.length+'</b> details on file, each with its source and date.');
+     : ph(STAGE===1?'What we have on file':'Company', STAGE===1?'What the network already knows about your business.':'Everything the network holds about you and where each answer came from.');
    var ask = (STAGE===2 && !SCENE.submitted && !c) ? '<div class="just"><b>Next step: name your team.</b><span>'+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
    /* regroup by subject, as Dana thinks of her company */
    if(!c && STAGE>1){ var by={}; facts.forEach(function(f){ var k=SUBJ[f.g]||f.g; (by[k]=by[k]||[]).push(f) }); groups=SUBJ_ORDER.filter(function(k){return by[k]}).map(function(k){ return {g:k, f:by[k]} }); }
@@ -7881,7 +7881,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var np=SCENE.notif||{}; var def={'Settlement posted|Email':1,'Dispute opened|Email':1,'Dispute opened|Portal':1,'Alert raised|Email':1,'Alert raised|Portal':1,'Notice published|Portal':1,'Certification result|Portal':1,'Invoice issued|Email':1};
    var on=function(k){ return np[k]===undefined?!!def[k]:!!np[k] };
    var notif=secH('Notifications', 'Your preferences')+'<div class="gn-table-wrap"><table class="gn-table nmx"><thead><tr><th>Event</th><th>How often</th><th>Email</th><th>In the portal</th></tr></thead><tbody>'+NOTIF_EVENTS.map(function(e){ return '<tr><td>'+esc(e[0])+'</td><td>'+esc(e[1])+'</td>'+['Email','Portal'].map(function(ch){ var k=e[0]+'|'+ch; return '<td><label class="gn-check-l cmp"><input type="checkbox" data-act="notifTog" data-k="'+esc(k)+'"'+(on(k)?' checked':'')+'></label></td>' }).join('')+'</tr>' }).join('')+'</tbody></table></div>';
-   return ph('Team', 'Who has access, and to what.', SCENE.invite?'':'<button class="gn-btn" data-act="inviteOpen">Invite someone</button>')+inv+people+named+roles+notif;
+   return ph('Team', 'Team access and what each person can reach.', SCENE.invite?'':'<button class="gn-btn" data-act="inviteOpen">Invite someone</button>')+inv+people+named+roles+notif;
  };
  function milestones(compact, published){
    var st=function(m){ if(published||pre()) return ''; if(STAGE>=5) return 'done'; if(m.k==='cert' && SCENE.validated) return 'done'; return m.st };
@@ -8022,7 +8022,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  PARTNER.alerts=function(){
    var open=ALERTS.filter(function(a){return a.st==='inhand'}), coming=ALERTS.filter(function(a){return a.st==='coming'}), done=ALERTS.filter(function(a){return a.st==='resolved'});
-   var head=ph('Alerts', 'Issues on your traffic, and who is handling them.');
+   var head=ph('Alerts', 'Open alerts on your traffic and who is handling each.');
    var t=function(list){ return '<div class="nt-grid">'+list.map(function(a){ return '<article class="gn-notice is-link" data-act="alert" data-k="'+a.k+'"><div class="gn-notice-h">'+(a.st==='inhand'?sw('In hand','wa'):a.st==='coming'?sw('Coming',''):word('Fixed'))+'<span>'+esc(a.product)+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.p)+'</p><div class="gn-notice-f">'+av(a.owner,'a24')+'<span>'+esc(PEOPLE[a.owner].n)+', '+esc(a.when)+'</span></div></article>' }).join('')+'</div>' };
    return head+secH('Being handled', open.length+' by Discover')+(open.length?t(open):empty('Nothing open. The network has not flagged anything on your traffic.'))
     +secH('Coming', coming.length+' to plan for')+t(coming)+secH('Resolved', done.length+' this year')+t(done);
@@ -8213,7 +8213,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  var PERMS=[['Acceptance','write'],['Tokens','write'],['Disputes','read'],['Money','read'],['Decisioning','none']];
  DEV.keys=function(){
    var e=envSel(), a=envAvail(), keys=devKeys();
-   var head=ph('API keys', 'A key for each service, in each mode.')+toolbar(envSwitch(), a.sandbox&&!SCENE.keyNew&&!SCENE.keyShown?'<button class="gn-btn gn-btn--primary" data-act="keyNew">Create key</button>':'');
+   var head=ph('API keys', 'API keys for each service and environment.')+toolbar(envSwitch(), a.sandbox&&!SCENE.keyNew&&!SCENE.keyShown?'<button class="gn-btn gn-btn--primary" data-act="keyNew">Create key</button>':'');
    if(!a.sandbox) return head+'<p class="para">No keys yet. A sandbox key is issued when provisioning completes.</p>'+secH('mTLS certificates')+certTable();
    var create = SCENE.keyNew ? '<section class="gn-setup"><div class="gn-setup-h"><div><h3>Create key</h3><p>Name the key for its service and grant only the permissions it needs.</p></div></div><form class="gn-setup-f" onsubmit="return false"><label class="gn-field"><span class="gn-field-l">Key name</span><input class="gn-in'+(SCENE.keyErr?' is-err':'')+'" id="keyName" value="'+esc(SCENE.keyName||'')+'">'+(SCENE.keyErr?'<span class="gn-help is-err">'+esc(SCENE.keyErr)+'</span>':'<span class="gn-help">The service that will use it, like billing-service.</span>')+'</label><div class="gn-field"><span class="gn-field-l">Permissions</span><div class="perm">'+PERMS.map(function(x){ return '<div class="perm-r"><span>'+esc(x[0])+'</span>'+['none','read','write'].map(function(v){ return '<label><input type="radio" name="p-'+x[0]+'"'+(v===x[1]?' checked':'')+'> '+v+'</label>' }).join('')+'</div>' }).join('')+'</div></div><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="keyCreate">Create key</button><span class="gn-link cancel" data-act="keyCancel">Cancel</span></div></form></section>' : '';
    var shown = SCENE.keyShown ? '<section class="gn-setup is-once"><div class="gn-setup-h"><div><h3>'+esc(SCENE.keyShown.n)+'</h3><p>Copy the key now. It can’t be shown again.</p></div>'+sw('Shown once','wa')+'</div><div class="kv big"><span class="gn-mono">'+esc(SCENE.keyShown.full)+'</span><button class="gn-btn gn-btn--sm" data-act="keyCopy">Copy</button></div><form class="gn-setup-f" onsubmit="return false"><label class="gn-field"><span class="gn-field-l">Note<small>where you stored it</small></span><input class="gn-in" placeholder="Vault: brightline/dgn/'+esc(SCENE.keyShown.n)+'"></label><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="keyDone">Done</button></div></form></section>' : '';
@@ -8245,7 +8245,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  DEV.webhooks=function(){
    var e=envSel(), a=envAvail(), eps=devEndpoints(), open=eps.filter(function(x){return x.id===SCENE.epId})[0];
    if(open) return epPage(open);
-   var head=ph('Webhooks', 'Endpoints that receive signed events.')+toolbar(envSwitch(), a.sandbox&&!SCENE.epForm?'<button class="gn-btn gn-btn--primary" data-act="epNew">Add endpoint</button>':'');
+   var head=ph('Webhooks', 'Endpoints that receive signed events from the network.')+toolbar(envSwitch(), a.sandbox&&!SCENE.epForm?'<button class="gn-btn gn-btn--primary" data-act="epNew">Add endpoint</button>':'');
    if(!a.sandbox) return head+'<p class="para">Endpoints can be added once the sandbox is provisioned. '+goLink('Event reference','data-go2="events"')+'</p>';
    var form=SCENE.epForm==='new'?epForm(null):'';
    var list = eps.length ? tbl2([['Endpoint'],['Events',1],['Status'],['Delivered, 7 days',1],['Last delivery'],['']], eps.map(function(x){ var r=epRate(x), dl=epDeliveries(x); return {c:['<span class="gn-mono">'+esc(x.url)+'</span>'+(x.d?'<em>'+esc(x.d)+'</em>':''), String(x.events.length), x.on?word('Active'):sw('Disabled',''), r===null?'—':(r<100?'<span class="gn-status is-warn">'+r+'%</span>':r+'%'), dl.length?esc(dl[0][2]):'—', menu('ep:'+x.id, [['Settings','epSettings',x.id],[x.on?'Disable':'Enable','epToggle',x.id],['Delete','epDelete',x.id,true]])], act:'epOpen', k:x.id} }))
@@ -8309,7 +8309,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      +secH('Delivery')+doc([['Signed','DGN-Signature header, HMAC-SHA256','Verify before acting'],['Retries','Up to 8 over three days','On anything but 2xx'],['Ordering','Not guaranteed','De-duplicate on the event id']])
      +'<div class="sc-a inset">'+(eps.length?'<button class="gn-btn" data-act="evTest" data-k="'+esc(x[0])+'">Send a test event</button>':'')+goLink(eps.length?'Manage subscriptions':'Add an endpoint','data-go2="webhooks"')+'</div></div>';
    var side='<div class="spec-c"><div class="code-h"><span class="gn-eyebrow">Sample payload</span><span class="gn-link" data-act="keyCopy">Copy</span></div>'+ink(EVENT_SAMPLES[x[0]]||'{}','sm')+'</div>';
-   return ph('Event reference', 'Payloads and timing for every event type.')+toolbar(envSwitch(), '<span class="l2-mode">'+(eps.length?eps.length+' endpoint'+(eps.length>1?'s':'')+' in '+ENVN[envSel()]:'No endpoints yet in '+ENVN[envSel()])+'</span>')+'<div class="spec three">'+nav+head+side+'</div>';
+   return ph('Event reference', 'The payload and timing of every event type.')+toolbar(envSwitch(), '<span class="l2-mode">'+(eps.length?eps.length+' endpoint'+(eps.length>1?'s':'')+' in '+ENVN[envSel()]:'No endpoints yet in '+ENVN[envSel()])+'</span>')+'<div class="spec three">'+nav+head+side+'</div>';
  };
  /* ── Logs ── */
  function logTable(log, sel, compact, sort){ var cols=compact?[['Time'],['Request'],['Status'],['Latency',1]]:[['Time',0,'when'],['Request',0,'p'],['Status',0,'st'],['Latency',1,'ms']]; /* the key is a filter, not a column: the split pane has no room for it */
@@ -8328,7 +8328,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
        fsel('logKey', keyF, [['','any key'],['Production','the production key'],['Reporting','the reporting key']], 'Key'),
        fsel('logHour', hrF, [['','any hour'],['night','overnight, 12 to 6 AM'],['morning','morning, 6 AM to noon'],['afternoon','afternoon, noon to 6 PM'],['evening','evening, 6 PM to midnight']], 'Hour')
      ], (stF||epF||hrF||keyF||q||f!=='all'||m!=='all')?'<span class="gn-link" data-act="logClearAll">Clear filters</span>':'') : '';
-   var head=ph('Logs', 'Requests and responses for this mode.')+(SCENE.logFrom?logInsight(log, f, q):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var head=ph('Logs', 'Every request and response in this environment.')+(SCENE.logFrom?logInsight(log, f, q):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
    if(!a.sandbox) return head+'<p class="para">Requests appear here once the sandbox is provisioned.</p>';
    var sel=log.filter(function(r){return r.id===SCENE.logId})[0]||log[0];
    var lfoot=e==='prod'?'<div class="gn-table-foot">'+((f==='all'&&m==='all'&&!q&&!keyF&&!stF&&!epF&&!hrF)?'Newest '+log.length+' of 48,211 today. Search by request id or path for the rest.':nn(log.length,'request')+' match of 48,211 today.')+'</div>':'';
@@ -8399,7 +8399,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  DEV.sandbox=function(){
    var cur=+tab('card',0), t=TESTS[cur], res=TESTRES[t[0]], fired=SCENE.fired===cur, a=envAvail();
-   var head=ph('Test cards', 'Numbers that always answer the same way, with any CVC and expiry.');
+   var head=ph('Test cards', 'Test card numbers and the response each one returns.');
    var idx={}; TESTS.forEach(function(x,i){ idx[x[0]]=i });
    var cards=TEST_SECTIONS.map(function(sec){ return secH(esc(sec[0]), esc(sec[1]))+tbl2([['Number'],['Scenario'],['Code'],['Details'],['']], sec[2].map(function(x){ var i=idx[x[0]]; var tone=x[2]==='00'&&x[1].indexOf('Stand')<0?'ok':x[2]==='10'||x[1].indexOf('Stand')>-1?'wa':'no';
      return ['<span class="kv"><span class="gn-mono">'+esc(x[0])+'</span><span class="gn-link" data-act="keyCopy">Copy</span></span>', sw(x[1], tone), '<span class="gn-mono">'+esc(x[2])+'</span>', esc(x[3]), a.sandbox&&i!==undefined?'<span class="gn-link" data-tab="card:'+i+'">Use in console</span>':''] })) }).join('');
@@ -8414,7 +8414,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  DEV.changelog=function(){
    var impact={'v4.2':['Nothing to change. Read round_trip_ms from every response if you want it.','spec'],'v4.1':['Send Idempotency-Key on every capture. Your client already does.','spec'],'v4.0':['Tokens is in your agreement; the endpoint is live for you.','spec'],'v3.9':['Dispute evidence uploads accept multipart. Your handler can send files directly.','spec']};
-   return ph('Changelog', 'API versions and what changed.')+'<div class="ds-grid">'+CHANGELOG.map(function(c){ var im=impact[c.v]||['',''];
+   return ph('Changelog', 'API versions and the changes in each.')+'<div class="ds-grid">'+CHANGELOG.map(function(c){ var im=impact[c.v]||['',''];
      return '<article class="dsh"><span class="gn-eyebrow">'+esc(c.v)+', '+esc(c.d)+'</span><h2>'+esc(c.t)+'</h2><span class="dsh-m">'+esc(c.b)+'</span><div class="dsh-s"><span class="gn-eyebrow">What changes for you</span><span class="dsh-m">'+esc(im[0])+'</span> '+goLink('Reference','data-go2="'+im[1]+'"')+'</div></article>' }).join('')+'</div>';
  };
 
@@ -8426,7 +8426,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var known={'BIN range':1,'Settlement account':0,'Settlement currency':1,'Dispute routing':0,'Authorization timeout':1,'Stand-in ceiling':0,'Callback endpoint':0,'Certificate':(SCENE.sandbox||STAGE>=3)?1:0};
    var have=function(n){ return signed||known[n]||(SCENE.cfg||{})[n]!==undefined };
    var total=CONFIG.length, got=CONFIG.filter(function(r){return have(r[0])}).length;
-   var head=ph('Configuration', 'Settings the network needs, by area.')+toolbar('<span class="l2-mode">'+(ok?'Confirmed. Certification cases are generated from this set.':got+' of '+total+' values set. '+(signed?'Confirm to generate certification cases.':'The rest arrive from Schedules A and B at signature.'))+'</span>', ok?word('Confirmed'):signed?'<button class="gn-btn gn-btn--primary" data-act="cfgOk">Confirm configuration</button>':'');
+   var head=ph('Configuration', 'Configuration the network needs before go-live.')+toolbar('<span class="l2-mode">'+(ok?'Confirmed. Certification cases are generated from this set.':got+' of '+total+' values set. '+(signed?'Confirm to generate certification cases.':'The rest arrive from Schedules A and B at signature.'))+'</span>', ok?word('Confirmed'):signed?'<button class="gn-btn gn-btn--primary" data-act="cfgOk">Confirm configuration</button>':'');
    return head+CFG_SECTIONS.map(function(sec){ var editing=SCENE.cfgEdit===sec[0];
      var body = editing
        ? '<form class="gn-setup-f" onsubmit="return false">'+sec[1].map(function(n){ var r=cfgVal(n); return '<label class="gn-field"><span class="gn-field-l">'+esc(n)+'</span><input class="gn-in cfgIn" data-n="'+esc(n)+'" value="'+esc(have(n)?r[1]:'')+'" placeholder="'+esc(n==='Callback endpoint'?'https://…':'')+'"></label>' }).join('')+'<div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="cfgSave" data-k="'+esc(sec[0])+'">Save</button><span class="gn-link cancel" data-act="cfgCancel">Cancel</span></div></form>'
@@ -8465,14 +8465,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var groups=certCases(), all=[]; groups.forEach(function(g){ all=all.concat(g.cases) });
    var total=all.length, seen=all.filter(function(x){return x.seen}).length, pass=all.filter(function(x){return x.res==='pass'}).length;
    if(STAGE<4){
-     return ph('Certification', total+' cases from your configuration, sent from your host.', sw('Opens at signature',''))
+     return ph('Certification', 'Test cases generated from your configuration and run from your host.', sw('Opens at signature',''))
       +'<p class="para">Cases open at signature. Your host sends each one to cert.api.dgn.com; a case turns green when the network sees it.</p>'+certBasis()
       +groups.map(function(g){ return secH(esc(g.n), nn(g.cases.length,'case'))+tbl2([['Case'],['What it checks'],['Who sends it']], g.cases.map(function(x){ return [ '<i class="gn-mono">'+esc(x.id)+'</i>', esc(x.t), x.by==='network'?'The network':'Your host' ] })) }).join('');
    }
    var snagLive = STAGE===4 && PANEL===7 && !SCENE.certOk, snag=CERT.snag;
    var ready = seen===total && pass===total && STAGE<5 && !SCENE.certSubmitted;
    var status = STAGE>=5 || SCENE.validated ? word('Validated') : SCENE.certSubmitted ? sw('Submitted','') : ready ? '<button class="gn-btn gn-btn--primary" data-act="certSubmit">Submit for validation</button>' : sw('In progress','wa');
-   var head=c?'':ph('Certification', total+' cases from your configuration, sent from your host.', status)
+   var head=c?'':ph('Certification', 'Test cases generated from your configuration and run from your host.', status)
      +'<p class="para">Your host sends each case to cert.api.dgn.com. A case turns green when the network sees it.'+(SCENE.certSubmitted&&STAGE<5?' Submitted May 6. Ana Okafor validates in the window.':'')+'</p>'+certBasis()
      +figs([['Seen', seen+' of '+total, 'by the network'],['Passing', pass+' of '+total, seen<total?'not yet seen: '+(total-seen):''],['Window', winMoved()?SCENE.winReq:CERT.window, winMoved()?'confirmed by Ana Okafor':'Ana Okafor validates'],['Validation', STAGE>=5?'Passed May 8':SCENE.validated?'Passed today':SCENE.certSubmitted?'Booked':'Pending', STAGE>=5||SCENE.validated?'end to end':'after submission']]);
    /* the snag: what the network saw, what it worked out, and the one thing to do next */
@@ -8508,7 +8508,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return head+caught+table+win;
  };
  DEV.support=function(){
-   var head=ph('Support', 'Environment status and who to reach.');
+   var head=ph('Support', 'Environment status and how to reach support.');
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
    var always=secH('Channels')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
@@ -8850,7 +8850,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  AGENT.bookrep=function(){
    if(SCENE.agRep==='plan') return planReport();
    var R=BOOK_REPORT;
-   var head=ph('Book report', 'How your partners are doing, side by side.', '<span class="gn-link" data-act="dl">Export</span>');
+   var head=ph('Book report', 'Your partners compared on the measures that matter.', '<span class="gn-link" data-act="dl">Export</span>');
    var liveN=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
    var f=figs([['Partners',String(BOOK.length),liveN+' live'],['Median first conversation to live','74 days','target 78'],['Approval rate, live acquirers','96.4%','network 96.1%'],['Marks met, this quarter','24 of 27','']]);
    var across=bookAcross();
@@ -8882,7 +8882,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return secH('Across the book', 'Four readings')+segs+body;
  }
  AGENT.certs=function(){
-   var head=ph('Windows', 'Certification windows: who is certifying, and when.')+'<p class="para">Each partner’s cases reflect the requirements in its contracts and the waivers on file.</p>';
+   var head=ph('Windows', 'Scheduled certification windows across your book.')+'<p class="para">Each partner’s cases reflect the requirements in its contracts and the waivers on file.</p>';
    var wins=certWindows(), cases=wins.reduce(function(a,w){ return a+(w[0]==='Brightline Bank'?certTotal():(w[1]||19)) },0);
    var f=figs([['Windows in May',String(wins.length),''],['Cases in May',String(cases),''],['Not yet booked',SCENE.agBooked?'0':'1',SCENE.agBooked?'':'Halcyon Acquiring'],['Passing today', STAGE>=4?certPassing()+' of '+certTotal():'28 of 31', STAGE>=4?'Brightline Bank':'Tallgrass']], 'gn-figs--compact');
    /* validation is the network's action once the partner's host has submitted; while it is on screen it is the one solid button */
@@ -8906,7 +8906,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  AGENT.team=function(){
    var cur=SCENE.agRole||'impl';
-   var head=ph('Your team', 'Six seats on the network’s side, and what each one acts on.', cur==='impl'?'':'<span class="gn-link" data-act="agRoleBack">Back to your seat</span>');
+   var head=ph('Your team', 'The network-side seats and what each one can act on.', cur==='impl'?'':'<span class="gn-link" data-act="agRoleBack">Back to your seat</span>');
    var rowsT=tbl2([['Seat'],['Who'],['Acts on'],['']], AG_SEATS.map(function(s){ var w=PEOPLE[s.who];
      return {c:[esc(s.t), esc(w.n), esc(s.d), s.k===cur?word('Viewing'):'<span class="gn-link" data-act="agRoleView" data-k="'+s.k+'" aria-label="View as '+esc(w.n)+', '+esc(s.t.toLowerCase())+'">View as</span>'], act:'noopRow'} }));
    var note='<p class="para">Every seat sees every page, writes notes and sends reminders. Its row says what else it may change.</p>';
@@ -8936,7 +8936,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var list=all.filter(function(c){ return (seg==='all' || (seg==='open'?c.st!=='resolved':c.st===seg)) && (who==='all' || (who==='mine'?c.owner===me:!c.owner)) })
      .sort(function(a,b){ var ra=a.st==='resolved'?2:a.st==='waiting'?1:0, rb=b.st==='resolved'?2:b.st==='waiting'?1:0; return ra-rb || caseDue(a)-caseDue(b) });
    var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
-   var head=ph('Cases', open_.length+' open across the book'+(late.length?', '+nn(late.length,'reply','replies')+' overdue':'')+(un.length?', '+nn(un.length,'case')+' unassigned.':'.'));
+   var head=ph('Cases', 'Questions and issues raised by your partners and by the network.');
    var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
    var bar=(SCENE.caseFrom?caseInsight(list, who, seg):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
    var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
@@ -8984,7 +8984,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  AGENT.golives=function(){
    var st=function(g){ return g[2]==='{live}'?(STAGE>=5?'Live':'Scheduled'):g[2]==='scheduled'?'Scheduled':g[2] };
-   var head=ph('Go-lives', 'Scheduled and completed activations.');
+   var head=ph('Go-lives', 'Activations scheduled and completed across your book.');
    var f=figs([['This month',String(GOLIVES.filter(function(g){return g[1].indexOf('May')===0}).length),STAGE>=5?'1 done':''],['Next', STAGE>=5?'Halcyon, May 21':'Brightline Bank, May 14',''],['Not yet booked','1','Marlow & Third'],['First conversation to live','71 days','Brightline Bank, median 78']]);
    return head+f+timeline([
      {day:'May', items:GOLIVES.filter(function(g){return g[1].indexOf('May')===0}).sort(function(a,b){return dnum(a[1])-dnum(b[1])}).map(function(g){ var k=BOOK.filter(function(b){return b.n===g[0]})[0]; return {t:g[1], title:esc(g[0]), d:st(g)==='Live'?'Activated 6:00 AM. First authorization 6:04 AM. First settlement May 15.':'Activation 6:00 AM. Partner and network on one call until the first settlement.', r:word(st(g)), act:'agPartner', k:k?k.k:'brightline'} })},
@@ -8995,7 +8995,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return '<article class="gn-notice"><div class="gn-notice-h">'+(done?word('Resolved'):taken?sw('Yours','wa'):a.kind==='action'?sw('Action needed','wa'):sw('For information',''))+'<span>'+esc(a.p)+'</span></div><h3>'+esc(agAlertT(a))+'</h3><p>'+esc(a.what)+'</p><div class="gn-notice-f">'+(done?'<span>Resolved '+since('agr:'+a.k)+((SCENE.resNote||{})[a.k]?': '+esc(SCENE.resNote[a.k]):'')+'</span>':taken?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>':(SCENE.assigned||{})[a.k]?'<span>Handed to '+esc((SCENE.assigned||{})[a.k])+'</span>':a.kind==='action'?'<button class="gn-btn gn-btn--sm" data-act="agTake" data-k="'+a.k+'">Take it</button>'+menu('al:'+a.k, [['Hand to Ana Okafor','agHand',a.k+'|Ana Okafor'],['Hand to Theo Marchetti','agHand',a.k+'|Theo Marchetti']]):'')+'</div></article>' }
  AGENT.alerts=function(){
    var open=AG_ALERTS.filter(function(a){ return STAGE>=a.from && STAGE<=a.until });
-   var head=ph('Alerts', 'Issues across your book.');
+   var head=ph('Alerts', 'Open issues across every partner in your book.');
    var cnpDone=(SCENE.resolved||{}).cnp;
    /* the Caught cards are written to the partner ("your staging certificate"); the network reads its own side of each */
    var netCard=function(c){ return alertCard(Object.assign({}, c, c.ag||{}, {close:''})) };
@@ -9634,7 +9634,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  function pfRead(html){ return html.replace(/data-act="(ptxOpen|pperfTx)"/g, 'data-read="$1"').replace(/data-act="sortBy" data-k="ptxSort\|/g, 'data-read="ptxSort" data-k="ptxSort|') }
  AGENT.ptx=function(){
    var b=pfPartner(), k=b.k, isLive=pfLive(b);
-   var head=ph('Transactions', esc(b.n)+'. '+(isLive&&pfAcq(b)?'The newest fourteen days, as the network saw them.':'Nothing on the acquiring record yet.'), pfSelect());
+   var head=ph('Transactions', (isLive&&pfAcq(b)?'The last fourteen days of traffic as the network recorded it.':'Nothing on the acquiring record yet.'), pfSelect());
    if(!isLive) return head+pfEmpty(b, 'No transactions yet.');
    if(!pfAcq(b)) return head+pfEmpty(b, 'No acquiring transactions.');
    var all=pfRows(k), names=pfMerchants(k).map(function(m){return m.n}).sort();
@@ -9680,7 +9680,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  }
  AGENT.pperf=function(){
    var b=pfPartner(), k=b.k, isLive=pfLive(b), n=pfDays(), cmp=pfCmp(), canCmp=n<=15;
-   var head=ph('Performance', esc(b.n)+'. '+(isLive&&pfAcq(b)?'Against the network and against its own previous period.':isLive?'An issuer on the network.':'Before go-live.'), pfSelect());
+   var head=ph('Performance', (isLive&&pfAcq(b)?'How this partner compares with the network and with its own previous period.':isLive?'An issuer on the network.':'Before go-live.'), pfSelect());
    if(!isLive){ var pl=BOOKX[k]||{}, cert=k==='tallgrass'?['31','28','May 11 to 15']:k==='halcyon'?['19','—',SCENE.agBooked?'May 11 to 15':'Not booked']:k==='marlow'?['—','—','After the settlement account']:[String(certTotal()), STAGE>=4?String(certPassing()):'—', STAGE>=4?'May 4 to 8':'After signature'];
      return head+'<div class="emp"><b>No live traffic yet.</b><span>'+esc(b.n)+' is '+esc(pfStageWord(b))+'. Performance is read from the first live authorization.</span></div>'
        +secH('Certification', cert[1]!=='—'?cert[1]+' of '+cert[0]+' passing':'')+figs([['Cases', cert[0], ''],['Passing', cert[1], cert[1]!=='—'&&cert[0]!=='—'?Math.round(100*cert[1]/cert[0])+'% pass rate':''],['Window', cert[2], '']], 'gn-figs--3 gn-figs--compact')
@@ -10242,7 +10242,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
  /* ── the page ───────────────────────────────────────────────────────────────── */
  PARTNER.insights=function(){
-   var head=ph('Insights', 'Where Brightline Bank sits against comparable participants on the network.');
+   var head=ph('Insights', 'How you compare with participants of similar size and mix.');
    if(!live()) return head+'<div class="emp"><b>Nothing to compare yet.</b><span>The comparison is drawn from your first fourteen days of authorizations.</span></div>';
    return head+insWho()+insStanding()+insSpread()+insRec();
  };
@@ -10495,7 +10495,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var sent=!!SCENE.sent, rows=xpRows(), n=rows.length, done=xpDone();
    var head=ph('Add Wallets',
      sent ? 'Sent to Discover with '+n+' answers carried from your record.'
-          : 'Confirm what the network holds, and answer the two things it cannot know.',
+          : 'Confirm what the network already holds and answer what it cannot know.',
      sent ? xpSentWord() : '');
    return sent ? head + xpSentBody(rows, n) + xpWorth() + xpNext()
                : head + xpWorth() + xpConfirm(rows, n, done) + xpAsk() + xpNext() + (canAct('expand') ? xpSendBlock(rows) : '');
