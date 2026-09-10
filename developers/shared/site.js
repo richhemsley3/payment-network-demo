@@ -4,10 +4,16 @@
   var root = (dir==='docs'||dir==='api') ? '../' : '';
   var NAV=[['docs/index.html','Docs'],['api/index.html','API reference'],['sdks.html','SDKs and tools'],['changelog.html','Changelog'],['status.html','Status'],['support.html','Support']];
   var cur=(dir==='docs'||dir==='api')?dir+'/'+here:here; var section=(dir==='docs')?'docs/index.html':(dir==='api')?'api/index.html':here;
-  var top=document.createElement('header'); top.className='dv-top';
+  window.dvTopRight=function(){
+  var a=(typeof dvAccount==='function')&&dvAccount();
+  return '<a class="gn-link" href="'+root+'../story/brightline-story/docs/index.html" aria-label="Discover Global Network home">Home</a>'
+    +(a ? '<a class="gn-link" href="'+root+'account.html">'+String(a.company).replace(/[<>&"]/g,'')+'</a>'
+        : '<a class="gn-link" href="'+root+'support.html#signup" data-account-open>Create a preview account</a>');
+};
+var top=document.createElement('header'); top.className='dv-top';
   var mainEl=document.querySelector('main'); if(mainEl && !mainEl.id) mainEl.id='main';
   if(mainEl) mainEl.setAttribute('tabindex','-1');
-  top.innerHTML='<div class="gn-topnav"><a class="gn-sidebar-mark" href="'+root+'index.html" aria-label="Discover Global Network Developers"'+(section==='index.html'?' aria-current="page"':'')+'><span>Discover Global Network</span></a><nav class="gn-topnav-l" aria-label="Site">'+NAV.map(function(n){ return '<a href="'+root+n[0]+'"'+(section===n[0]?' class="is-on"':'')+(section===n[0]?' aria-current="page"':'')+'>'+n[1]+'</a>' }).join('')+'</nav><div class="gn-header-q"><form onsubmit="return false">'+gnIcon('search')+'<input id="dvQ" placeholder="Search" aria-label="Search the docs and reference" autocomplete="off" aria-expanded="false" aria-controls="dvQPanel"><kbd>/</kbd><button type="button" class="dv-q-clear" aria-label="Clear the search" hidden>&times;</button></form></div><div class="gn-topnav-r"><a class="gn-link" href="'+root+'../story/brightline-story/docs/index.html" aria-label="Discover Global Network home">Home</a>'+(typeof dvAccount==='function'&&dvAccount()?'<a class="gn-link" href="'+root+'account.html">'+String(dvAccount().company).replace(/[<>&"]/g,'')+'</a>':'<a class="gn-link" href="'+root+'support.html#signup">Create a free account</a>')+'</div></div>';
+  top.innerHTML='<div class="gn-topnav"><a class="gn-sidebar-mark" href="'+root+'index.html" aria-label="Discover Global Network Developers"'+(section==='index.html'?' aria-current="page"':'')+'><span>Discover Global Network</span></a><nav class="gn-topnav-l" aria-label="Site">'+NAV.map(function(n){ return '<a href="'+root+n[0]+'"'+(section===n[0]?' class="is-on"':'')+(section===n[0]?' aria-current="page"':'')+'>'+n[1]+'</a>' }).join('')+'</nav><div class="gn-header-q"><form onsubmit="return false">'+gnIcon('search')+'<input id="dvQ" placeholder="Search" aria-label="Search the docs and reference" autocomplete="off" aria-expanded="false" aria-controls="dvQPanel"><kbd>/</kbd><button type="button" class="dv-q-clear" aria-label="Clear the search" hidden>&times;</button></form></div><div class="gn-topnav-r">'+dvTopRight()+'</div></div>';
   document.body.insertBefore(top, document.body.firstChild);
   /* the skip link goes in after the header so it is the first thing the keyboard reaches */
   if(!document.querySelector('.skip')){ var sk=document.createElement('a'); sk.className='skip'; sk.href='#main'; sk.textContent='Skip to content'; sk.addEventListener('click',function(e){ e.preventDefault(); if(mainEl){ mainEl.focus(); mainEl.scrollIntoView() } }); document.body.insertBefore(sk, document.body.firstChild) }

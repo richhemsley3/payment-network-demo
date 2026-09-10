@@ -25,7 +25,7 @@
 <script>document.getElementById('tcBody').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]), a=DV.after[i]; return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td><span class="gn-status '+tone+'">'+c[2]+'</span></td><td>'+a[0]+'</td><td>'+a[1]+'</td><td class="is-num"><button class="gn-link" type="button" onclick="pick('+i+')">Try it</button></td></tr>' }).join('');</script>
 <h2 id="console">The demo console</h2>
 <p>Runs on your own sandbox key, which a free account gives you. Under the console is the same request as code, in your language, ready to copy.</p>
-<div id="acctStrip"></div>
+<div id="acctStrip" data-account-strip></div>
 <div class="dv-build">
   <div>
     <span class="gn-label">Card</span><div class="gn-testcards" id="tcPick"></div>
