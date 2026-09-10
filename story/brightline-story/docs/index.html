@@ -10818,8 +10818,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  setPanel(1);
  /* a refresh starts the demo at the marketing page (Rich, September 7); the saved session comes back only when the URL says #resume */
  try{ var S0=location.hash==='#resume'?JSON.parse(sessionStorage.getItem('gn.state')||'null'):null; if(S0 && S0.PANEL){ setPanel(S0.PANEL); if(S0.SEAT){ SEAT=S0.SEAT; SEATS=[SEAT] } SCENE=S0.SCENE||{}; if(S0.VIEW) VIEW=S0.VIEW; if(typeof S0.NOW==='number') NOW=S0.NOW; repaint(); paintRail() } }catch(e){}
- /* the frame on the public site names a panel by number; arriving with one opens it */
- try{ var pm=/^#panel=(\d+)$/.exec(location.hash); if(pm){ var pn=+pm[1]; if(PANELS.some(function(x){ return x.n===pn })){ setPanel(pn); repaint(); paintRail() } } }catch(e){}
+ /* the frame on the public site names a panel by number; arriving with one opens it, and so does
+    changing to one while the page is already open */
+ function panelFromHash(){ try{ var pm=/^#panel=(\d+)$/.exec(location.hash); if(!pm) return;
+   var pn=+pm[1]; if(PANELS.some(function(x){ return x.n===pn })){ setPanel(pn); repaint(); paintRail() } }catch(e){} }
+ panelFromHash(); window.addEventListener('hashchange', panelFromHash);
 
 })();
 </script>
