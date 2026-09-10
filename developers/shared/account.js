@@ -30,11 +30,30 @@
   /* what an account changes, said once and reused: the page that offers keys and the account page itself */
   window.dvAccountGrants=[
     ['The reference, the events and the guides','Public','Public'],
-    ['The shared demo sandbox, one request at a time','Public','Public'],
+    ['The test cards, and every request shown as code','Public','Public'],
+    ['The demo console, sending against the sandbox','Needs an account','Yours'],
     ['Your own sandbox key and webhook endpoint','Needs an account','Yours'],
     ['The log of what you sent','Needs an account','Yours'],
     ['Certification and production','With a participation agreement','With a participation agreement']
   ];
+
+  /* the sandbox needs an account. The button that sends is disabled until there is one, and the reason
+     stands next to it rather than in a tooltip, because a control that does nothing without saying why
+     is the worst of both. Creating the account signs her in and returns her here, so there is no second
+     step and nothing to go back to. */
+  window.dvGateSend=function(btn, note){
+    if(!btn) return;
+    var a=get();
+    if(a){ btn.disabled=false; btn.removeAttribute('aria-describedby'); if(note) note.innerHTML=''; return }
+    btn.disabled=true; btn.setAttribute('aria-describedby','dvGateWhy');
+    if(!note) return;
+    var d=(location.pathname.split('/').slice(-2,-1)[0]);
+    var root=(d==='docs'||d==='api')?'../':'';
+    var back=(d==='docs'||d==='api'?d+'/':'')+(location.pathname.split('/').pop()||'index.html')+(location.hash||'');
+    note.innerHTML='<span id="dvGateWhy" class="dv-gate"><b>The sandbox needs a free account.</b> '
+      +'<a class="gn-link" href="'+root+'support.html?next='+encodeURIComponent(back)+'#signup">Create one and come back here</a>'
+      +'<span>A sandbox key in a minute. No agreement, no card, nothing to cancel.</span></span>';
+  };
 
   /* the strip a page shows where an account is the difference between reading and doing */
   window.dvAccountStrip=function(where){

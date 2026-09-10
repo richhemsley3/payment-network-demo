@@ -56,7 +56,8 @@ function supSearch(){ var v=document.getElementById('supQ').value.trim(), out=do
 </div>
 <script>
 function signIn(){ var e=document.getElementById('siEmail'), p=document.getElementById('siPass'); if(dvOffline(e)) return; var a=dvErr(e, !e.value.trim()?'Enter your email.':!dvEmail(e.value)?'Enter an email address, like name@acquirer.example.':''); var b=dvErr(p, p.value?'':'Enter your password.'); if(a&&b) dvToast('Not available in this prototype'); else dvFirstErr(document.getElementById('signin')) }
-function signUp(){ var e=document.getElementById('suEmail'), c=document.getElementById('suCo'); if(dvOffline(e)) return; var a=dvErr(e, !e.value.trim()?'Enter your work email.':!dvEmail(e.value)?'Enter an email address, like you@acquirer.example.':''); var b=dvErr(c, c.value.trim()?'':'Enter your company name.'); if(!(a&&b)){ dvFirstErr(document.getElementById('signup')); return } dvSignUp({email:e.value.trim(), company:c.value.trim()}); location.href='account.html' }
+function signUp(){ var e=document.getElementById('suEmail'), c=document.getElementById('suCo'); if(dvOffline(e)) return; var a=dvErr(e, !e.value.trim()?'Enter your work email.':!dvEmail(e.value)?'Enter an email address, like you@acquirer.example.':''); var b=dvErr(c, c.value.trim()?'':'Enter your company name.'); if(!(a&&b)){ dvFirstErr(document.getElementById('signup')); return } dvSignUp({email:e.value.trim(), company:c.value.trim()});
+ var nx=/[?&]next=([^&#]+)/.exec(location.search); location.href = nx ? decodeURIComponent(nx[1]) : 'account.html' }
 </script>
 <script>document.getElementById('supQ').addEventListener('dv-restored',supSearch); if(document.getElementById('supQ').value) supSearch();</script>
 <h2 id="terms">API terms</h2>

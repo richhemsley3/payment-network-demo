@@ -151,3 +151,9 @@ body.has-story{padding-bottom:56px}
 .dv-acct span{font-size:var(--gn-type-body); color:var(--gn-text-secondary)}
 .dv-acct a{margin-left:auto; white-space:nowrap}
 .dv-acct.is-on b{color:var(--gn-good)}
+
+/* the reason a send is disabled, beside the control rather than behind a tooltip */
+.dv-gate{display:block; margin-top:12px; font-size:var(--gn-type-body); color:var(--gn-text-secondary)}
+.dv-gate b{font-weight:600; color:var(--gn-text)}
+.dv-gate a{margin-left:8px}
+.dv-gate span{display:block; font-size:var(--gn-type-label); color:var(--gn-text-caption); margin-top:4px}

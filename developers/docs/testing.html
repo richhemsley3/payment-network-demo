@@ -23,12 +23,12 @@
 <div class="gn-table-wrap"><table class="gn-table gn-table--dense dv-cards"><thead><tr><th scope="col">Number</th><th scope="col">Answers</th><th scope="col">Code</th><th scope="col">Your code then</th><th scope="col">What follows</th><th scope="col"><span class="dv-sr">Try it</span></th></tr></thead><tbody id="tcBody"></tbody></table></div>
 <script>document.getElementById('tcBody').innerHTML=DV.cards.map(function(c,i){ var tone=DV.tone(c[2]), a=DV.after[i]; return '<tr><td class="gn-mono">'+c[0]+'</td><td>'+c[1]+'</td><td><span class="gn-status '+tone+'">'+c[2]+'</span></td><td>'+a[0]+'</td><td>'+a[1]+'</td><td class="is-num"><button class="gn-link" type="button" onclick="pick('+i+')">Try it</button></td></tr>' }).join('');</script>
 <h2 id="console">The demo console</h2>
-<p>Runs on the shared demo sandbox with the demo credentials, one request at a time. Under the console is the same request as code, in your language, ready to copy.</p>
+<p>Runs on your own sandbox key, which a free account gives you. Under the console is the same request as code, in your language, ready to copy.</p>
 <div id="acctStrip"></div>
 <div class="dv-build">
   <div>
     <span class="gn-label">Card</span><div class="gn-testcards" id="tcPick"></div>
-    <div class="dv-build-bar" style="margin-top:24px"><label class="gn-field"><span class="gn-field-l">Amount</span><input class="gn-in gn-in--mono" id="tcAmt" value="58.20" inputmode="decimal"></label><label class="gn-field"><span class="gn-field-l">Entry mode</span><select class="gn-in gn-in--auto" id="tcEntry"></select></label><button class="gn-btn gn-btn--primary" type="button" id="tcSend">Send</button></div>
+    <div class="dv-build-bar" style="margin-top:24px"><label class="gn-field"><span class="gn-field-l">Amount</span><input class="gn-in gn-in--mono" id="tcAmt" value="58.20" inputmode="decimal"></label><label class="gn-field"><span class="gn-field-l">Entry mode</span><select class="gn-in gn-in--auto" id="tcEntry"></select></label><button class="gn-btn gn-btn--primary" type="button" id="tcSend">Send</button></div><div id="tcGate"></div>
   </div>
   <div><span class="gn-label">Request and response</span><div class="gn-console"><div class="gn-console-bar"><span class="gn-mono">POST /acceptance/v1/authorizations</span><span class="gn-rs" id="tcRs"></span></div><pre id="tcOut" aria-live="polite"><span class="gn-console-wait">Pick a card and press Send.</span></pre></div>
     <div class="dv-code-wrap" style="margin-top:24px"><div class="dv-code-h" style="margin-top:0"><span class="gn-label">The same request as code</span></div><div class="dv-code" style="margin-top:8px"><pre class="gn-code" data-lang="curl" data-name="cURL" id="tcCurl"></pre><pre class="gn-code" data-lang="node" data-name="Node" id="tcNode"></pre><pre class="gn-code" data-lang="python" data-name="Python" id="tcPython"></pre></div></div>
@@ -45,7 +45,8 @@ document.getElementById('tcPick').addEventListener('click',function(e){ var b=e.
 document.getElementById('tcEntry').innerHTML=DV.entry.map(function(m){ return '<option value="'+m+'">'+m+'</option>' }).join('');
 document.getElementById('tcEntry').addEventListener('change',paintReq); document.getElementById('tcAmt').addEventListener('input',paintReq); document.getElementById('tcAmt').addEventListener('dv-restored',paintReq);
 function send(){ var a=document.getElementById('tcAmt'), n=parseFloat(a.value); if(!dvErr(a, !a.value.trim()?'Enter an amount in dollars, like 58.20.':!(n>0)||!/^\d+(\.\d{1,2})?$/.test(a.value.trim())?'Enter an amount in dollars, like 58.20.':'')){ a.focus(); return } if(dvOffline()){ document.getElementById('tcRs').innerHTML=''; document.getElementById('tcOut').textContent='You\'re offline. The request was not sent. The sandbox needs a connection.'; return } var amt=Math.round(parseFloat(a.value)*100), body=DV.body(cur, amt, document.getElementById('tcEntry').value), res=DV.respond(cur, amt); document.getElementById('tcRs').innerHTML='<b'+(res.round_trip_ms>500?' class="is-slow"':'')+'>200</b> · '+res.round_trip_ms+' ms'; document.getElementById('tcOut').textContent=JSON.stringify(body,null,2)+'\n\n// response\n'+JSON.stringify(res,null,2); if(window.dvSent) dvSent(res); if(window.dvWon) dvWon(document.getElementById('tcOut'),'sandbox') }
-document.getElementById('tcSend').addEventListener('click',send);
+if(window.dvGateSend) dvGateSend(document.getElementById('tcSend'), document.getElementById('tcGate'));
+document.getElementById('tcSend').addEventListener('click',function(){ if(!dvAccount()) return; send() });
 /* a link can arrive with a card chosen: testing.html?card=2#console */
 (function(){ var m=location.search.match(/card=(\d)/); select(m&&DV.cards[+m[1]]?+m[1]:0) })();
 </script>
@@ -79,7 +80,7 @@ document.getElementById('tcSend').addEventListener('click',send);
 <script src="../shared/account.js"></script>
 <script src="../shared/site.js"></script>
 <script>
-(function(){ var el=document.getElementById('acctStrip'); if(el&&typeof dvAccountStrip==='function') el.innerHTML=dvAccountStrip('The console runs on shared demo credentials'); })();
+(function(){ var el=document.getElementById('acctStrip'); if(el&&typeof dvAccountStrip==='function') el.innerHTML=dvAccountStrip('The console needs a free account'); })();
 </script>
 </body>
 </html>
