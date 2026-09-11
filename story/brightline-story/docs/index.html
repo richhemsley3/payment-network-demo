@@ -7078,6 +7078,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
 /* page tabs: different content areas of one page, underlined, each a place of its own. A segment
     control (tabs) is for subsets or representations of one data set. */
  /* a record's highlights: four to six facts the reader decides on, at body size, in one row */
+/* a report section: the visual and the same data as a table, switched by a segment control */
+ function vt(key, title, sub, visual, table){ var v=tab(key,'visual'); return secH(title, (sub?'<span class="gn-mute">'+sub+'</span> ':'')+tabs(key,[['visual','Visual'],['table','Table']],'visual'))+(v==='table'?table:visual) }
  function hlRow(list){ return '<div class="gn-hl">'+list.map(function(f){ return '<div><span>'+f[0]+'</span><b>'+f[1]+'</b>'+(f[2]?'<small>'+f[2]+'</small>':'')+'</div>' }).join('')+'</div>' }
  function ptabs(key, list, def, right){
    var cur=tab(key,def);
@@ -7778,14 +7780,16 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      var inv=secH('Invoices')+doc([['First invoice','The first business day of the month after go-live','Monthly'],['Covers','Fees against settled volume, by product',''],['Sent to','<span class="gn-doc-x">Finance contact, once named in Reporting</span>','']]);
      return head+secH('Settlement account')+setup('bank')+secH('Daily balancing')+setup('bal')+fees+inv;
    }
-   var head=ph('Settlement and fees', 'When settlement lands and what each cycle covers.');
+   var head=ph('Settlement and fees', '<b>Next wire tomorrow, 6:00 AM ET, $1.31M.</b> Every cycle in fourteen days landed on time.');
    var net=DAILY.map(function(d){ return [d[0], d[4]] });
+   var stT=tab('setTab','report');
+   var setTb=tbrow([fsel('setPeriod','14',[['14','14 days'],['30','30 days'],['90','90 days']],'Period'), fsel('setCmp','prev',[['prev','Previous period'],['none','No comparison']],'Compare')]);
    var f=figs([['Settled, 14 days','$'+DAILY.reduce(function(a,d){return a+d[4]},0).toFixed(1)+'M',''],['Fees this month','$13,590','against $38.2M'],['Next wire, tomorrow','6:00 AM ET','$1.31M'],['Open adjustments','0','']]);
-   var ch=secH('Net settled by day')+chartLine(net,{min:0.8,max:1.6,fmt:function(v){return '$'+v.toFixed(2)+'M'}});
+   var ch=vt('setNet','Net settled by day','', chartLine(net,{min:0.8,max:1.6,fmt:function(v){return '$'+v.toFixed(2)+'M'}}), tbl2([['Day'],['Authorizations',1],['Approved',1],['Net settled',1]], DAILY.slice().reverse().map(function(d){ return [esc(d[0]), d[1].toLocaleString('en-US'), d[2]+'%', '$'+d[4].toFixed(2)+'M'] })));
    var cyc=secH('Settlement cycles')+tbl2([['Cycle'],['Gross',1],['Fees',1],['Adjustments',1],['Net',1],['Wire']], Object.keys(CYCLES).map(function(k){ var c=CYCLES[k]; return {c:[esc(k), money0(c.gross), money0(-(c.assess+c.authfee+c.disp)), money0(c.adj), money0(c.net), esc(c.wire)], act:'cycle', k:k} }));
    var acct=secH('Settlement account')+setup('bank')+secH('Daily balancing')+setup('bal');
    var inv=secH('Invoices')+'<div class="ds-grid three">'+INVOICES.map(function(i){ return '<article class="dsh"><span class="gn-eyebrow">'+esc(i[0])+'</span><h3>'+esc(i[1])+'</h3><span class="dsh-m">Fees against settled volume</span><div class="dsh-s">'+(i[3]==='paid'?word('paid'):sw(i[2],'wa'))+'</div></article>' }).join('')+'</div>';
-   return head+f+ch+cyc+acct+fees+inv;
+   return head+ptabs('setTab',[['report','Settlement'],['acct','Account and fees']],'report')+(stT==='acct'?acct+fees+inv:setTb+f+ch+cyc);
  };
  /* ── notices: the reason a partner signs in on a Tuesday ── */
  function noticesOpen(){ var ack=SCENE.acked||{}; return NOTICES.filter(function(n){ if(SCENE.relDraft===n.k && !(SCENE.relPub||{})[n.k]) return false; if(n.liveOnly && !live()) return false; if(n.pre && live()) return false; if(n.go==='rules' && (ack[n.k]||STAGE>=3)) return false; if(n.k==='maint' && STAGE>=3) return false; return true }) }
@@ -9130,14 +9134,16 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  AGENT.bookrep=function(){
    if(SCENE.agRep==='plan') return planReport();
    var R=BOOK_REPORT;
-   var head=ph('Book report', 'Your partners compared on the measures that matter.', '<span class="gn-link" data-act="dl">Export</span>');
+   var head=ph('Book report', '<b>'+BOOK.filter(function(b){return bookStage(b)==='Live'}).length+' of '+BOOK.length+' partners live.</b> Median first conversation to live is 74 days against a target of 78. Live acquirers approve at 96.4% against the network\u2019s 96.1%.', '<span class="gn-link" data-act="dl">Export</span>')+tbrow([fsel('brPeriod','q',[['q','This quarter'],['y','This year']],'Period'), fsel('brStage','all',[['all','Every stage'],['onb','Onboarding'],['live','Live']],'Stage'), fsel('brCmp','net',[['net','The network'],['prev','Previous quarter']],'Compare')]);
    var liveN=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
    var f=figs([['Partners',String(BOOK.length),liveN+' live'],['Median first conversation to live','74 days','target 78'],['Approval rate, live acquirers','96.4%','network 96.1%'],['Marks met, this quarter','24 of 27','']]);
    var across=bookAcross();
    var mx=Math.max.apply(null,R.ttl.map(function(x){return x[1]}));
-   var st=secH('By stage')+'<div class="gn-rank">'+R.stages.map(function(x){ return '<div class="gn-rank-r"><span>'+esc(x[0])+'</span><div class="gn-bar gn-bar--thin"><i style="--w:'+Math.round(100*x[1]/4)+'%"></i></div><b class="gn-num">'+x[1]+'</b><span class="gn-num"></span></div>' }).join('')+'</div>';
-   var ttl=secH('Days from first conversation to live', 'Shortest first')+chart('lollipop',{items:R.ttl.slice().sort(function(a,b){return a[1]-b[1]}).map(function(x){ return {name:x[0], value:x[1], tone:x[1]<=78?'good':'warn'} }), fmt:'days', max:100});
-   var ap=secH('Approval rate against the network', 'Live acquirers')+chart('dumbbell',{items:R.live.filter(function(x){return x[3]!=='—'}).map(function(x){ return {name:x[0], a:parseFloat(x[3]), b:96.1} }), names:['Partner','Network'], fmt:'pct1', min:94, max:98});
+   var st=vt('brSt','By stage','', '<div class="gn-rank">'+R.stages.map(function(x){ return '<div class="gn-rank-r"><span>'+esc(x[0])+'</span><div class="gn-bar gn-bar--thin"><i style="--w:'+Math.round(100*x[1]/4)+'%"></i></div><b class="gn-num">'+x[1]+'</b><span class="gn-num"></span></div>' }).join('')+'</div>', tbl2([['Stage'],['Partners',1]], R.stages.map(function(x){ return [esc(x[0]), String(x[1])] })));
+   var ttlS=R.ttl.slice().sort(function(a,b){return a[1]-b[1]});
+   var ttl=vt('brTtl','Days from first conversation to live','Shortest first', chart('lollipop',{items:ttlS.map(function(x){ return {name:x[0], value:x[1], tone:x[1]<=78?'good':'warn'} }), fmt:'days', max:100}), tbl2([['Partner'],['Days',1],['Against the target']], ttlS.map(function(x){ return [esc(x[0]), String(x[1]), x[1]<=78?word('Inside'):sw((x[1]-78)+' over','wa')] })));
+   var apL=R.live.filter(function(x){return x[3]!=='\u2014'});
+   var ap=vt('brAp','Approval rate against the network','Live acquirers', chart('dumbbell',{items:apL.map(function(x){ return {name:x[0], a:parseFloat(x[3]), b:96.1} }), names:['Partner','Network'], fmt:'pct1', min:94, max:98}), tbl2([['Partner'],['Approval',1],['Network',1],['Against it']], apL.map(function(x){ var d=parseFloat(x[3])-96.1; return [esc(x[0]), esc(x[3]), '96.1%', d>=0?word((d>0?'+':'')+d.toFixed(1)+' pts'):sw(d.toFixed(1)+' pts','no')] })));
    var settle=secH('Settlement files', 'Received, last 14 days')+settleStrip();
    var live_=secH('Live partners')+tbl2([['Partner'],['Kind'],['Annual volume',1],['Approval',1],['Disputes per 10k',1],['Fraud rate',1]], R.live.map(function(x){ var k=BOOK.filter(function(b){return b.n===x[0]})[0]; return {c:x.map(esc), act:'agPartner', k:k?k.k:'brightline'} }));
    var sla=secH('The network’s own marks', 'This quarter')+doc(R.sla.map(function(x){ var ok=x[1].split(' of ')[0]===x[1].split(' of ')[1]; return [x[0], esc(x[1]), ok?'All met':'One missed'] }));
@@ -10054,11 +10060,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    if(!pfAcq(b)){ var lr=BOOK_REPORT.live.filter(function(x){return x[0]===b.n})[0]||[];
      return head+'<div class="emp"><b>No acquiring record.</b><span>'+esc(b.n)+' issues cards on the network. Its authorizations are read on the acquiring side, and its own performance on the issuing side, which this record does not carry.</span></div>'+secH('On the book')+doc([['Annual volume', esc(lr[2]||'—'), 'issued'],['Live since', esc((BOOKX[k]||{}).live||'—'), ''],['Settlement files', pfFiles(k, n)+' of '+n, 'received in the period']]) }
    var S=pfSeries(k, n), P=cmp?pfSeries(k, n, true):null, rows=pfInPeriod(k, n), F=pfFigures(k, n), F0=cmp?pfFigures(k, n, true):null, net=pfNetSeries(n);
-   var seg=toolbar(tabs('pfd',[['7','7 days'],['14','14 days'],['30','30 days']],'14'), canCmp?'<label class="gn-check-l cmp"><input type="checkbox" data-read="pperfCmp"'+(cmp?' checked':'')+'> <span>Compare with previous period</span></label>':'<span class="l2-mode">Not enough history to compare 30 days</span>');
+   var seg=tbrow([fsel('pfd', String(n), [['7','7 days'],['14','14 days'],['30','30 days']], 'Period'), canCmp?'<label class="gn-check-l cmp"><input type="checkbox" data-read="pperfCmp"'+(cmp?' checked':'')+'> <span>Compare with previous period</span></label>':'<span class="l2-mode">Not enough history to compare 30 days</span>']);
    var f=figs([['Authorizations', F.auth.toLocaleString('en-US'), cmp?pfDelta(F.auth, F0.auth, '%'):'last '+n+' days'],['Approval', F.appr.toFixed(1)+'%', cmp?pfDelta(F.appr, F0.appr, 'pt'):'network '+PF_NET.appr+'%'],['Card not present', F.cnp.toFixed(1)+'%', cmp?pfDelta(F.cnp, F0.cnp, 'pt'):'approved, network '+PF_NET.cnp+'%'],['Disputes per 10k', F.d10k.toFixed(1), cmp?pfDelta(F.d10k, F0.d10k, ''):'network '+PF_NET.d10k.toFixed(1)],['Issuer answer', F.p50+' ms', 'p99 '+F.p99+' ms'+(cmp?', p50 '+pfDelta(F.p50, F0.p50, 'ms'):'')],['Settlement files', F.files+' of '+n, cmp?F0.files+' of '+n+' the period before':'received']], 'gn-figs--3');
    var lo=Math.min.apply(null, S.map(function(d){return d.appr}).concat(net)), hi=Math.max.apply(null, S.map(function(d){return d.appr}).concat(net));
-   var c1=secH('Approval', 'The network dotted')+chart('line',{labels:S.map(function(d){return d.day}), series:[{name:b.n, values:S.map(function(d){return d.appr})}], prev:net, min:Math.floor(lo)-0.5, max:Math.ceil(hi)+0.5, fmt:'pct1'})+'<p class="para chart-key"><span class="key-l"></span>'+esc(b.n)+' <span class="key-p"></span>Network</p>';
-   var c2=secH('Authorizations', cmp?'Previous period dotted':'By day')+chart('line',{labels:S.map(function(d){return d.day}), series:[{name:b.n, values:S.map(function(d){return d.auth})}], prev:cmp?P.map(function(d){return d.auth}):undefined, min:0, fmt:'k'})+(cmp?'<p class="para chart-key"><span class="key-l"></span>This period <span class="key-p"></span>Previous period</p>':'');
+   var c1=vt('pfC1','Approval','The network dotted', chart('line',{labels:S.map(function(d){return d.day}), series:[{name:b.n, values:S.map(function(d){return d.appr})}], prev:net, min:Math.floor(lo)-0.5, max:Math.ceil(hi)+0.5, fmt:'pct1'})+'<p class="para chart-key"><span class="key-l"></span>'+esc(b.n)+' <span class="key-p"></span>Network</p>', tbl2([['Day'],['Approval',1],['Network',1]], S.map(function(d,i){ return [esc(d.day), d.appr.toFixed(1)+'%', (net[i]||PF_NET.appr).toFixed(1)+'%'] })));
+   var c2=vt('pfC2','Authorizations', cmp?'Previous period dotted':'By day', chart('line',{labels:S.map(function(d){return d.day}), series:[{name:b.n, values:S.map(function(d){return d.auth})}], prev:cmp?P.map(function(d){return d.auth}):undefined, min:0, fmt:'k'})+(cmp?'<p class="para chart-key"><span class="key-l"></span>This period <span class="key-p"></span>Previous period</p>':''), tbl2([['Day'],['Authorizations',1]].concat(cmp?[['Previous period',1]]:[]), S.map(function(d,i){ return [esc(d.day), d.auth.toLocaleString('en-US')].concat(cmp?[(P[i]?P[i].auth:0).toLocaleString('en-US')]:[]) })));
    var chg=secH('What changed', 'From the period’s numbers')+pfLine(pfChanges(k, n, S, rows));
    var dec=rows.filter(function(x){return x.st==='declined'}), byCode={}; dec.forEach(function(x){ byCode[x.code]=(byCode[x.code]||0)+1 });
    var decTot=Math.round(F.auth*(1-F.appr/100)), codes=Object.keys(byCode).sort(function(a,b){return byCode[b]-byCode[a]}), top=codes.length?byCode[codes[0]]:1;
@@ -10614,9 +10620,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
  /* ── the page ───────────────────────────────────────────────────────────────── */
  PARTNER.insights=function(){
-   var head=ph('Insights', 'How you compare with participants of similar size and mix.');
-   if(!live()) return head+'<div class="emp"><b>Nothing to compare yet.</b><span>The comparison is drawn from your first fourteen days of authorizations.</span></div>';
-   return head+insWho()+insStanding()+insNoticed()+insSpread()+insRec();
+   if(!live()) return ph('Insights', 'How you compare with participants of similar size and mix.')+'<div class="emp"><b>Nothing to compare yet.</b><span>The comparison is drawn from your first fourteen days of authorizations.</span></div>';
+   var F=insFig(), n=insCount(), thin=insThin(), lead=INS_M.map(function(m){ return insLead(F[m.k], insMed(insVals(m)), m) }), ahead=lead.filter(function(x){return x>0}).length, behind=lead.filter(function(x){return x<0}).length;
+   var head=ph('Insights', '<b>Ahead of the comparable median on '+nn(ahead,'measure')+', behind on '+behind+'.</b> Compared with '+n+' participants of similar size and mix over the fourteen days to '+esc(DAILY[DAILY.length-1][0])+'.');
+   var s0=insSet(), tb=tbrow([insSelect('insC', s0[0], INS_SETS.map(function(x){ return [x[0], x[1]] }), 'Compared with'), fsel('insPeriod','14',[['14','14 days'],['30','30 days']],'Period')]);
+   var figsRow=figs(INS_M.slice(0,4).map(function(m){ var v=insVals(m), med=insMed(v), x=F[m.k]; return [m.t, insNum(x, m), thin?'no median drawn':'median '+insNum(med, m)] }));
+   return head+tb+figsRow+insStanding()+insSpread()+insNoticed()+insRec();
  };
  /* what the network noticed on her traffic and already holds: the act's thesis in one row. Drawn
     only while an alert is in hand, and it opens the alert. */
@@ -10670,13 +10679,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  function insSpread(){
    var mk=tab('insM','appr'), m=INS_M.filter(function(x){ return x.k===mk })[0]||INS_M[0];
    var F=insFig(), v=insVals(m), q1=insPct(v,0.25), q3=insPct(v,0.75);
-   var seg=toolbar(tabs('insM', INS_M.map(function(x){ return [x.k, x.t] }), 'appr'), esc(m.d));
+   var seg=tbrow([fsel('insM', mk, INS_M.map(function(x){ return [x.k, x.t] }), 'Measure')], esc(m.d));
    var B=insBinPick(v, m);
    var c=chart('histogram', {bins:B.c, start:B.b.start, width:B.b.width,
      unit:m.unit.trim()||'', marker:{value:F[m.k], label:'Brightline Bank, '+insNum(F[m.k], m)}});
    var line='<p class="para">The middle half of the set runs from '+esc(insNum(q1,m))+' to '+esc(insNum(q3,m))
      +'. Brightline Bank is at '+esc(insNum(F[m.k], m))+'.</p>';
-   return secH('The spread', 'Each column counts participants')+seg+c+line;
+   var spT=tab('insSpV','visual');
+   return secH('The spread', '<span class="gn-mute">Each column counts participants</span> '+tabs('insSpV',[['visual','Visual'],['table','Table']],'visual'))+seg+(spT==='table'?tbl2([['Range'],['Participants',1]], B.c.map(function(cnt,i){ var a=B.b.start+i*B.b.width; return [insNum(a, m)+' to '+insNum(a+B.b.width, m), String(cnt)] })):c)+line;
  }
 
  /* ── the recommendation, and the two ways out of it ── */
