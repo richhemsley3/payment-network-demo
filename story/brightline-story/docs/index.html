@@ -3493,6 +3493,10 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 /* the outline, folded */
 .st-fold{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:16px; padding:12px 0; border-top:1px solid var(--gn-rule); border-bottom:1px solid var(--gn-rule)} .st-fold b{font-weight:600} .st-fold-r{font-size:13px; color:var(--gn-text-caption)}
 @media (max-width:1000px){ .ov-tiles{grid-template-columns:1fr} .gn-hl{grid-template-columns:repeat(3,minmax(0,1fr))} }
+/* a select in a toolbar is a control, not a filter sentence */
+.tb3 .fs-i .fs-t{display:inline-flex; align-items:center; height:32px; padding:0 30px 0 12px; border:1px solid var(--g200); border-radius:6px; color:var(--g900); background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23696A75' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 10px center/14px}
+.tb3 .fs-i:hover .fs-t{border-color:var(--g400); color:var(--g900)}
+.tb3 .gn-in--sm{width:240px}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
@@ -7681,7 +7685,10 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var ids=secH('Identifiers and ranges')+setup('ids');
    var keys=secH('Keys and certificates')+setup('keys');
    var perf = live() ? secH('API performance', 'Production, 24 hours')+figs([['Requests','48,211',''],['Errors','3.2%','1,543 requests'],['Issuer answer, median','44 ms','p99 210 ms'],['Availability','99.98%','30 days']], 'gn-figs--compact') : '';
-   return head+env+perf+cred+cert+spec+ids+keys;
+   /* Rich, September 11: settings-style pages take a page tab per group */
+   var igT=tab('igTab','env');
+   var igTabs=ptabs('igTab',[['env','Environments'],['perf','Performance'],['cred','Credentials'],['cert','Certification'],['spec','Specification'],['ids','Identifiers'],['keys','Keys']],'env');
+   return head+igTabs+(igT==='perf'?perf:igT==='cred'?cred:igT==='cert'?cert:igT==='spec'?spec:igT==='ids'?ids:igT==='keys'?keys:env);
  };
  /* the card-not-present report: what a question opens. Fourteen days of the rate against the overall,
     where the traffic sits by merchant, the declines behind it, and the alert that explains the drop. */
