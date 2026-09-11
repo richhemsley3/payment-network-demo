@@ -7067,6 +7067,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  function ink(code, cls){ return '<pre class="gn-code gn-code--ink '+(cls||'')+'">'+esc(code)+'</pre>' }
 /* page tabs: different content areas of one page, underlined, each a place of its own. A segment
     control (tabs) is for subsets or representations of one data set. */
+ /* a record's highlights: four to six facts the reader decides on, at body size, in one row */
+ function hlRow(list){ return '<div class="gn-hl">'+list.map(function(f){ return '<div><span>'+f[0]+'</span><b>'+f[1]+'</b>'+(f[2]?'<small>'+f[2]+'</small>':'')+'</div>' }).join('')+'</div>' }
  function ptabs(key, list, def, right){
    var cur=tab(key,def);
    return '<div class="gn-tabs" role="tablist">'+list.map(function(t){ return '<a data-tab="'+key+':'+t[0]+'" role="tab" tabindex="0" class="'+(cur===t[0]?'is-on':'')+'" aria-selected="'+(cur===t[0])+'">'+esc(t[1])+(t[2]?'<span class="gn-count">'+t[2]+'</span>':'')+'</a>' }).join('')+(right?'<div class="gn-tabs-r">'+right+'</div>':'')+'</div>';
@@ -7391,7 +7393,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  PARTNER.agreement=function(sk,c){
    var signed=!pre(), early=STAGE<4 && !SCENE.issued; /* the network issuing the agreement from its side makes it ready to sign here */
    var headAct = (!signed && !early) ? '<button class="gn-btn gn-btn--primary" data-act="sign">Sign for Brightline Bank</button>' : '';
-   var head=ph('Agreements', 'What you have signed and acknowledged.', headAct);
+   var wvAll=wvFor('brightline'), wvOn=wvAll.filter(function(w){return w.st==='approved'}).length, wvRq=wvAll.filter(function(w){return w.st==='requested'}).length;
    var just = signed && atPanel('The Green Light') ? '<div class="just"><b>Agreement signed.</b><span>Configuration is open for your engineer. '+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
    var parties=[['Brightline Bank Payments LLC','Your team. Executed with the deal.',word('Done')]].concat(SCENE.third?[[esc(SCENE.third),'Third party. Sent for signature.',sw('Sent','wa')]]:[]);
    var ack=SCENE.acked||{}, nAck=RULES.filter(function(r){return ack[r.k]||STAGE>=3}).length;
@@ -7402,7 +7404,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      ['Network rules', nAck+' of '+RULES.length+' acknowledged', nAck>=2?word('Done'):sw('Two required now','wa'), 'data-go2="rules"'],
      ['Waivers', (function(){ var w=wvFor('brightline'), on=w.filter(function(x){return x.st==='approved'}).length, rq=w.filter(function(x){return x.st==='requested'}).length; return w.length?(on?nn(on,'waiver')+' on file':'')+(on&&rq?', ':'')+(rq?nn(rq,'request')+' with the network':''):'None on file' })(), (function(){ var w=wvFor('brightline'); return w.some(function(x){return x.st==='requested'})?sw('Requested','wa'):w.some(function(x){return x.st==='approved'})?word('Done'):sw('None','') })(), 'data-go2="notices"']
     ].map(function(d){ return '<article class="dsh'+(d[3]?' is-link" '+d[3]:'"')+'><span class="gn-eyebrow">Document</span><h2>'+esc(d[0])+'</h2><span class="dsh-m">'+esc(d[1])+'</span><div class="dsh-s">'+d[2]+'</div></article>' }).join('')+'</div>';
-   var nda=shelf+secH('Confidentiality agreement', goLink('Add a third party','data-go2="third"'))+tbl2([['Party'],['Covers'],['Status']], parties);
+   var conf=secH('Confidentiality agreement', goLink('Add a third party','data-go2="third"'))+tbl2([['Party'],['Covers'],['Status']], parties);
    var feasText = typeof SCENE.feasible==='string' ? SCENE.feasible : 'Feasible. Our ISO 8583 maps onto Acceptance directly; tokens are a small addition.';
    var feas = (!early && STAGE<5) ? secH('Technical review', 'closed March 18')+msg('priya','March 18', feasText) : '';
    var status = signed ? word('Done') : early ? sw('Issued when risk review clears','') : goLink('Sign for Brightline Bank','data-act="sign"');
@@ -7412,7 +7414,11 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      +tbl2([['Section'],['What it is'],['Terms']], AGREEMENT.sections.map(function(x){ return ['<span class="gn-num">'+x[0]+'</span> '+esc(x[1]), esc(x[2]), x[0]==='4'?sw('Yours',''):sw('Standard','')] }))
      +(signed?'<div class="sc-a inset"><span class="gn-link" data-act="dl">Download the signed agreement</span></div>':'')
      +secH('Signatures')+tbl2([['Signatory'],['Role'],['Signed',1]], AGREEMENT.signers.map(function(x,i){ return [esc(x[0]), esc(x[1]), signed?'<span class="gn-num">'+esc(x[2])+'</span>':word(i===0&&!early?'now':'soon')] }));
-   return head+just+nda+feas+pa+wvSection('brightline');
+   var head=openHead('Agreements \u00b7 '+ORG.n, signed?'Signed '+AGREEMENT.signed+'. '+nAck+' of '+RULES.length+' rules acknowledged'+(wvOn?', '+nn(wvOn,'waiver')+' on file':'')+(wvRq?', '+wvRq+' requested':''):early?'Prepared from the deal, issued after risk review':'Ready for signature', 'What you have signed and acknowledged, and what each one binds.', headAct);
+   var hl=hlRow([['Participation agreement', signed?'Signed':early?'After risk review':'Ready to sign', esc(AGREEMENT.ref)],['Confidentiality','Executed','with the deal, March 9'],['Rules acknowledged',nAck+' of '+RULES.length,nAck>=2?'':'two required now'],['Fee schedule','Standard','effective January 1, 2026'],['Waivers',wvAll.length?String(wvAll.length):'None',wvOn?wvOn+' on file':wvRq?wvRq+' requested':''],['Technical review',(!early&&STAGE<5)?'Closed':'Open',(!early&&STAGE<5)?'March 18, feasible':'']]);
+   var agT=tab('agrTab','over');
+   return head+hl+just+ptabs('agrTab',[['over','Overview'],['pa','Participation agreement'],['conf','Confidentiality'],['wv','Waivers',wvAll.length?String(wvAll.length):'']],'over')
+    +(agT==='pa'?pa+feas:agT==='conf'?conf:agT==='wv'?(wvSection('brightline')||empty('No waivers on file. A waiver is asked for on a notice, on the clause it sets aside.')):shelf);
  };
  function askForm(){
    if(!(STAGE===2 && !SCENE.submitted)) return '';
@@ -8021,12 +8027,19 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  PARTNER.company=function(sk,c){
    var facts=known(), groups=[];
    facts.forEach(function(f){ var g=groups.filter(function(x){return x.g===f.g})[0]; if(!g){ g={g:f.g,f:[]}; groups.push(g) } g.f.push(f) });
+   var fact=function(l){ var f=facts.filter(function(x){return x.l===l})[0]; return f?f.v:'\u2014' };
+   var byAgr=facts.filter(function(f){ return /Schedule|agreement/i.test(f.how||'') }).length, byNet=facts.filter(function(f){ return /handshake|it happened/.test(f.how||'') }).length;
    var head=c?'<div class="rec-h"><b><span data-to="'+facts.length+'" data-fmt="int">'+facts.length+'</span> on file</b><span>details</span></div>'
-     : ph(STAGE===1?'What we have on file':'Company', STAGE===1?'What the network already knows about your business.':'Everything the network holds about you and where each answer came from.');
+     : STAGE===1 ? ph('What we have on file', 'What the network already knows about your business.')
+     : openHead(ORG.n+' \u00b7 Company', facts.length+' facts on file, '+byAgr+' set by the agreement'+(byNet?', '+byNet+' read from the network':''), 'Everything the network holds about you and where each answer came from.');
+   var hl = (!c && STAGE>1) ? hlRow([['Legal name',esc(fact('Legal name')),''],['What you do',esc(fact('What you do')),''],['Merchants',esc(fact('Merchants')),''],['Where you operate',esc(fact('Where you operate')),''],['Registered',esc(fact('Registered')),''],['Facts on file',String(facts.length),byAgr+' from the agreement']]) : '';
    var ask = (STAGE===2 && !SCENE.submitted && !c) ? '<div class="just"><b>Next step: name your team.</b><span>'+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
    /* regroup by subject, as Dana thinks of her company */
    if(!c && STAGE>1){ var by={}; facts.forEach(function(f){ var k=SUBJ[f.g]||f.g; (by[k]=by[k]||[]).push(f) }); groups=SUBJ_ORDER.filter(function(k){return by[k]}).map(function(k){ return {g:k, f:by[k]} }); }
-   var gtabs='';
+   var coT=tab('coTab','over'), gtabs='', allGroups=groups;
+   if(!c && STAGE>1){ gtabs=ptabs('coTab', [['over','Overview']].concat(groups.map(function(g){ return [g.g, g.g, String(g.f.length)] })), 'over');
+     if(coT==='over'){ var top=['Legal name','What you do','Merchants','Where you operate','Interested in','Who got in touch','Who signs','Technical contact','Average ticket','Card present, share']; var picked=facts.filter(function(f){ return top.indexOf(f.l)>-1 }).slice(0,8); groups=[{g:'The facts most pages read', f:picked.length?picked:facts.slice(0,8)}] }
+     else groups=groups.filter(function(g){ return g.g===coT }) }
    /* two of these were never typed by anyone: the certificate expiry, read off
       the first handshake, and the first settlement cycle, recorded as it ran.
       They carry the network as their source, and that is the quiet proof. */
@@ -8038,7 +8051,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
         return '<div class="gn-doc-r'+(self[f.how]?' is-observed':'')+'"><span class="gn-doc-l">'+esc(f.l)+'</span><span class="gn-doc-v">'+esc(f.v)+'</span>'
          +'<span class="gn-doc-p">'+esc(f.by+', '+f.on+', '+f.how)+'</span></div>' }).join('')+'</div>')
      +'</section>' }).join('')+'</div>';
-   return head+ask+gtabs+body;
+   return head+hl+ask+gtabs+body;
  };
  PARTNER.team=function(sk,c){
    var t=TEAM.filter(function(x){ return x.at<=STAGE && (x.k!=='priya' || STAGE>2 || SCENE.submitted) && !(SCENE.removed||{})[x.k] });
@@ -8070,7 +8083,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  PARTNER.discover=function(sk,c){
    var lead=DGN_TEAM.filter(function(t){return t.lead})[0], rest=DGN_TEAM.filter(function(t){return !t.lead});
    var L=PEOPLE[lead.k];
-   var head=ph('Your Discover team', 'The people at Discover who work your account.');
+   var head=openHead('Your Discover team \u00b7 '+ORG.n, esc(L.n)+' has your account', 'The people at Discover who work it, and the ways to reach them.', SCENE.booked||SCENE.bookOpen?'':'<button class="gn-btn" data-act="bookOpen">Book 30 minutes</button>');
+   var hl=hlRow([['Your contact',esc(L.n),esc(L.r)],['Technical questions','Theo Marchetti','solutions engineer'],['Certification','Ana Okafor','books and reads your runs'],['Reach them',esc(lead.where.split(',')[0]),esc(lead.where.split(',').slice(1).join(',').trim())],['Next call',SCENE.booked?esc(SCENE.booked):'Not booked',''],['Last message',SCENE.thread||SCENE.replied?'Just now':STAGE>=2?'March 9':esc(DEAL.sent),'']]);
    var card='<div class="dt-lead">'+av(lead.k,'a64')+'<div class="dt-b"><b>'+esc(L.n)+'</b><span class="dt-r">'+esc(L.r)+', '+esc(L.org)+'</span>'
      +'<p>'+esc(lead.what)+'</p>'
      +'<div class="dt-c"><a href="mailto:'+lead.email+'">'+esc(lead.email)+'</a><span>'+esc(lead.phone)+'</span><span>'+esc(lead.where)+'</span></div>'
@@ -8084,7 +8098,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var reply = SCENE.replied || (STAGE>=2 ? 'Confirmed. Priya Raghavan takes the technical look; I will name the rest of the team this week.' : null);
    var thread=secH('Threads', 'With Sonia')+'<div class="thr">'+msg('sonia', DEAL.sent, DEAL.note)+(reply?msg('dana', STAGE>=2?'March 9':'Just now', reply):'')+(SCENE.thread?msg('dana','Just now',SCENE.thread):'')
      +'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="thrBox" rows="2" placeholder="Reply to Sonia"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="threadSend">Send</button></div></form></div>';
-   return head+card+casesSection()+thread+also+sup;
+   var dtT=tab('dtTab','over');
+   return head+hl+ptabs('dtTab',[['over','Overview'],['thread','Threads'],['cases','Cases'],['team','Support team']],'over')+(dtT==='thread'?thread:dtT==='cases'?casesSection():dtT==='team'?also+sup:card+sup);
  };
  /* what Brightline Bank's own traffic says to add next, read from the record:
     yesterday's authorizations, the token share, the card-not-present gap,
@@ -8927,7 +8942,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var st=bookStage(b), S=stepState(), steps=bookSteps(b), isLive=st==='Live';
    var lr=BOOK_REPORT.live.filter(function(x){return x[0]===b.n})[0];
    var d=daysIn(b), stageLine = isLive ? 'Live since '+esc(x.live||bookSince(b))+'.' : (st.indexOf('Deal')===0 ? esc(st)+' '+esc(bookSince(b)) : esc(st)+' since '+esc(bookSince(b)))+(d?', '+daysWord(d)+' waiting.':'.');
-   var head=(bl&&!SCENE.bk?'':backTo('Partners','data-go2="book"'))+ph(esc(b.n), esc(b.kind)+'. '+stageLine, healthWord(x.health));
+   var crumb=(bl&&!SCENE.bk?'':backTo('Partners','data-go2="book"'));
    /* 2. next: one card, whose turn, the network's action if it is the network's */
    /* Brightline Bank's current step is the one Dana's Getting started calls current, so both sides read one Next;
       the sandbox moment stays on the team step until the sandbox opens */
@@ -9010,12 +9025,21 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      : secH('Handoff to operations', allDone?'Ready':(hoItems.filter(function(it){return it[2]}).length+' of 4'))+checklist+(allDone?'<div class="sc-a inset">'+agGate('<button class="gn-btn gn-btn--primary" data-act="handoff" data-k="'+b.k+'">Hand off to operations</button>')+'</div>':'');
    var cs=agCases().filter(function(c){ return c.k===b.k });
    var cases = cs.length ? secH('Cases', goLink('Inbox','data-go2="cases"'))+tbl2([['Case'],['Area'],['Opened'],['Reply'],['Status']], cs.map(function(c){ return {c:[esc(c.t), esc(c.area), esc(c.opened), c.st==='open'?slaWord(caseDue(c)):'—', c.st==='open'?sw('Open','wa'):word('Resolved')], act:'agCase', k:c.id} })) : '';
-   /* Rich, September 11: a record is a highlights row and page tabs, never a scroll of sections */
-   var hlRow='<div class="gn-hl">'+[['Kind',esc(b.kind),''],['Stage',esc(st),bookSince(b)?'since '+esc(bookSince(b)):''],['Standing',healthWord(x.health),''],['Cases open',String(agCases().filter(function(c){return c.k===b.k&&c.st==='open'}).length),''],['Whose turn',esc(b.turn&&b.turn!=='\u2014'?b.turn:'Nobody'),d?daysWord(d)+' waiting':''],['Lead',esc((x.lead||'').split(', ')[0]||'\u2014'),esc((x.lead||'').split(', ')[1]||'')]].map(function(f){ return '<div><span>'+f[0]+'</span><b>'+f[1]+'</b>'+(f[2]?'<small>'+f[2]+'</small>':'')+'</div>' }).join('')+'</div>';
+   /* The Record layout (Rich, September 11). The head names the record and leads with its state. The
+      highlights row is the six facts Marcus decides on. Overview carries Next and Standing; the rest is a tab each. */
+   var openCases=agCases().filter(function(c){return c.k===b.k&&c.st==='open'}).length, done_=bl?S.done:steps.filter(function(r){return r.st==='done'}).length;
+   var move = b.turn==='You' ? 'Your move' : (b.turn&&b.turn!=='\u2014') ? b.turn+'\u2019s move' : '';
+   var stateS = isLive ? 'Live since '+(x.live||bookSince(b))+(openCases?', '+nn(openCases,'case')+' open':', nothing open')
+                       : st+' since '+bookSince(b)+(d?', '+daysWord(d)+' waiting':'')+(move?'. '+move:'');
+   var subS = esc(b.kind)+(cur?'. Next, '+esc(cur.x.t.toLowerCase())+'.':'.')+(isLive&&hoDate?' Handed to operations '+esc(hoDate)+'.':'');
+   var leadN=(x.lead||'').split(', ');
+   var head=crumb+openHead(b.n+' \u00b7 Partner', stateS, subS, agCanDo('agMessage')&&leadN[0]?'<button class="gn-btn" data-act="agMessage" data-k="'+b.k+'">Message '+esc(leadN[0].split(' ')[0])+'</button>':'');
+   var hl=hlRow([['Kind',esc(b.kind),''],['Stage',esc(st),bookSince(b)?'since '+esc(bookSince(b)):''],['Standing',healthWord(x.health),bad.length?nn(bad.length,'check')+' open':'all checks inside'],
+     ['Whose turn',esc(b.turn&&b.turn!=='\u2014'?b.turn:'Nobody'),d?daysWord(d)+' waiting':''],['Plan',done_+' of '+STEPS.length,isLive?'complete':nowWeek?'week '+nowWeek+' of 9':''],['Lead',esc(leadN[0]||'\u2014'),esc(leadN[1]||'')]]);
    var pt=tab('agTab_'+b.k,'over');
    var tabsRow=ptabs('agTab_'+b.k,[['over','Overview'],['plan','Plan'],['env','Environments'],['docs','Documents'],['people','People'],['activity','Activity']],'over');
-   var bodyT = pt==='plan' ? intime+plan : pt==='env' ? env : pt==='docs' ? docs+reqs : pt==='people' ? team : pt==='activity' ? act+note+running+wvSection(b.k)+cases+handoff : next+health;
-   return head+hlRow+tabsRow+bodyT;
+   var bodyT = pt==='plan' ? intime+plan+handoff : pt==='env' ? env : pt==='docs' ? docs+reqs+wvSection(b.k) : pt==='people' ? team : pt==='activity' ? act+note : next+health+running+cases;
+   return head+hl+tabsRow+bodyT;
  };
  /* ── a quarterly review, run from the queue ── */
  AGENT.review=function(){
@@ -9700,9 +9724,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    SCENE.agPartner=b.k; /* the open partner, for the pages that read it */
    var x=BOOKX[b.k], X=agfX(b), st=bookStage(b), isLive=st==='Live', d=daysIn(b), ids=agfIds(b), lr=BOOK_REPORT.live.filter(function(r){return r[0]===b.n})[0];
    var stageLine = isLive ? 'Live since '+esc(x.live||bookSince(b))+'.' : (st.indexOf('Deal')===0 ? esc(st)+' '+esc(bookSince(b)) : esc(st)+' since '+esc(bookSince(b)))+'.';
-   var head=backTo(SCENE.agFindQ?'Find':'Partners', SCENE.agFindQ?'data-go2="find"':'data-go2="book"')+ph(esc(b.n), esc(b.kind)+'. '+stageLine+' '+esc(X.city||''), healthWord(x.health));
+   var open0=agfOpen(b);
+   var head=backTo(SCENE.agFindQ?'Find':'Partners', SCENE.agFindQ?'data-go2="find"':'data-go2="book"')+openHead(b.n+' \u00b7 '+b.kind, stageLine.replace(/\.$/,'')+(open0.length?', '+nn(open0.length,'item')+' open':''), (X.city?X.city+'. ':'')+'Lead '+(x.lead||'').split(', ')[0]+'.', '');
    var open=agfOpen(b), steps=bookSteps(b), done=steps.filter(function(r){return r.st==='done'}).length, att=ATTEST.filter(function(a){return a.k===b.k && a.st!=='received'})[0], nowWeek=b.k==='brightline'?{1:0,2:1,3:2,4:4,5:9,6:9}[STAGE]:PLAN_WEEK[b.k];
-   var f=figs(isLive
+   var f=hlRow(isLive
      ? [['Annual volume', lr?lr[2]:'—', lr?'On the record':''],['Approved', lr&&lr[3]!=='—'?lr[3]:'—', lr&&lr[3]!=='—'?'against the network':'Issuer'],['Open items', String(open.length), agfKinds(open)],['Next attestation', att?String(Math.max(0,daysLeft(att.due)))+' days':'—', att?att.due:'None due']]
      : [['Waiting', d?daysWord(d):'Today', agfNext(b).turn==='You'?'your move':agfNext(b).turn!=='—'?agfNext(b).turn+'’s move':''],['Plan', done+' of '+steps.length, nowWeek?'week '+nowWeek+' of 9':'steps done'],['Open items', String(open.length), agfKinds(open)],['Next attestation', att?String(Math.max(0,daysLeft(att.due)))+' days':'—', att?att.due:'None due']]);
    /* identity */
@@ -9733,7 +9758,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var openT=secH('Open items', nn(open.length,'item'))+(open.length?tbl2([['Item'],['Kind'],['Since'],['Status']], open.map(function(o){ return {c:[esc(o.t), esc(o.kind), esc(o.since), o.st], act:o.act||'go2', k:o.act?o.k:o.go} })):'<p class="gn-empty">Nothing is open on the network’s side.</p>');
    /* where to go from here */
    var links='<div class="gn-actions inset">'+goLink('Partner page','data-go2="partner"')+(AGENT.ptx?goLink('Transactions','data-go2="ptx"'):'')+(AGENT.pperf?goLink('Performance','data-go2="pperf"'):'')+goLink('Cases','data-go2="cases"')+'</div>';
-   return head+f+openT+ident+contacts+idents+contracts+products+envT+people+links;
+   var pfT=tab('pfTab','over');
+   return head+f+ptabs('pfTab',[['over','Overview'],['ids','Identifiers'],['contracts','Contracts'],['products','Products'],['env','Environments'],['people','People']],'over')+(pfT==='ids'?idents:pfT==='contracts'?contracts:pfT==='products'?products:pfT==='env'?envT:pfT==='people'?people+links:openT+ident+contacts);
  };
  /* the profile's top in the slide-over: identity and what is open, with the two ways on */
  function agfPanel(b){ var x=BOOKX[b.k], X=agfX(b), st=bookStage(b), open=agfOpen(b), ids=agfIds(b), lead=(x.lead||'').split(', ');
@@ -10236,8 +10262,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* ── the page ── */
  AGENT.inbound=function(){
   var I=INBOUND, taken=inTaken(), sharer=PEOPLE[I.by], signer=PEOPLE[I.to];
-  var head=ph('Inbound', 'One company signed up on the public developer site.',
-    taken?sw('In your book','ok'):sw('Not in the book',''));
+  var head=openHead(I.co+' \u00b7 Inbound', taken?'In your book. Replied to '+signer.n:'Not in the book. '+sharer.n+' named '+signer.n+' and asked us to reach out', 'Signed up '+I.account+' on the public developer site, with nothing sent from our side.');
 
   /* 1 · what is next, and the one action: the same Next card the partner page uses */
   var next = taken
@@ -10250,11 +10275,13 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      +agGate('<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="inTake">Reply to '+esc(signer.n)+'</button>')+'</div></article>';
 
   /* 2 · the four figures that argue: everything she did before anyone spoke to her */
-  var f=figs([
+  var f=hlRow([
    ['On the site', I.minutes+' minutes', 'one session, March 5'],
    ['Pages read', String(I.pages), 'API reference and two more'],
    ['Endpoints opened', String(I.endpoints), 'of nine in the reference'],
-   ['Sandbox requests', String(I.requests), 'approved in '+I.ms+' ms']
+   ['Sandbox requests', String(I.requests), 'approved in '+I.ms+' ms'],
+   ['Decides this', esc(signer.n), esc(signer.r)],
+   ['Waiting since', esc(I.asked), taken?'answered':'no reply yet']
   ]);
 
   /* 3 · the opportunity itself, said honestly: no account, no agreement, nothing sent from our side */
@@ -10281,7 +10308,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    +doc(I.known.map(function(r){ return [r[0], esc(r[1]), r[2]] }))
    +'<p class="para">Nothing here is confirmed by '+esc(I.co)+'.</p>';
 
-  return head+next+f+who+said+trail+answer+known;
+  var inT=tab('inTab','over');
+  return head+f+ptabs('inTab',[['over','Overview'],['said','What they said'],['explored','What she explored'],['company','The company']],'over')+(inT==='said'?said:inT==='explored'?trail+answer:inT==='company'?known:next+who);
  };
 
  /* taking it: Brightline Bank becomes the open partner, the page reads as taken and the count goes. Nothing is
