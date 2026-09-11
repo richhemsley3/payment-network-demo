@@ -7326,7 +7326,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
     +rest.map(function(t){ var w=PEOPLE[t.k]; return '<div class="ds-p">'+av(t.k,'a32')+'<div><b>'+esc(w.n)+'</b><span>'+esc(w.r)+'</span><p>'+esc(t.short||t.what)+'</p><a href="mailto:'+t.email+'">'+esc(t.email)+'</a></div></div>' }).join('')
     +'<div class="ds-h mt">On file <span>'+facts.length+'</span></div>'
     +'<div class="ds-f">'+facts.map(function(f){ return '<div><span>'+esc(f.l)+'</span><b>'+esc(f.v)+'</b></div>' }).join('')+'</div>'
-    +'<p class="ds-n">Something wrong? <span class="gn-link" data-act="focusReply">Tell Sonia.</span></p>'
+    +'<p class="ds-n">Something wrong? <span class="gn-link" data-act="focusReply">Tell Marcus.</span></p>'
     +'</aside>';
  }
  function planChart(withTok, nowWeek){
@@ -7351,8 +7351,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      +'<p class="deal-p">Your numbers on the network: $1.9B annual volume, 4,200 merchants, 29% card not present.</p>';
    /* Sonia's note is a conversation, so it has a reply */
    var reply=SCENE.replied
-     ? '<div class="nc-sent">'+av('dana','a36')+'<div><p>'+esc(SCENE.replied)+'</p><b class="meta"><span>'+esc(PEOPLE.dana.n)+'</span><span>Just now</span><span>Sent to Sonia</span></b></div></div>'
-     : '<form class="nc-reply" onsubmit="return false"><textarea class="gn-in" id="replyBox" rows="2" placeholder="Reply to Sonia"></textarea><button class="gn-btn gn-btn--sm" data-act="reply">Send</button></form>';
+     ? '<div class="nc-sent">'+av('dana','a36')+'<div><p>'+esc(SCENE.replied)+'</p><b class="meta"><span>'+esc(PEOPLE.dana.n)+'</span><span>Just now</span><span>Sent to Marcus</span></b></div></div>'
+     : '<form class="nc-reply" onsubmit="return false"><textarea class="gn-in" id="replyBox" rows="2" placeholder="Reply to Marcus"></textarea><button class="gn-btn gn-btn--sm" data-act="reply">Send</button></form>';
    var note='<div class="nc"><div class="nc-m">'+av('sonia','a36')+'<div><b>'+esc(so.n)+'</b><span class="meta"><span>'+esc(so.r)+'</span><span>March 6, 4:20 PM</span></span></div></div><p>'+esc(DEAL.note)+'</p>'+reply+'</div>';
    /* the card answers the switches: a product in the deal adds its figure and
       its savings to the total; Acceptance's three are always there */
@@ -7667,7 +7667,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var onfile=secH('From your account', String(known().length)+' details')+'<p class="para">Company details fill the questionnaire from your account.</p>';
    var docs=secH('From you', got+' of '+RISK_DOCS.length)+'<div class="ds-grid three">'+RISK_DOCS.map(function(d){ var ok=up[d.k]||STAGE>=4;
      return '<article class="dsh"><span class="gn-eyebrow">'+esc(d.area)+'</span><h3>'+esc(d.t)+'</h3><span class="dsh-m">'+esc(d.d)+'</span><div class="dsh-s">'+(ok?word('Received'):'<button class="gn-btn gn-btn--sm" data-act="upload" data-k="'+d.k+'">'+(d.k==='ctl'?'Open the questionnaire':'Upload')+'</button>')+'</div></article>' }).join('')+'</div>';
-   var who=secH('Who is involved')+'<div class="sc-p inset">'+['dana','sonia'].map(function(k){return av(k,'a28')}).join('')+'<span>Dana, Sonia and the network’s risk team</span></div>';
+   var who=secH('Who is involved')+'<div class="sc-p inset">'+['dana','marcus'].map(function(k){return av(k,'a28')}).join('')+'<span>Dana, Marcus and the network’s risk team</span></div>';
    return head+strip+areas+onfile+docs+who;
  };
  /* ── phase 1 · a third party under the confidentiality agreement ── */
@@ -8028,7 +8028,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var facts=known(), groups=[];
    facts.forEach(function(f){ var g=groups.filter(function(x){return x.g===f.g})[0]; if(!g){ g={g:f.g,f:[]}; groups.push(g) } g.f.push(f) });
    var fact=function(l){ var f=facts.filter(function(x){return x.l===l})[0]; return f?f.v:'\u2014' };
-   var byAgr=facts.filter(function(f){ return /Schedule|agreement/i.test(f.how||'') }).length, byNet=facts.filter(function(f){ return /handshake|it happened/.test(f.how||'') }).length;
+   var byAgr=Math.min(facts.length, STAGE>=4?CONFIG.length:0), byNet=facts.filter(function(f){ return /handshake|it happened/.test(f.how||'') }).length;
    var head=c?'<div class="rec-h"><b><span data-to="'+facts.length+'" data-fmt="int">'+facts.length+'</span> on file</b><span>details</span></div>'
      : STAGE===1 ? ph('What we have on file', 'What the network already knows about your business.')
      : openHead(ORG.n+' \u00b7 Company', facts.length+' facts on file, '+byAgr+' set by the agreement'+(byNet?', '+byNet+' read from the network':''), 'Everything the network holds about you and where each answer came from.');
@@ -8083,12 +8083,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  PARTNER.discover=function(sk,c){
    var lead=DGN_TEAM.filter(function(t){return t.lead})[0], rest=DGN_TEAM.filter(function(t){return !t.lead});
    var L=PEOPLE[lead.k];
-   var head=openHead('Your Discover team \u00b7 '+ORG.n, esc(L.n)+' has your account', 'The people at Discover who work it, and the ways to reach them.', SCENE.booked||SCENE.bookOpen?'':'<button class="gn-btn" data-act="bookOpen">Book 30 minutes</button>');
+   var head=openHead('Your Discover team \u00b7 '+ORG.n, esc(L.n)+' has your account', 'The people at Discover who work it, and the ways to reach them.', '');
    var hl=hlRow([['Your contact',esc(L.n),esc(L.r)],['Technical questions','Theo Marchetti','solutions engineer'],['Certification','Ana Okafor','books and reads your runs'],['Reach them',esc(lead.where.split(',')[0]),esc(lead.where.split(',').slice(1).join(',').trim())],['Next call',SCENE.booked?esc(SCENE.booked):'Not booked',''],['Last message',SCENE.thread||SCENE.replied?'Just now':STAGE>=2?'March 9':esc(DEAL.sent),'']]);
    var card='<div class="dt-lead">'+av(lead.k,'a64')+'<div class="dt-b"><b>'+esc(L.n)+'</b><span class="dt-r">'+esc(L.r)+', '+esc(L.org)+'</span>'
      +'<p>'+esc(lead.what)+'</p>'
      +'<div class="dt-c"><a href="mailto:'+lead.email+'">'+esc(lead.email)+'</a><span>'+esc(lead.phone)+'</span><span>'+esc(lead.where)+'</span></div>'
-     +'<div class="dt-a">'+(SCENE.booked?sw('Booked '+SCENE.booked+' with Sonia','ok'):SCENE.bookOpen?'<div class="slots">'+['Thursday, 2:00 PM ET','Thursday, 4:30 PM ET','Friday, 10:00 AM ET'].map(function(t){ return '<button class="gn-btn" data-act="bookPick" data-k="'+esc(t)+'">'+esc(t)+'</button>' }).join('')+'<span class="gn-link cancel" data-act="bookClose">Cancel</span></div>':'<button class="gn-btn" data-act="bookOpen">'+esc(lead.book)+'</button><a class="gn-btn" href="mailto:'+lead.email+'">Email Sonia</a>')+'</div></div></div>';
+     +'<div class="dt-a">'+(SCENE.booked?sw('Booked '+SCENE.booked+' with Marcus','ok'):SCENE.bookOpen?'<div class="slots">'+['Thursday, 2:00 PM ET','Thursday, 4:30 PM ET','Friday, 10:00 AM ET'].map(function(t){ return '<button class="gn-btn" data-act="bookPick" data-k="'+esc(t)+'">'+esc(t)+'</button>' }).join('')+'<span class="gn-link cancel" data-act="bookClose">Cancel</span></div>':'<button class="gn-btn" data-act="bookOpen">'+esc(lead.book)+'</button><a class="gn-btn" href="mailto:'+lead.email+'">Email Sonia</a>')+'</div></div></div>';
    /* once the network hands Brightline Bank to operations, the person who runs steady state joins the list */
    var hoD=STAGE>=6?(HANDOFF.brightline||{})[6]:STAGE>=5?SCENE.handoff:null; if(hoD) rest=rest.concat([{k:DGN_OPS.k, what:DGN_OPS.what.replace('{date}', hoD), email:DGN_OPS.email, phone:DGN_OPS.phone, where:DGN_OPS.where}]);
    var also=secH('Support team')+'<div class="dt-l">'+rest.map(function(t){ var w=PEOPLE[t.k];
@@ -8097,7 +8097,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var sup=secH('And always')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
    var reply = SCENE.replied || (STAGE>=2 ? 'Confirmed. Priya Raghavan takes the technical look; I will name the rest of the team this week.' : null);
    var thread=secH('Threads', 'With Sonia')+'<div class="thr">'+msg('sonia', DEAL.sent, DEAL.note)+(reply?msg('dana', STAGE>=2?'March 9':'Just now', reply):'')+(SCENE.thread?msg('dana','Just now',SCENE.thread):'')
-     +'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="thrBox" rows="2" placeholder="Reply to Sonia"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="threadSend">Send</button></div></form></div>';
+     +'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="thrBox" rows="2" placeholder="Reply to Marcus"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="threadSend">Send</button></div></form></div>';
    var dtT=tab('dtTab','over');
    return head+hl+ptabs('dtTab',[['over','Overview'],['thread','Threads'],['cases','Cases'],['team','Support team']],'over')+(dtT==='thread'?thread:dtT==='cases'?casesSection():dtT==='team'?also+sup:card+sup);
  };
@@ -9031,6 +9031,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var move = b.turn==='You' ? 'Your move' : (b.turn&&b.turn!=='\u2014') ? b.turn+'\u2019s move' : '';
    var stateS = isLive ? 'Live since '+(x.live||bookSince(b))+(openCases?', '+nn(openCases,'case')+' open':', nothing open')
                        : st+' since '+bookSince(b)+(d?', '+daysWord(d)+' waiting':'')+(move?'. '+move:'');
+   if(!cur){ var trq=turnRows().filter(function(r){ return r.k===b.k })[0]; if(trq) next=secH('Next')+'<article class="gn-notice" id="next"><div class="gn-notice-h">'+(trq.mine?sw('Needs you','wa'):sw('Waiting on '+esc(trq.turn||b.n),''))+'<span>'+esc(trq.kind||'')+'</span></div><h3>'+esc(trq.t.replace(/\.$/,''))+'</h3><div class="gn-notice-f"><span>Since '+esc(cap(String(trq.since||'')))+'</span>'+(trq.act||'')+'</div></article>' }
    var subS = esc(b.kind)+(cur?'. Next, '+esc(cur.x.t.toLowerCase())+'.':'.')+(isLive&&hoDate?' Handed to operations '+esc(hoDate)+'.':'');
    var leadN=(x.lead||'').split(', ');
    var head=crumb+openHead(b.n+' \u00b7 Partner', stateS, subS, agCanDo('agMessage')&&leadN[0]?'<button class="gn-btn" data-act="agMessage" data-k="'+b.k+'">Message '+esc(leadN[0].split(' ')[0])+'</button>':'');
