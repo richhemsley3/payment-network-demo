@@ -7204,8 +7204,9 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    /* panel 9. Getting started retires at go-live, so the reading panel 7 opened
       arrives here instead: the same instrument, on the home that replaced its page. */
    if(live() && !c && tab('gs','mine')==='all'){
-     return ph('Where it landed', 'Both tracks, at go-live.')
-      + wholeProcess(stepState(), true)
+     var WS=stepState();
+     return ph('Where it landed', wholeRead(WS, true))
+      + wholeProcess(WS, true)
       + '<p class="para">'+goLink('Open the home','data-act="gsMine"')+'</p>';
    }
    if(live()){
@@ -7480,18 +7481,21 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      var w = r.complete ? word('Done') : i===firstOpen ? sw('Now','') : sw('Later','');
      return '<div class="p5-r"><span class="p5-t">'+(i+1)+'. '+esc(r.t)+'</span><div class="p5-bar"><i style="--w:'+Math.round(100*r.done/r.total)+'%"></i></div><span class="gn-num">'+r.done+' of '+r.total+'</span>'+w+'</div>' }).join('')+'</div>';
  }
+ /* the reading is the page's own subtitle. It is a sentence about state, so it is not a
+    filled strip: a fill is for an object, an input or something lifted out, and prose is
+    none of the three. */
+ function wholeRead(S, landed){
+   var F=ftState(), doneAll=S.done+F.done, totAll=STEPS.length+FT_STEPS.length, left=totAll-doneAll;
+   var next = S.cur ? {t:S.cur.t, mine:true} : F.cur ? {t:F.cur.t, mine:false} : null;
+   if(landed) return '<b>'+doneAll+' of '+totAll+' done</b>, both tracks, the last of them on '+esc(LAUNCH.target)+'. Nothing was carried over.';
+   return '<b>'+doneAll+' of '+totAll+' done</b> across both tracks, '+nn(left,'thing')+' left. '
+     +(next ? 'Next '+(next.mine?'on yours':'on Priya\u2019s')+', '+esc(next.t)+'. ' : '')
+     +'Go-live '+esc(LAUNCH.target)+'.';
+ }
  function wholeProcess(S, landed){
-   var F=ftState(), ph=ftPhases();
-   var doneAll=S.done+F.done, totAll=STEPS.length+FT_STEPS.length, left=totAll-doneAll;
-   var next = S.cur ? {t:S.cur.t, who:'yours'} : F.cur ? {t:F.cur.t, who:'Priya'} : null;
-   var read = landed
-     ? '<div class="gn-open"><b>Both tracks finished.</b><span>'+doneAll+' of '+totAll+' done, and the last of them on '+esc(LAUNCH.target)+'. Nothing was carried over.</span></div>'
-     : '<div class="gn-open"><b>'+doneAll+' of '+totAll+' done across both tracks.</b><span>'
-       +(next ? nn(left,'thing')+' left. Next '+(next.who==='yours'?'on yours':'on Priya\u2019s')+': '+esc(next.t)+'.' : 'Nothing is waiting.')
-       +' Go-live '+esc(LAUNCH.target)+'.</span></div>';
-   return read
-     + secH('Yours', S.done+' of '+STEPS.length+' steps') + partsBars(S, !landed)
-     + secH('Priya\u2019s', F.done+' of '+FT_STEPS.length+' steps') + trackBars(ph);
+   var F=ftState();
+   return secH('Yours', S.done+' of '+STEPS.length+' steps') + partsBars(S, !landed)
+     + secH('Priya\u2019s', F.done+' of '+FT_STEPS.length+' steps') + trackBars(ftPhases());
  }
  PARTNER.start=function(sk,c){
    var S=stepState();
@@ -7503,9 +7507,9 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    /* the switch: her own steps, or the whole process. Panel 7 and panel 9 arrive on the second. */
    var gsAll = tab('gs','mine')==='all';
    if(gsAll && !SCENE.group){
-     return ph(live()?'Where it landed':'Getting started', live()?'Both tracks, at go-live.':'Your steps and your engineer\u2019s, in one place.')
+     return ph('Getting started', wholeRead(S, false))
       + tabs('gs', [['mine','Your steps'],['all','Everything']], 'mine')
-      + wholeProcess(S);
+      + wholeProcess(S, false);
    }
    var g=PEOPLE[GUIDE.k], gl=GUIDE.lines[(S.cur&&S.cur.k)] || GUIDE.lines[S.cur?'team':'done'] || GUIDE.lines.done;
    var guide='<div class="guide">'+av(GUIDE.k,'a40')+'<div><p>'+esc(gl)+'</p><span>'+esc(g.n)+', '+esc(g.r)+', Discover <span class="gn-link" data-go2="discover">Message Marcus</span></span></div></div>';
