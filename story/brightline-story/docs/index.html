@@ -4275,16 +4275,13 @@ body.mode-prep #prepbar{display:flex}
   {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert', start:{certRerun:1}, press:{sel:'[data-act="certRun"]', t:'Run the cases'},
    emo:'Confidence, on both sides.',
    d:'The tests say what they are testing against: the contracts and the waivers on file. The transaction log underneath is searchable from both seats, so neither takes the other’s word.'},
-  {n:15, act:5, t:'Noticed Before She Had to Ask', seat:'dana', stage:6, view:'alerts',
-   emo:'Told before she asked.',
-   d:'Something moves in the traffic and the network says so before Dana asks. The alert names what changed, who holds it, and what to look at next.'},
-  {n:16, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights', press:{t:'Ask about decisioning'},
+  {n:15, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights', press:{t:'Ask about decisioning'},
    emo:'Genuine interest.',
-   d:'Unasked, Dana is shown how Brightline Bank compares with participants like it, and what a capability they have not taken would be worth. The numbers underneath open.'},
-  {n:17, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products', press:{sel:'#nav [data-go="expand"], nav [data-go="expand"]', t:'Add a product'},
+   d:'Unasked, Dana is shown how Brightline Bank compares with participants like it, and what a capability they have not taken would be worth. The numbers underneath open. On the same page, the one thing that moved in her traffic this morning is already in hand at Discover, caught before she looked.'},
+  {n:16, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products', press:{sel:'#nav [data-go="expand"], nav [data-go="expand"]', t:'Add a product'},
    emo:'Familiar ease.',
    d:'Dana asks for a new product from the same place the relationship started. Business and technical run side by side again, and both are far shorter this time.'},
-  {n:18, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand', start:{xpStarted:1}, press:{t:'Confirm and send'},
+  {n:17, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand', start:{xpStarted:1}, press:{t:'Confirm and send'},
    emo:'Ease, and loyalty.',
    d:'The request arrives filled in from what Brightline Bank already established, down to the technical contacts, with what the product is expected to be worth beside it. She confirms rather than supplies.'}
  ];
@@ -10464,8 +10461,17 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  PARTNER.insights=function(){
    var head=ph('Insights', 'How you compare with participants of similar size and mix.');
    if(!live()) return head+'<div class="emp"><b>Nothing to compare yet.</b><span>The comparison is drawn from your first fourteen days of authorizations.</span></div>';
-   return head+insWho()+insStanding()+insSpread()+insRec();
+   return head+insWho()+insStanding()+insNoticed()+insSpread()+insRec();
  };
+ /* what the network noticed on her traffic and already holds: the act's thesis in one row. Drawn
+    only while an alert is in hand, and it opens the alert. */
+ function insNoticed(){
+   var open=ALERTS.filter(function(a){ return a.st==='inhand' && !(SCENE.resolved||{})[a.k] });
+   if(!open.length) return '';
+   return secH('Noticed on your traffic', open.length===1?'In hand at Discover':open.length+' in hand at Discover')
+    +'<div class="nt-grid">'+open.map(function(a){ var o=PEOPLE[a.owner]||{n:''}, last=a.steps&&a.steps.length?a.steps[0]:null;
+      return '<article class="gn-notice is-link" data-act="alert" data-k="'+esc(a.k)+'"><div class="gn-notice-h">'+sw('In hand','wa')+'<span>'+esc(a.product)+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.p)+'</p><div class="gn-notice-f"><span>'+esc(o.n)+', '+esc(a.when)+(a.took?'. '+esc(a.took.charAt(0).toUpperCase()+a.took.slice(1)):'')+'</span>'+goLink('Open the alert','data-act="alert" data-k="'+esc(a.k)+'"')+'</div></article>' }).join('')+'</div>';
+ }
 
  /* who the reader is being compared with, before a single figure is drawn */
  function insWho(){
