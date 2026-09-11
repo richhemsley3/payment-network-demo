@@ -3498,6 +3498,9 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .tb3 .fs-i:hover .fs-t{border-color:var(--g400); color:var(--g900)}
 .tb3 .gn-in--sm{width:240px}
 .st-fold-x{font-size:13px; padding:8px 24px 0}
+/* a record inside the slide-over: its own page, without the back link and the tabs it cannot switch there */
+.pk .back, .pk .gn-tabs{display:none}
+.pk h1{font-size:22px; letter-spacing:-0.01em} .pk .gn-page-head, .pk .gn-open-h{margin-top:16px}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
@@ -4267,7 +4270,7 @@ body.mode-prep #prepbar{display:flex}
   {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases', start:{relDraft:'v9'}, press:{sel:'[data-act="relPub"]', t:'Publish'}, then:[{seat:'dana', sel:'.ov-tile [data-go2="notices"]', t:'Open notices'}],
    emo:'Informed, not blindsided.',
    d:'A release carries a policy change. It reaches Brightline Bank’s record as a dated, versioned item the moment Marcus publishes it, rather than an attachment that can be missed.'},
-  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notice', start:{nk:'v9'}, press:{sel:'[data-act="wvAsk"]', t:'Request a waiver'}, then:[{seat:'marcus', view:'releases', sel:'[data-act="wvApprove"]', t:'Approve the waiver'},{seat:'dana', view:'notice', nk:'v9', t:'Read the decision'}],
+  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notice', start:{nk:'v9'}, press:{sel:'[data-act="wvAsk"]', t:'Request a waiver'}, then:[{seat:'marcus', view:'releases', set:'relTab=wv', sel:'[data-act="wvApprove"]', t:'Approve the waiver'},{seat:'dana', view:'notice', nk:'v9', t:'Read the decision'}],
    emo:'A formal process, not a favour.',
    d:'Brightline Bank cannot meet one clause yet, so Dana asks for a waiver on the same record. Marcus decides, and the reasoning sits where both sides read it.'},
   {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert', start:{certRerun:1, wv:{wv_113:{id:'wv_113', k:'brightline', rel:'v9', clause:'dsp20', reason:'Card-present disputes route through a processor whose evidence cycle runs 25 days.', term:'Until June 30, 2027', st:'approved', by:'Marcus Bell', on:'June 3', at:1, until:'June 30, 2027', note:'The processor cycle is documented and the term is the longest the network grants. Certification tests against 30 days until then.'}}}, press:{sel:'[data-act="certRun"]', t:'Run the cases'},
@@ -5435,6 +5438,10 @@ window.GNChart=(function(){
  function panelOn(){ var p=$('#pnl'); return !!(p && p.classList.contains('is-on')) }
  document.addEventListener('click', function(e){ if(e.target && e.target.id==='scrim' && panelOn()) closePanel() });
  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && panelOn()){ e.preventDefault(); closePanel() } });
+ /* a list row opens its record in the slide-over (the List rule, September 11). The record's own page renders
+    inside, its back link and tabs hidden, and Open the page is the way to the route. */
+ function peekView(v, kicker){ var R=(PORTAL[SEAT]==='agent'?AGENT:PORTAL[SEAT]==='developer'?DEV:PARTNER)[v]; if(!R){ go(v); return }
+   var html=R(); openPanel('<div class="gn-panel-top"><span>'+esc(kicker||'')+'</span><button class="gn-panel-x" data-act="pnlClose" aria-label="Close"><svg class="i" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div><div class="gn-panel-body pk">'+html+'</div><div class="gn-panel-foot">'+goLink('Open the page','data-act="pnlGo" data-k="'+esc(v)+'"')+'</div>') }
  function panelShell(title, meta, body, foot){ return '<div class="gn-panel-top"><span>'+esc(meta.kicker||'')+'</span><button class="gn-panel-x" data-act="pnlClose" aria-label="Close"><svg class="i" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div><div class="gn-panel-ttl"><h2 id="pnlT">'+title+'</h2><div class="gn-panel-meta">'+(meta.line||'')+'</div></div><div class="gn-panel-body">'+body+'</div>'+(foot?'<div class="gn-panel-foot">'+foot+'</div>':'') }
  function closeDialog(confirmed){ var d=$('#dlg'); if(!d) return; d.hidden=true; $('#scrim').classList.remove('is-on'); var f=DLG_FROM; DLG_FROM=null; if(!confirmed && f && document.contains(f) && f!==document.body) f.focus(); else if(!confirmed) focusMain() }
  /* one polite live region for what changes without a page change: the needs-you count, the offline banner. Cleared and set again so the same words are read twice when they happen twice. */
@@ -6135,10 +6142,10 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pnlGo:1, peekPartner:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
- var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1, xpPlanOpen:1, xpPlanSend:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
+ var AG_READ={agPartner:1, agAlert:1, agWvOpen:1, bookClear:1, go2:1, xpPlanOpen:1, xpPlanSend:1, peekPartner:1, pnlGo:1, pnlClose:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
  /* an act may be held whole ("agStep") or for one step of the plan ("agStep:agr") */
  function agCanDo(act){ if(READ_ACTS[act] || AG_READ[act]) return true; var a=agSeat().acts; return a.indexOf(act)>=0 || (act.indexOf(':')>0 && a.indexOf(act.split(':')[0])>=0) }
  function agActOf(el){ var a=el.dataset.act; return a==='agStep'&&el.dataset.s ? a+':'+el.dataset.s : a }
@@ -7350,7 +7357,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    /* Sonia's note is a conversation, so it has a reply */
    var reply=SCENE.replied
      ? '<div class="nc-sent">'+av('dana','a36')+'<div><p>'+esc(SCENE.replied)+'</p><b class="meta"><span>'+esc(PEOPLE.dana.n)+'</span><span>Just now</span><span>Sent to Sonia</span></b></div></div>'
-     : '<form class="nc-reply" onsubmit="return false"><textarea class="gn-in" id="replyBox" rows="2" placeholder="Reply to Sonia"></textarea><button class="gn-btn gn-btn--sm" data-act="reply">Send</button></form>';
+     : '<form class="nc-reply" onsubmit="return false"><textarea class="gn-in" id="replyBox" rows="2" placeholder="Reply to Marcus"></textarea><button class="gn-btn gn-btn--sm" data-act="reply">Send</button></form>';
    var note='<div class="nc"><div class="nc-m">'+av('sonia','a36')+'<div><b>'+esc(so.n)+'</b><span class="meta"><span>'+esc(so.r)+'</span><span>March 6, 4:20 PM</span></span></div></div><p>'+esc(DEAL.note)+'</p>'+reply+'</div>';
    /* the card answers the switches: a product in the deal adds its figure and
       its savings to the total; Acceptance's three are always there */
@@ -7412,7 +7419,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      +tbl2([['Section'],['What it is'],['Terms']], AGREEMENT.sections.map(function(x){ return ['<span class="gn-num">'+x[0]+'</span> '+esc(x[1]), esc(x[2]), x[0]==='4'?sw('Yours',''):sw('Standard','')] }))
      +(signed?'<div class="sc-a inset"><span class="gn-link" data-act="dl">Download the signed agreement</span></div>':'')
      +secH('Signatures')+tbl2([['Signatory'],['Role'],['Signed',1]], AGREEMENT.signers.map(function(x,i){ return [esc(x[0]), esc(x[1]), signed?'<span class="gn-num">'+esc(x[2])+'</span>':word(i===0&&!early?'now':'soon')] }));
-   return head+just+nda+feas+pa+wvSection('brightline');
+   var agT=tab('agrTab','docs');
+   return head+just+ptabs('agrTab',[['docs','Documents'],['pa','Participation agreement'],['wv','Waivers',(function(){ var n=wvFor('brightline').length; return n?String(n):'' })()]],'docs')+(agT==='pa'?feas+pa:agT==='wv'?(wvSection('brightline')||empty('No waivers on file.')):nda);
  };
  function askForm(){
    if(!(STAGE===2 && !SCENE.submitted)) return '';
@@ -7732,7 +7740,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var exps=EXPORTS.concat(SCENE.exports||[]).filter(function(e){ return !(SCENE.expDel||{})[e.id] });
    var exf = SCENE.expForm ? '<section class="gn-setup"><div class="gn-setup-h"><div><h3>Schedule an export</h3><p>Sends the report to an inbox on a schedule.</p></div></div><form class="gn-setup-f" onsubmit="return false"><label class="gn-field"><span class="gn-field-l">Report</span><select class="gn-in" id="exRep">'+REPORTS.map(function(r){ return '<option>'+esc(r.t)+'</option>' }).join('')+'<option>By day (this table)</option></select></label><label class="gn-field"><span class="gn-field-l">Cadence</span><select class="gn-in" id="exCad"><option>Every day, 6:15 AM ET</option><option>Every Monday</option><option>First business day of the month</option></select></label><label class="gn-field"><span class="gn-field-l">Send to</span><input class="gn-in" id="exTo" placeholder="finance@brightline.example"></label><label class="gn-field"><span class="gn-field-l">Format</span><select class="gn-in" id="exFmt"><option>CSV</option><option>Excel</option><option>JSON</option></select></label><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="expSave">Schedule</button><span class="gn-link cancel" data-act="expClose">Cancel</span></div></form></section>' : '';
    var ex=secH('Scheduled exports', SCENE.expForm?'':'<button class="gn-btn gn-btn--sm" data-act="expOpen">Schedule an export</button>')+exf+(exps.length?tbl2([['Report'],['Cadence'],['Send to'],['Format'],['Since'],['']], exps.map(function(e){ return [esc(e.report), esc(e.cadence), '<span class="gn-mono">'+esc(e.to)+'</span>', esc(e.format), esc(e.since), '<span class="gn-link" data-act="expDel" data-k="'+e.id+'">Remove</span>'] })):'<p class="para">None yet.</p>');
-   return head+seg+ch+(repView==='table'?t:'')+hist+dec+ex+cat+secH('Recipients')+setup('report');
+   var rpT=tab('repTab','auth');
+   return head+ptabs('repTab',[['auth','Authorizations'],['hist','Transaction history'],['exp','Exports and recipients']],'auth')+(rpT==='hist'?hist:rpT==='exp'?ex+cat+secH('Recipients')+setup('report'):seg+ch+(repView==='table'?t:'')+dec);
  };
  /* transaction history across dimensions: the same period read by merchant, channel, response, hour and credential. Counts are the period's, shares come from the record. Each row opens Transactions filtered to it. */
  function txHistory(series){
@@ -7768,7 +7777,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var cyc=secH('Settlement cycles')+tbl2([['Cycle'],['Gross',1],['Fees',1],['Adjustments',1],['Net',1],['Wire']], Object.keys(CYCLES).map(function(k){ var c=CYCLES[k]; return {c:[esc(k), money0(c.gross), money0(-(c.assess+c.authfee+c.disp)), money0(c.adj), money0(c.net), esc(c.wire)], act:'cycle', k:k} }));
    var acct=secH('Settlement account')+setup('bank')+secH('Daily balancing')+setup('bal');
    var inv=secH('Invoices')+'<div class="ds-grid three">'+INVOICES.map(function(i){ return '<article class="dsh"><span class="gn-eyebrow">'+esc(i[0])+'</span><h3>'+esc(i[1])+'</h3><span class="dsh-m">Fees against settled volume</span><div class="dsh-s">'+(i[3]==='paid'?word('paid'):sw(i[2],'wa'))+'</div></article>' }).join('')+'</div>';
-   return head+f+ch+cyc+acct+fees+inv;
+   var stT=tab('setTab','cycles');
+   return head+f+ptabs('setTab',[['cycles','Cycles'],['acct','Account'],['fees','Fees and invoices']],'cycles')+(stT==='acct'?acct:stT==='fees'?fees+inv:ch+cyc);
  };
  /* ── notices: the reason a partner signs in on a Tuesday ── */
  function noticesOpen(){ var ack=SCENE.acked||{}; return NOTICES.filter(function(n){ if(SCENE.relDraft===n.k && !(SCENE.relPub||{})[n.k]) return false; if(n.liveOnly && !live()) return false; if(n.pre && live()) return false; if(n.go==='rules' && (ack[n.k]||STAGE>=3)) return false; if(n.k==='maint' && STAGE>=3) return false; return true }) }
@@ -7792,9 +7802,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var open=noticesOpen(), act=open.filter(function(n){return ntKind(n)==='action'}), info=open.filter(function(n){return ntKind(n)!=='action'});
    var past=NOTICES.filter(function(n){ return open.indexOf(n)<0 && !(n.liveOnly&&!live()) && !(n.pre&&live()&&n.k==='maint') });
    var head=ph('Notices', 'What the network is changing.');
-   return head+(act.length?secH('Action needed', nn(act.length,'notice'))+'<div class="nt-grid">'+act.map(noticeCard).join('')+'</div>':'')
-    +(info.length?secH('For information')+'<div class="nt-grid">'+info.map(noticeCard).join('')+'</div>':'')
-    +(past.length?secH('Done')+'<div class="nt-grid">'+past.map(noticeCard).join('')+'</div>':'');
+   /* the List rule: page tabs by state, one grid in each. Each card carries its own state word. */
+   var nt=tab('ntTab','open'), cur=nt==='done'?past:act.concat(info);
+   return head+ptabs('ntTab',[['open','Open',String(open.length)],['done','Done',String(past.length)]],'open')
+    +(cur.length?'<div class="nt-grid">'+cur.map(noticeCard).join('')+'</div>':empty(nt==='done'?'Nothing is done yet.':'Nothing open. The network has changed nothing that needs you.'));
  };
  PARTNER.notice=function(){
    var n=NOTICES.filter(function(x){return x.k===SCENE.nk})[0]||NOTICES[3]; var acted = n.go==='rules' && ((SCENE.acked||{})[n.k]||STAGE>=3);
@@ -7821,7 +7832,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var shown=cases.filter(function(c){ return f==='all' || (f==='open'&&(c.st==='needs_response'||c.st==='under_review')) || (f==='needs'&&c.st==='needs_response') || (f==='closed'&&['won','lost','accepted','closed'].indexOf(c.st)>-1) });
    var open=cases.filter(function(c){return c.st==='needs_response'||c.st==='under_review'}), needs=cases.filter(function(c){return c.st==='needs_response'});
    var won=cases.filter(function(c){return c.st==='won'}).length, decided=cases.filter(function(c){return c.st==='won'||c.st==='lost'}).length;
-   var head=ph('Disputes', 'Disputes raised against your merchants and what each one needs.', '<a class="gn-btn" href="mailto:disputes@brightline.example">Case inbox</a>');
+   var head=ph('Disputes', '<b>'+(needs.length?nn(needs.length,'case')+' need'+(needs.length===1?'s':'')+' a response'+(needs.length?', next due '+needs.map(function(c){return c.due}).sort()[0]:'')+'.':'Nothing needs a response.')+'</b> '+(open.length-needs.length)+' in review, $'+(open.reduce(function(a,c){return a+c.amount},0)/100).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2})+' at stake. Won '+(decided?Math.round(100*won/decided)+'%':'none')+' of '+decided+' decided in 90 days.', '<a class="gn-btn" href="mailto:disputes@brightline.example">Case inbox</a>');
    var figs_=figs([['Needs response', String(needs.length), needs.length?'next due '+needs.map(function(c){return c.due}).sort()[0]:''],['In review', String(open.length-needs.length), ''],['At stake', '$'+(open.reduce(function(a,c){return a+c.amount},0)/100).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}), 'open cases'],['Won, 90 days', decided?Math.round(100*won/decided)+'%':'—', won+' of '+decided+' decided']], 'gn-figs--compact');
    var byReason={}; open.forEach(function(c){ var k=(REASONS[c.reason]||c.reason).split(':')[0]; byReason[k]=(byReason[k]||0)+1 });
    var dc=open.length?'<div class="gn-chartcards">'
@@ -7830,7 +7841,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var filt=(SCENE.dspFrom?dspInsight(needs):'')+toolbar(tabs('df2',[['open','Open',String(open.length)],['needs','Needs response',String(needs.length)],['closed','Closed',String(cases.length-open.length)],['all','All',String(cases.length)]],'open'), '<span class="gn-link" data-act="dl">Export</span>');
    var t=tbl2([['Case'],['Merchant'],['Amount',1],['Reason'],['Stage'],['Respond by'],['Status']], shown.map(function(c){ var dl=daysLeft(c.due);
      return {c:['<span class="gn-mono">'+esc(c.id)+'</span>', esc(c.merchant), '$'+(c.amount/100).toFixed(2), esc(c.reason)+'<em>'+esc((REASONS[c.reason]||'').split(':')[0])+'</em>', esc(c.stage.charAt(0).toUpperCase()+c.stage.slice(1)), c.st==='needs_response'?esc(c.due)+'<em>'+(dl<=3?'<span class="gn-status is-bad">'+daysWord(dl)+' left</span>':daysWord(dl)+' left')+'</em>':c.st==='closed'?esc(c.due)+'<em><span class="gn-status is-bad">Window closed '+agoWord(-dl)+'</span></em>':'—', dspWord(c.st)], act:'dspOpen', k:c.id} }));
-   return head+figs_+dc+filt+(shown.length?t:'<div class="emp"><b>No cases match these filters.</b><span>Try a different status.</span></div>');
+   return head+filt+(shown.length?t:'<div class="emp"><b>No cases match these filters.</b><span>Try a different status.</span></div>');
  };
  PARTNER.dispute=function(){
    var c=DISPUTE_CASES.filter(function(x){return x.id===SCENE.dk})[0]||DISPUTE_CASES[0], st=dspStatus(c), dl=daysLeft(c.due), form=SCENE.dspForm===c.id, step=SCENE.dspStep||1;
@@ -7995,15 +8006,17 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var list=MERCHANTS.filter(function(m){ return (!q||m.n.toLowerCase().indexOf(q)>-1||m.k.indexOf(q)>-1) && (rf==='all'||mRisk(m)===rf) });
    var num=function(v){ return parseFloat(String(v).replace(/[$k,]/g,'')) };
    list.sort(function(a,b){ return srt==='vol'?num(b.vol)-num(a.vol):srt==='disp'?b.disputes-a.disputes:srt==='appr'?a.appr-b.appr:a.n.localeCompare(b.n) });
-   var head=ph('Merchants', 'Your merchants ranked by volume this month.', '<span class="gn-link" data-act="dl">Export</span>');
+   var head=ph('Merchants', '<b>4,212 merchants, 38 new this month.</b> '+MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length+' at elevated risk, '+MERCHANTS.filter(function(m){return mRisk(m)==='paused'}).length+' paused. Ranked by volume.', '<span class="gn-link" data-act="dl">Export</span>');
    var f=figs([['Merchants','4,212',''],['New this month','38',''],['Elevated risk',String(MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length),''],['Paused',String(MERCHANTS.filter(function(m){return mRisk(m)==='paused'}).length),'']]);
    var mc='<div class="gn-chartcards">'
      +card('Volume by merchant, 30 days', '$1.4M', chart('treemap',{items:(function(){ var s=MERCHANTS.slice().sort(function(a,b){return num(b.vol)-num(a.vol)}); return s.slice(0,7).map(function(m){ return {name:m.n, value:num(m.vol)} }).concat([{name:'All others', value:s.slice(7).reduce(function(a,m){return a+num(m.vol)},0)+420}]) })(), fmt:'k$', h:200}), '4,212 merchants', goLink('Export','data-act="dl"'))
      +card('Disputes against volume', MERCHANTS.filter(function(m){return mRisk(m)==='elevated'}).length+' elevated', chart('scatter',{points:MERCHANTS.map(function(m){ return {name:m.n, x:num(m.vol), y:m.disputes, r:4+Math.round((100-m.appr)*1.5), label:m.disputes>=5||num(m.vol)>=380, series:mRisk(m)==='elevated'?1:0} }), xfmt:'k$', yfmt:'int', xmin:0, ymin:0, h:200, xlabel:'Volume, 30 days'}), 'Size is decline rate. Elevated risk in the second hue')+'</div>';
    var fromM = SCENE.mFrom ? mInsight() : '';
-   var tb=fromM+toolbar(tabs('msort',[['vol','By volume'],['disp','By disputes'],['appr','Lowest approval'],['name','A to Z']],'vol')+tabs('mrisk',[['all','All'],['normal','Normal'],['elevated','Elevated'],['paused','Paused']],'all'), '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="mQ" value="'+esc(SCENE.mQ||'')+'" placeholder="Merchant name or id"><button class="gn-btn gn-btn--sm" data-act="mSearch">Search</button>'+(SCENE.mQ?'<span class="gn-link" data-act="mClear">Clear</span>':'')+'</form>');
+   var tb=fromM+tbrow([fsel('mrisk', rf, [['all','All merchants'],['normal','Normal risk'],['elevated','Elevated risk'],['paused','Paused']], 'View'),
+       '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="mQ" value="'+esc(SCENE.mQ||'')+'" placeholder="Merchant name or id"><button class="gn-btn gn-btn--sm" data-act="mSearch">Search</button>'+(SCENE.mQ?'<span class="gn-link" data-act="mClear">Clear</span>':'')+'</form>',
+       fsel('msort', srt, [['vol','By volume'],['disp','By disputes'],['appr','Lowest approval'],['name','A to Z']], 'Sort')], '<span class="gn-link" data-act="noop">Columns</span>');
    var t=tbl2([['Merchant'],['Category'],['Volume, 30 days',1],['Approved',1],['Card not present',1],['Disputes',1],['Risk']], list.map(function(m){ return {c:[esc(m.n)+'<em>'+esc(m.k)+'</em>', esc(m.mcc), esc(m.vol), m.appr+'%', m.cnp+'%', String(m.disputes), riskWord(mRisk(m))], act:'mOpen', k:m.k} }));
-   return head+f+mc+tb+(list.length?t:'<div class="emp"><b>No merchants match.</b><span>Clear the search, or try the merchant id.</span></div>');
+   return head+tb+(list.length?t:'<div class="emp"><b>No merchants match.</b><span>Clear the search, or try the merchant id.</span></div>');
  };
  PARTNER.merchant=function(){
    var m=MERCHANTS.filter(function(x){return x.k===SCENE.mk})[0]||MERCHANTS[0], r=mRisk(m);
@@ -8026,7 +8039,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var ask = (STAGE===2 && !SCENE.submitted && !c) ? '<div class="just"><b>Next step: name your team.</b><span>'+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
    /* regroup by subject, as Dana thinks of her company */
    if(!c && STAGE>1){ var by={}; facts.forEach(function(f){ var k=SUBJ[f.g]||f.g; (by[k]=by[k]||[]).push(f) }); groups=SUBJ_ORDER.filter(function(k){return by[k]}).map(function(k){ return {g:k, f:by[k]} }); }
-   var gtabs='';
+   var coT=tab('coTab', groups.length?groups[0].g:''), gtabs='';
+   if(!c && STAGE>1 && groups.length>1){ gtabs=ptabs('coTab', groups.map(function(g){ return [g.g, g.g, String(g.f.length)] }), groups[0].g); groups=groups.filter(function(g){ return g.g===coT }) }
    /* two of these were never typed by anyone: the certificate expiry, read off
       the first handshake, and the first settlement cycle, recorded as it ran.
       They carry the network as their source, and that is the quiet proof. */
@@ -8055,7 +8069,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var np=SCENE.notif||{}; var def={'Settlement posted|Email':1,'Dispute opened|Email':1,'Dispute opened|Portal':1,'Alert raised|Email':1,'Alert raised|Portal':1,'Notice published|Portal':1,'Certification result|Portal':1,'Invoice issued|Email':1};
    var on=function(k){ return np[k]===undefined?!!def[k]:!!np[k] };
    var notif=secH('Notifications', 'Your preferences')+'<div class="gn-table-wrap"><table class="gn-table nmx"><thead><tr><th>Event</th><th>How often</th><th>Email</th><th>In the portal</th></tr></thead><tbody>'+NOTIF_EVENTS.map(function(e){ return '<tr><td>'+esc(e[0])+'</td><td>'+esc(e[1])+'</td>'+['Email','Portal'].map(function(ch){ var k=e[0]+'|'+ch; return '<td><label class="gn-check-l cmp"><input type="checkbox" data-act="notifTog" data-k="'+esc(k)+'"'+(on(k)?' checked':'')+'></label></td>' }).join('')+'</tr>' }).join('')+'</tbody></table></div>';
-   return ph('Team', 'Team access and what each person can reach.', SCENE.invite?'':'<button class="gn-btn" data-act="inviteOpen">Invite someone</button>')+inv+people+named+roles+notif;
+   var tt=tab('teamTab','people');
+   return ph('Team', 'Team access and what each person can reach.', SCENE.invite?'':'<button class="gn-btn" data-act="inviteOpen">Invite someone</button>')+ptabs('teamTab',[['people','People',String(t.length)],['roles','Roles'],['notif','Notifications']],'people')+inv+(tt==='roles'?roles:tt==='notif'?notif:people+named);
  };
  function milestones(compact, published){
    var st=function(m){ if(published||pre()) return ''; if(STAGE>=5) return 'done'; if(m.k==='cert' && SCENE.validated) return 'done'; return m.st };
@@ -8074,7 +8089,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var card='<div class="dt-lead">'+av(lead.k,'a64')+'<div class="dt-b"><b>'+esc(L.n)+'</b><span class="dt-r">'+esc(L.r)+', '+esc(L.org)+'</span>'
      +'<p>'+esc(lead.what)+'</p>'
      +'<div class="dt-c"><a href="mailto:'+lead.email+'">'+esc(lead.email)+'</a><span>'+esc(lead.phone)+'</span><span>'+esc(lead.where)+'</span></div>'
-     +'<div class="dt-a">'+(SCENE.booked?sw('Booked '+SCENE.booked+' with Sonia','ok'):SCENE.bookOpen?'<div class="slots">'+['Thursday, 2:00 PM ET','Thursday, 4:30 PM ET','Friday, 10:00 AM ET'].map(function(t){ return '<button class="gn-btn" data-act="bookPick" data-k="'+esc(t)+'">'+esc(t)+'</button>' }).join('')+'<span class="gn-link cancel" data-act="bookClose">Cancel</span></div>':'<button class="gn-btn" data-act="bookOpen">'+esc(lead.book)+'</button><a class="gn-btn" href="mailto:'+lead.email+'">Email Sonia</a>')+'</div></div></div>';
+     +'<div class="dt-a">'+(SCENE.booked?sw('Booked '+SCENE.booked+' with Marcus','ok'):SCENE.bookOpen?'<div class="slots">'+['Thursday, 2:00 PM ET','Thursday, 4:30 PM ET','Friday, 10:00 AM ET'].map(function(t){ return '<button class="gn-btn" data-act="bookPick" data-k="'+esc(t)+'">'+esc(t)+'</button>' }).join('')+'<span class="gn-link cancel" data-act="bookClose">Cancel</span></div>':'<button class="gn-btn" data-act="bookOpen">'+esc(lead.book)+'</button><a class="gn-btn" href="mailto:'+lead.email+'">Email Sonia</a>')+'</div></div></div>';
    /* once the network hands Brightline Bank to operations, the person who runs steady state joins the list */
    var hoD=STAGE>=6?(HANDOFF.brightline||{})[6]:STAGE>=5?SCENE.handoff:null; if(hoD) rest=rest.concat([{k:DGN_OPS.k, what:DGN_OPS.what.replace('{date}', hoD), email:DGN_OPS.email, phone:DGN_OPS.phone, where:DGN_OPS.where}]);
    var also=secH('Support team')+'<div class="dt-l">'+rest.map(function(t){ var w=PEOPLE[t.k];
@@ -8082,9 +8097,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       +'<div class="dt-c"><a href="mailto:'+t.email+'">'+esc(t.email)+'</a><span>'+esc(t.phone)+'</span><span>'+esc(t.where)+'</span></div></div></div>' }).join('')+'</div>';
    var sup=secH('And always')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
    var reply = SCENE.replied || (STAGE>=2 ? 'Confirmed. Priya Raghavan takes the technical look; I will name the rest of the team this week.' : null);
-   var thread=secH('Threads', 'With Sonia')+'<div class="thr">'+msg('sonia', DEAL.sent, DEAL.note)+(reply?msg('dana', STAGE>=2?'March 9':'Just now', reply):'')+(SCENE.thread?msg('dana','Just now',SCENE.thread):'')
-     +'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="thrBox" rows="2" placeholder="Reply to Sonia"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="threadSend">Send</button></div></form></div>';
-   return head+card+casesSection()+thread+also+sup;
+   var thread=secH('Threads', 'With Marcus')+'<div class="thr">'+msg('marcus', DEAL.sent, DEAL.note)+(reply?msg('dana', STAGE>=2?'March 9':'Just now', reply):'')+(SCENE.thread?msg('dana','Just now',SCENE.thread):'')
+     +'<form class="gn-ask thr-f" onsubmit="return false"><textarea class="gn-in" id="thrBox" rows="2" placeholder="Reply to Marcus"></textarea><div class="gn-form-act"><button class="gn-btn" data-act="threadSend">Send</button></div></form></div>';
+   var dtT=tab('dtTab','thread');
+   return head+card+ptabs('dtTab',[['thread','Threads'],['cases','Cases'],['team','Support team']],'thread')+(dtT==='cases'?casesSection():dtT==='team'?also+sup:thread);
  };
  /* what Brightline Bank's own traffic says to add next, read from the record:
     yesterday's authorizations, the token share, the card-not-present gap,
@@ -8111,10 +8127,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    }
    var head=ph('Products', 'What your traffic says to add next.');
    var recs=insights().filter(function(i){ return !(SCENE.sent && i.k==='wallet') });
-   var rec = live()&&recs.length ? secH('Recommended for Brightline Bank', 'From your traffic')+'<div class="pc-grid">'+recs.map(function(i){ var p=CAT.filter(function(x){return x.k===i.k})[0];
+   var rec = live()&&recs.length ? secH('Available', recs.length+' recommended from your traffic, first')+'<div class="pc-grid">'+recs.map(function(i){ var p=CAT.filter(function(x){return x.k===i.k})[0];
      return '<article class="pc is-link" data-act="product" data-k="'+p.k+'"><div class="pc-h"><h2>'+esc(p.t)+'</h2>'+sw('Available','')+'</div><p>'+esc(i.why)+'</p><div class="pc-m"><div><b>'+esc(i.fig)+'</b><span>'+esc(i.fl)+'</span></div></div><div class="pc-a">'+goLink('Open','data-act="product" data-k="'+p.k+'"')+'</div></article>' }).join('')+'</div>' : '';
    var recK=recs.map(function(i){return i.k}), rest=CAT.filter(function(p){ return !(p.st&&p.st[STAGE]) && recK.indexOf(p.k)<0 && !(SCENE.sent&&p.k==='wallet') });
-   var more = rest.length ? secH('More products and services')+'<div class="pc-grid">'+rest.map(function(p){ return '<article class="pc is-link is-avail" data-act="product" data-k="'+p.k+'"><div class="pc-h"><h2>'+esc(p.t)+'</h2>'+sw('Available','')+'</div><p>'+esc(p.line)+'</p><div class="pc-a">'+goLink('Open','data-act="product" data-k="'+p.k+'"')+'</div></article>' }).join('')+'</div>' : '';
+   var more = rest.length ? '<div class="pc-grid">'+rest.map(function(p){ return '<article class="pc is-link is-avail" data-act="product" data-k="'+p.k+'"><div class="pc-h"><h2>'+esc(p.t)+'</h2>'+sw('Available','')+'</div><p>'+esc(p.line)+'</p><div class="pc-a">'+goLink('Open','data-act="product" data-k="'+p.k+'"')+'</div></article>' }).join('')+'</div>' : '';
    var live_=CAT.filter(function(p){return p.st&&p.st[STAGE]});
    var grid=secH('Live on your connection', live_.length+' of '+CAT.length)+'<div class="pc-grid">'+live_.map(function(p){ var m=PMETRIC[p.k]||[];
      return '<article class="pc is-link" data-act="product" data-k="'+p.k+'"><div class="pc-h"><h2>'+esc(p.t)+'</h2>'+word(p.st[STAGE])+'</div><p>'+esc(p.line)+'</p>'
@@ -8198,8 +8214,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var open=ALERTS.filter(function(a){return a.st==='inhand'}), coming=ALERTS.filter(function(a){return a.st==='coming'}), done=ALERTS.filter(function(a){return a.st==='resolved'});
    var head=ph('Alerts', 'Open alerts on your traffic and who is handling each.');
    var t=function(list){ return '<div class="nt-grid">'+list.map(function(a){ return '<article class="gn-notice is-link" data-act="alert" data-k="'+a.k+'"><div class="gn-notice-h">'+(a.st==='inhand'?sw('In hand','wa'):a.st==='coming'?sw('Coming',''):word('Fixed'))+'<span>'+esc(a.product)+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.p)+'</p><div class="gn-notice-f">'+av(a.owner,'a24')+'<span>'+esc(PEOPLE[a.owner].n)+', '+esc(a.when)+'</span></div></article>' }).join('')+'</div>' };
-   return head+secH('Being handled', open.length+' by Discover')+(open.length?t(open):empty('Nothing open. The network has not flagged anything on your traffic.'))
-    +secH('Coming', coming.length+' to plan for')+t(coming)+secH('Resolved', done.length+' this year')+t(done);
+   var alT=tab('alTab','inhand');
+   return head+ptabs('alTab',[['inhand','In hand',String(open.length)],['coming','Coming',String(coming.length)],['done','Resolved',String(done.length)]],'inhand')
+    +(alT==='coming'?(coming.length?t(coming):empty('Nothing coming.')):alT==='done'?(done.length?t(done):empty('Nothing resolved this year.')):(open.length?t(open):empty('Nothing open. The network has not flagged anything on your traffic.')));
  };
  PARTNER.alert=function(){
    var a=ALERTS.filter(function(x){return x.k===SCENE.ak})[0]||ALERTS[0], o=PEOPLE[a.owner];
@@ -8410,7 +8427,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      return [editing?'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="keyRename" value="'+esc(k.n)+'"><button class="gn-btn gn-btn--sm gn-btn--primary" data-act="keySaveName" data-k="'+k.id+'">Save</button><span class="gn-link cancel" data-act="keyCancelName">Cancel</span></form>':esc(k.n)+(k.fresh&&!k.lapsed?' '+sw('New','ok'):'')+(k.lapsed?' '+sw('Expired','no'):k.grace!==undefined?' '+sw('Expires in '+daysWord(k.grace),'wa'):''),
              '<span class="kv"><span class="gn-mono">'+esc(rev?k.full:k.tok+'••••••••')+'</span><span class="gn-link" data-act="keyReveal" data-k="'+k.id+'">'+(rev?'Hide':'Reveal')+'</span><span class="gn-link" data-act="keyCopy">Copy</span>'+(rev?'<span class="gn-num">Shown to '+esc(seat().n)+' just now</span>':'')+'</span>', k.at!==undefined?agoDay(k.at):esc(k.created), esc(k.last),
              k.lapsed?'':menu('key:'+k.id, [['Edit name','keyEditName',k.id]].concat(k.grace!==undefined?[]:[['Rotate','keyRotate',k.id]]).concat([['View request logs','logsFor',k.id],['Expire','keyExpire',k.id,true]]))] }));
-   return head+create+shown+secH('Keys', keys.filter(function(k){return !k.lapsed}).length+' active in '+ENVN[e])+t+keyNotes(keys)+secH('mTLS certificates', STAGE>=5?'':'<button class="gn-btn gn-btn--sm" data-act="certUp">Upload chain</button>')+certTable()+secH('Access policy', SCENE.polEdit?'':'<span class="gn-link" data-act="polEdit">Edit</span>')+policy();
+   var kt=tab('keyTab','keys');
+   return head+ptabs('keyTab',[['keys','Keys',String(keys.filter(function(k){return !k.lapsed}).length)],['certs','Certificates'],['policy','Access policy']],'keys')
+    +(kt==='certs' ? secH('mTLS certificates', STAGE>=5?'':'<button class="gn-btn gn-btn--sm" data-act="certUp">Upload chain</button>')+certTable()
+     : kt==='policy' ? secH('Access policy', SCENE.polEdit?'':'<span class="gn-link" data-act="polEdit">Edit</span>')+policy()
+     : create+shown+secH('Keys', keys.filter(function(k){return !k.lapsed}).length+' active in '+ENVN[e])+t+keyNotes(keys));
  };
  DEV.creds=DEV.keys;
  function certTable(){ var up=SCENE.certUp; return tbl2([['Certificate'],['Subject'],['Status'],['Note']], DEV_CERTS.map(function(x){ var have = x[3]==='sandbox' || (x[3]==='cert'&&(STAGE>=4||up)) || (x[3]==='prod'&&STAGE>=5); return [esc(x[0]), have?'<span class="gn-mono">'+esc(x[1])+'</span>':'—', have?(x[3]==='prod'?certWord():word('Valid')):sw('Not uploaded',''), have?esc(x[3]==='prod'?certNote():x[3]==='cert'&&up&&STAGE<4?'Uploaded just now':x[2]):''] })) }
@@ -8517,7 +8538,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
        fsel('logKey', keyF, [['','any key'],['Production','the production key'],['Reporting','the reporting key']], 'Key'),
        fsel('logHour', hrF, [['','any hour'],['night','overnight, 12 to 6 AM'],['morning','morning, 6 AM to noon'],['afternoon','afternoon, noon to 6 PM'],['evening','evening, 6 PM to midnight']], 'Hour')
      ], (stF||epF||hrF||keyF||q||f!=='all'||m!=='all')?'<span class="gn-link" data-act="logClearAll">Clear filters</span>':'') : '';
-   var head=ph('Logs', 'Every request and response in this environment.')+(SCENE.logFrom?logInsight(log, f, q):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all')+tabs('lm',[['all','Any method'],['POST','POST'],['GET','GET']],'all'), (keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
+   var head=ph('Logs', 'Every request and response in this environment.')+(SCENE.logFrom?logInsight(log, f, q):'')+toolbar(envSwitch()+tabs('lf',[['all','All',String(all.length)],['ok','2xx',String(all.filter(function(r){return r.st===200}).length)],['err','Errors',String(all.filter(function(r){return r.st===0||r.st>=400}).length)],['slow','Over 400 ms',String(all.filter(function(r){return r.ms>=400}).length)]],'all'), fsel('lm', m, [['all','Any method'],['POST','POST'],['GET','GET']], 'Method')+(keyF?'<span class="chip">Key '+esc(keyF)+' <span class="gn-link" data-act="logKeyClear">Clear</span></span>':'')+'<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="logQ" value="'+esc(SCENE.q||'')+'" placeholder="Request id or path"><button class="gn-btn gn-btn--sm" data-act="logSearch">Search</button>'+(SCENE.q?'<span class="gn-link" data-act="logClear">Clear</span>':'')+'</form><span class="gn-link" data-act="noopRefresh">Refresh</span>');
    if(!a.sandbox) return head+'<p class="para">Requests appear here once the sandbox is provisioned.</p>';
    var sel=log.filter(function(r){return r.id===SCENE.logId})[0]||log[0];
    var lfoot=e==='prod'?'<div class="gn-table-foot">'+((f==='all'&&m==='all'&&!q&&!keyF&&!stF&&!epF&&!hrF)?'Newest '+log.length+' of 48,211 today. Search by request id or path for the rest.':nn(log.length,'request')+' match of 48,211 today.')+'</div>':'';
@@ -8536,7 +8557,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      ['Activation', F.st.date==='done'?word('Done'):F.st.date==='dgn'?sw(SCENE.actDate?'Scheduled':'Not yet scheduled','wa'):sw('After certification',''), F.st.date==='done'?'May 14, 6:00 AM ET, Marcus Bell':SCENE.actDate||'Marcus Bell schedules it once the three objects above are ready', '']
    ];
    var t=tbl2([['Object'],['Status'],['Detail'],['']], rows.map(function(r){ return [esc(r[0]), r[1], esc(r[2]), r[3]] }));
-   var first = lv ? secH('First hour', 'May 14')+figs([['Authorizations','2,104','first at 6:04 AM'],['Approved','96.9%',''],['Median issuer answer','43 ms',''],['Webhook deliveries','2,118','0 failed']])+secH('Since then')+healthFigs('gn-figs--compact') : secH('On the day')+'<p class="para">Activation is at 6:00 AM ET on the scheduled day. Production traffic appears in Logs from the first authorization.</p>';
+   var first = lv ? secH('First hour', 'May 14')+figs([['Authorizations','2,104','first at 6:04 AM'],['Approved','96.9%',''],['Median issuer answer','43 ms',''],['Webhook deliveries','2,118','0 failed']]) : secH('On the day')+'<p class="para">Activation is at 6:00 AM ET on the scheduled day. Production traffic appears in Logs from the first authorization.</p>';
    return head+secH('Readiness', F.st.chain==='done'&&F.st.prodep==='done'?'Ready':'')+t+first;
  };
  /* ── Alerts: what is failing, expiring, changing; each names an action ── */
@@ -8544,7 +8565,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  DEV.alerts=function(){
    var als=devAlerts(), act=als.filter(function(a){return a.kind==='action'}), info=als.filter(function(a){return a.kind!=='action'});
    var head=ph('Alerts', 'What is failing or about to expire.');
-   return head+(act.length?secH('Action needed', nn(act.length,'alert'))+'<div class="nt-grid">'+act.map(devAlertCard).join('')+'</div>':'')+(info.length?secH('For information')+'<div class="nt-grid">'+info.map(devAlertCard).join('')+'</div>':'')+(als.length?'':'<div class="emp"><b>No alerts.</b><span>Delivery failures, expiring certificates, and version changes appear here.</span></div>');
+   var dvT=tab('dvAlTab','act');
+   return head+ptabs('dvAlTab',[['act','Action needed',String(act.length)],['info','For information',String(info.length)]],'act')
+    +(dvT==='info'?(info.length?'<div class="nt-grid">'+info.map(devAlertCard).join('')+'</div>':empty('Nothing for information.')):(act.length?'<div class="nt-grid">'+act.map(devAlertCard).join('')+'</div>':empty('No alerts. Nothing is failing or about to expire.')));
  };
  /* ── Docs: API reference. Nav by resource with the object first; parameters as rows with type and requirement; code beside. ── */
  function refNav(curk, q){
@@ -8724,7 +8747,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
    var always=secH('Channels')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
-   return head+ask+casesSection()+status+ppl+always;
+   var spT=tab('supTab','ask');
+   return head+ptabs('supTab',[['ask','Ask'],['cases','Cases'],['env','Environments'],['people','Contacts']],'ask')+(spT==='cases'?casesSection():spT==='env'?status:spT==='people'?ppl+always:ask);
  };
  DEV.case=function(){ return casePage('Support','data-go2="support"') };
 
@@ -8748,7 +8772,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      r.push(!((SCENE.ho||{}).brightline||{}).live ? {k:'brightline', p:'Brightline Bank', t:'Activated 6:00 AM, first authorization 6:04 AM, first hour clean.', turn:'You', mine:true, since:waitWord(waited(0)), d:waited(0), act:'<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="hoTick" data-k="live" data-p="brightline">Clear live operation</button>'}
                                      : {k:'brightline', p:'Brightline Bank', t:'Live, handoff to operations '+hoN+' of '+ho5.length+' done.', turn:'You', mine:true, since:waitWord(waited(0)), d:waited(0), act:'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="brightline">Open</button>'}); }
    else if(STAGE===6) r.push({k:'brightline', p:'Brightline Bank', t:'Card-not-present approvals fell 1.4 points at one merchant on one gateway.', kind:'Alert', turn:'You', mine:true, since:NOW===DAY0?'6:20 AM':agoWord(NOW-DAY0), d:NOW-DAY0, due:DAY0-NOW, act:'<button class="gn-btn gn-btn--sm" data-act="agAlert" data-k="cnp">Open</button>'});
-   if(STAGE>=5){ waivers().filter(function(w){return w.st==='requested'}).forEach(function(w){ var b=BOOK.filter(function(x){return x.k===w.k})[0]; r.push({k:w.k, p:b?b.n:w.k, t:'Waiver requested on '+wvClause(w).t.toLowerCase()+', '+wvRel(w).t+'.', kind:'Waiver', turn:'You', mine:true, since:waitWord(NOW-(DAY0+(w.at||0))), d:NOW-(DAY0+(w.at||0)), due:(DAY0+(w.at||0)+5)-NOW, act:'<span class="gn-link" data-go2="releases">Compliance</span>'}) }) }
+   if(STAGE>=5){ waivers().filter(function(w){return w.st==='requested'}).forEach(function(w){ var b=BOOK.filter(function(x){return x.k===w.k})[0]; r.push({k:w.k, p:b?b.n:w.k, t:'Waiver requested on '+wvClause(w).t.toLowerCase()+', '+wvRel(w).t+'.', kind:'Waiver', turn:'You', mine:true, since:waitWord(NOW-(DAY0+(w.at||0))), d:NOW-(DAY0+(w.at||0)), due:(DAY0+(w.at||0)+5)-NOW, act:'<span class="gn-link" data-act="agWvOpen">Decide</span>'}) }) }
    if(SCENE.xpStarted && !SCENE.xpPlan && !SCENE.sent) r.push({k:'brightline', p:'Brightline Bank', t:'Wallets: Dana Iverson started a request. The plan is yours to build from the record.', kind:'Request', turn:'You', mine:true, since:'Just now', d:0, due:1, act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="xpPlanOpen">Build the plan</button>'});
    if(SCENE.sent && !SCENE.reqBl) r.push({k:'brightline', p:'Brightline Bank', t:'Wallets requested by Dana Iverson.', kind:'Request', turn:'You', mine:true, since:agoDay((SCENE.at||{}).sent), d:daysAt('sent'), due:1-daysAt('sent'), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-go2="request">Review the request</button>'});
    AG_ALERTS.forEach(function(a){ if((SCENE.taken||{})[a.k] && !(SCENE.resolved||{})[a.k]) r.push({k:a.k, p:a.p, t:agAlertT(a)+'.', turn:'You', mine:true, since:agoDay((SCENE.at||{})['ag:'+a.k]), d:daysAt('ag:'+a.k), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>'}) });
@@ -8790,14 +8814,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var byDue=mine.slice().sort(function(a,b){ return (a.due===undefined?99:a.due)-(b.due===undefined?99:b.due) });
    var body='';
    if(tt==='ready'){
-     var readyRows=byDue.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(x.kind||'Step'), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act], act:'agPartner', k:x.k} })
+     var readyRows=byDue.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(x.kind||'Step'), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act], act:'peekPartner', k:x.k} })
        .concat(cases.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return {c:[esc(b?b.n:''), esc(c.t), 'Reply', esc(c.since||''), slaWord(caseDue(c)), '<span class="gn-link" data-act="agCase" data-k="'+c.id+'">Reply</span>'], act:'agCase', k:c.id} }));
      body=readyRows.length ? tbrow([ '<span class="tb3-q">Search by partner or item</span>' ]) + tbl2([['Partner'],['What'],['Kind'],['Since',1],['Due'],['']], readyRows) : empty('Nothing is ready for you.');
    } else if(tt==='waiting'){
      body=theirs.length ? tbl2([['Partner'],['On'],['Waiting',1],['']], theirs.map(function(x){ var lead=((BOOKX[x.k]||{}).lead||'').split(', ')[0];
-       return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'agPartner', k:x.k} })) : empty('Nothing is waiting on a partner.');
+       return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'peekPartner', k:x.k} })) : empty('Nothing is waiting on a partner.');
    } else {
-     body=done.length ? tbl2([['Partner'],['What'],['']], done.map(function(d){ return {c:[esc(d.p), esc(d.t), word('Done')], act:'agPartner', k:d.k} })) : empty('Nothing completed yet today.');
+     body=done.length ? tbl2([['Partner'],['What'],['']], done.map(function(d){ return {c:[esc(d.p), esc(d.t), word('Done')], act:'peekPartner', k:d.k} })) : empty('Nothing completed yet today.');
    }
    return head+ptab+body;
  };
@@ -8913,7 +8937,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    found=found.slice().sort(function(a,b){ var da=daysIn(a), db=daysIn(b); if(bookStage(a)==='Live'!==(bookStage(b)==='Live')) return bookStage(a)==='Live'?1:-1; if(db!==da) return db-da; return a.n.localeCompare(b.n) });
    var rowsT=tbl2([['Partner'],['Kind'],['Stage'],['Waiting',1],['Next'],['Turn'],['Health']], found.map(function(b){ var x=BOOKX[b.k], st=bookStage(b), nx=typeof b.next==='string'?b.next:b.next[STAGE];
      var turn=b.k==='brightline'?(turnRows()[0]||{}).turn||'—':b.turn||'—', d=daysIn(b);
-     return {c:[esc(b.n), esc(b.kind), esc(st), st==='Live'||!d?'—':daysWord(d), esc(nx&&nx!=='—'?nx:'—'), turn==='You'?'<b class="mine">You</b>':turn==='—'?'—':esc(turn), healthWord(x.health)], act:'agPartner', k:b.k} }));
+     return {c:[esc(b.n), esc(b.kind), esc(st), st==='Live'||!d?'—':daysWord(d), esc(nx&&nx!=='—'?nx:'—'), turn==='You'?'<b class="mine">You</b>':turn==='—'?'—':esc(turn), healthWord(x.health)], act:'peekPartner', k:b.k} }));
    if(view==='board'){ var cols=[['Deal',function(s){return s.indexOf('Deal')===0}],['Onboarding',function(s){return s==='Onboarding'||s==='Technical review'}],['Certifying',function(s){return s==='Certifying'}],['Live',function(s){return s==='Live'}]];
      var board='<div class="kb">'+cols.map(function(c){ var bs=found.filter(function(b){ return c[1](bookStage(b)) });
        return '<div class="kb-col"><div class="kb-h"><b>'+esc(c[0])+'</b><span class="gn-num">'+bs.length+'</span></div>'+(bs.length?bs.map(function(b){ var x=BOOKX[b.k], nx=typeof b.next==='string'?b.next:b.next[STAGE], d=daysIn(b), turn=b.k==='brightline'?(turnRows()[0]||{}).turn||'—':b.turn||'—';
@@ -9069,7 +9093,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var settle=secH('Settlement files', 'Received, last 14 days')+settleStrip();
    var live_=secH('Live partners')+tbl2([['Partner'],['Kind'],['Annual volume',1],['Approval',1],['Disputes per 10k',1],['Fraud rate',1]], R.live.map(function(x){ var k=BOOK.filter(function(b){return b.n===x[0]})[0]; return {c:x.map(esc), act:'agPartner', k:k?k.k:'brightline'} }));
    var sla=secH('The network’s own marks', 'This quarter')+doc(R.sla.map(function(x){ var ok=x[1].split(' of ')[0]===x[1].split(' of ')[1]; return [x[0], esc(x[1]), ok?'All met':'One missed'] }));
-   return head+f+across+st+ttl+ap+settle+live_+sla;
+   var brT=tab('brTab','across');
+   return head+f+ptabs('brTab',[['across','Across the book'],['time','Time to live'],['appr','Approval'],['settle','Settlement'],['live','Live partners']],'across')+(brT==='time'?ttl:brT==='appr'?ap:brT==='settle'?settle:brT==='live'?live_+sla:across+st);
  };
  /* the book read four ways: by partner, by kind, as traffic over fourteen days, and go-lives by month. Each row opens the partner. */
  function bookAcross(){
@@ -9098,10 +9123,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var bookBtn = SCENE.agBooked ? '<span id="booked">'+sw('Booked May 11 to 15','')+'</span>' : '<button class="gn-btn gn-btn--sm'+(val?'':' gn-btn--primary')+'" data-act="agBook">Book May 11 to 15</button>';
    var blLine = certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&atPanel('Never Stuck for Long')&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.');
    var tl=secH('Windows', 'By week')+tbl2([['Partner'],['Week'],['Cases',1],['What the network sees'],['']], [
-     {c:['Brightline Bank', 'May 4 to 8', String(certTotal()), esc(blLine), val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')], act:'agPartner', k:'brightline'},
+     {c:['Brightline Bank', 'May 4 to 8', String(certTotal()), esc(blLine), val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')], act:'peekPartner', k:'brightline'},
      {c:['Tallgrass Payments', 'May 11 to 15', '31', 'Three fare-capping cases fail on one rounding rule. The rule has been sent.', word('soon')], act:'agPartner', k:'tallgrass'},
-     {c:['Halcyon Acquiring', SCENE.agBooked?'May 11 to 15':'<span class="gn-doc-x">Not booked</span>', '19', 'Configuration confirmed April 30. Target May 21 needs a window by May 11.', bookBtn], act:'agPartner', k:'halcyon', cls:SCENE.agBooked?'':'is-now'},
-     {c:['Verrill Commerce', 'May 25 to 29', '12', 'Re-certification for the new terminal line.', word('soon')], act:'agPartner', k:'verrill'}]);
+     {c:['Halcyon Acquiring', SCENE.agBooked?'May 11 to 15':'<span class="gn-doc-x">Not booked</span>', '19', 'Configuration confirmed April 30. Target May 21 needs a window by May 11.', bookBtn], act:'peekPartner', k:'halcyon', cls:SCENE.agBooked?'':'is-now'},
+     {c:['Verrill Commerce', 'May 25 to 29', '12', 'Re-certification for the new terminal line.', word('soon')], act:'peekPartner', k:'verrill'}]);
    var weeks=calWeeks();
    var cal=secH('May', CERT_CAL.capacity+' windows a week')+'<div class="gn-cal">'+weeks.map(function(w){ var free=CERT_CAL.capacity-w[1].length;
      return '<div class="gn-cal-w"><div class="gn-cal-h"><b>'+esc(w[0])+'</b>'+(free>0?sw(free+' open',''):sw('Full','wa'))+'</div>'+w[1].map(function(it){ return '<div class="gn-cal-i"><span>'+esc(it[0])+'</span><span class="gn-num">'+it[1]+' cases</span></div>' }).join('')+(free>0?'<div class="gn-cal-e">'+free+' window'+(free>1?'s':'')+' free</div>':'')+'</div>' }).join('')+'</div>';
@@ -9110,7 +9135,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var reqs=reqList.filter(function(r){ return !(SCENE.winOk||[]).some(function(x){return x[0]===r[0]}) && !(SCENE.winNo||{})[r[0]] && !(SCENE.agBooked && r[0]==='Halcyon Acquiring') });
    /* a request into a week with no window free is refused under its own Confirm, with what to do instead */
    var rq=secH('Window requests', reqs.length?nn(reqs.length,'request'):'None open')+(reqs.length?tbl2([['Partner'],['Wants'],['Requested by'],['Why'],['']], reqs.map(function(r){ var e=(SCENE.winErr||{})[r[0]]; return [esc(r[0]), esc(r[1]), esc(r[2]), esc(r[3]), '<button class="gn-btn gn-btn--sm" data-act="winOk" data-k="'+esc(r[0]+'|'+r[1])+'">Confirm</button> <span class="gn-link" data-act="winNo" data-k="'+esc(r[0])+'">Decline</span>'+(e?'<span class="gn-help is-err">'+esc(e)+'</span>':'')] })):'<p class="para">Requests from partners’ Certification pages appear here.</p>');
-   return head+f+rq+cal+tl;
+   var ct_=tab('certTab','win');
+   return head+f+ptabs('certTab',[['win','Windows'],['req','Requests',reqs.length?String(reqs.length):''],['cal','Calendar']],'win')+(ct_==='req'?rq:ct_==='cal'?cal:tl);
  };
  AGENT.team=function(){
    var cur=SCENE.agRole||'impl';
@@ -9146,7 +9172,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
    var head=ph('Cases', 'Questions and issues raised by your partners and by the network.');
    var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
-   var bar=(SCENE.caseFrom?caseInsight(list, who, seg):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
+   var bar=(SCENE.caseFrom?caseInsight(list, who, seg):'')+toolbar(fsel('caseWho', who, [['mine','Assigned to me'],['un','Unassigned'],['all','Everyone']], 'Assigned')+' ', tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
    var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
    var pane='', ctx='';
    if(sel){ var bb=BOOK.filter(function(x){return x.k===sel.k})[0], ownr=PEOPLE[sel.owner]||null, mode=tab('caseMode','reply'), canned=CANNED.filter(function(a){ return true });
@@ -9184,7 +9210,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var pubRow = draft ? '<div class="just"><b>Drafted, not yet published.</b><span>'+esc(r.t)+' carries '+nn((POLICY[r.k]||[]).length,'policy change')+'. Publishing puts it on all '+BOOK.length+' partner records as a dated, versioned item, and opens the acknowledgement.</span><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="relPub" data-k="'+esc(r.k)+'">Publish to '+BOOK.length+' partners</button></div></div>'
      : justPub ? (function(){ var ak=BOOK.filter(function(b){ return relAcked(r,b) }).map(function(b){ return b.n }), wq=waivers().filter(function(w){ return w.rel===r.k && w.st==='requested' }).length, unread=BOOK.length-ak.length;
          return '<div class="just ok"><b>Published.</b><span>On all '+BOOK.length+' partner records as version '+esc(r.t.replace(/^.*?v?(\d+(\.\d+)?).*$/,'$1'))+', effective '+esc(r.eff)+(r.by?', acknowledge by '+esc(r.by):'')+'. '+(ak.length?listWords(ak)+(ak.length===1?' has':' have')+' acknowledged. ':'')+(wq?nn(wq,'partner')+(wq===1?' has':' have')+' asked to set a clause aside. ':'')+(unread?nn(unread,'partner')+(unread===1?' has':' have')+' not read it yet.':'')+'</span></div>' })() : '';
-   var segs=tabs('agRel', RELEASES.map(function(x){ var n=BOOK.filter(function(b){return !relAcked(x,b)}).length; return [x.k, x.t.split(',')[0], ct(n)] }), RELEASES[0].k);
+   var segs=tbrow([fsel('agRel', cur, RELEASES.map(function(x){ var n=BOOK.filter(function(b){return !relAcked(x,b)}).length; return [x.k, x.t.split(',')[0]+(n?', '+n+' open':'')] }), 'Release')]);
    var rowsT=tbl2([['Partner'],['Stage'],['Acknowledged'],['']], BOOK.map(function(b){ var ok=relAcked(r,b), rem=(SCENE.reminded||{})[r.k+'|'+b.k];
      return {c:[esc(b.n), esc(bookStage(b)), ok?word('Done'):late?sw('Overdue','no'):r.by?sw('Not yet','wa'):sw('Not yet',''), ok||!r.by?'':rem!==undefined?'<span class="gn-mute">Reminded '+esc(agoWord(NOW-rem))+'</span>':'<span class="gn-link" data-act="agRemind" data-k="'+b.k+'" data-rel="'+r.k+'" aria-label="Remind '+esc(b.n)+'">Remind</span>'], act:'agPartner', k:b.k} }));
    /* attestations: what each partner must keep current, by the day it is due, on the clock */
@@ -9194,7 +9220,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var wv=waivers().filter(function(w){return w.rel===r.k}).sort(function(a,b){ var o={requested:0,approved:1,declined:2}; return o[a.st]-o[b.st] || (b.at||0)-(a.at||0) });
    var wvT=(POLICY[r.k]||[]).length?secH('Waivers', wv.filter(function(w){return w.st==='requested'}).length+' to decide')+(wv.length?tbl2([['Partner'],['Clause'],['Term asked'],['Requested'],['Status'],['']], wv.map(function(w){ var b=BOOK.filter(function(x){return x.k===w.k})[0]; return {c:[esc(b?b.n:w.k), esc(wvClause(w).t), esc(w.term), esc(w.on), wvWord(w)+(w.st!=='requested'?' <span class="gn-mute">'+esc(w.by)+', '+esc(w.on)+'</span>':''), w.st==='requested'?'<span class="nw"><span class="gn-link" data-act="wvApprove" data-k="'+w.id+'">Approve</span> · <span class="gn-link" data-act="wvDecline" data-k="'+w.id+'">Decline</span></span>':''], act:'agPartner', k:w.k} })):'<p class="para">No partner has asked to set a clause of this release aside.</p>')+'<p class="para">An approved waiver is on file here, on the partner’s page and in the partner’s Agreements.</p>':'';
    if(draft) return openHead('Compliance \u00b7 Discover Global Network', esc(r.t)+' is drafted, not yet published', 'Releases, mandates and attestations, and who has met each.')+f+segs+secH(esc(r.t), esc(r.kind)+', '+sw('Draft','wa'))+pubRow+secH('Policy changes', nn((POLICY[r.k]||[]).length,'clause'))+tbl2([['Clause'],['Today'],['From '+esc(r.eff)],['Waiver term']], (POLICY[r.k]||[]).map(function(c){ return [esc(c.t), esc(c.from), esc(c.to), esc(c.term)] }));
-   return head+f+segs+secH(esc(r.t), esc(r.kind)+', effective '+esc(r.eff))+pubRow+rowsT+wvT+attTl;
+   var rt=tab('relTab','ack');
+   return head+f+ptabs('relTab',[['ack','Acknowledgements'],['wv','Waivers'],['att','Attestations']],'ack')+(rt==='wv'?wvT:rt==='att'?attTl:segs+secH(esc(r.t), esc(r.kind)+', effective '+esc(r.eff))+pubRow+rowsT);
  };
  AGENT.golives=function(){
    var st=function(g){ return g[2]==='{live}'?(STAGE>=5?'Live':'Scheduled'):g[2]==='scheduled'?'Scheduled':g[2] };
@@ -9304,8 +9331,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    setupCancel:function(){ SCENE.edit=null; drawApp(VIEW); },
    coEdit:function(b){ SCENE.edit='co:'+b.dataset.k; drawApp(VIEW); },
    coSave:function(){ SCENE.edit=null; drawApp(VIEW); toast('Saved'); },
-   notice:function(b){ SCENE.nk=b.dataset.k; go('notice'); },
-   threadSend:function(){ var t=$('#thrBox'); SCENE.thread=(t&&t.value.trim())||'Thanks Sonia. Priya has what she needs for now.'; drawApp(VIEW); toast('Message sent'); },
+   notice:function(b){ SCENE.nk=b.dataset.k; peekView('notice','Notice') },
+   threadSend:function(){ var t=$('#thrBox'); SCENE.thread=(t&&t.value.trim())||'Thanks Marcus. Priya has what she needs for now.'; drawApp(VIEW); toast('Message sent'); },
    ruleClose:function(){ SCENE.rule=null; drawApp(VIEW); },
    alAskOpen:function(b){ SCENE.alAskOpen=b.dataset.k; drawApp(VIEW); var t=$('#alAskBox'); if(t) t.focus() },
    alAskClose:function(){ SCENE.alAskOpen=null; drawApp(VIEW); },
@@ -9342,7 +9369,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
   txAmtClear:function(){ SCENE.txMin=null; SCENE.txMax=null; drawApp(VIEW) },
   txDaysClear:function(){ SCENE.txDays=null; drawApp(VIEW) },
   logClear:function(){ SCENE.q=''; drawApp(VIEW); },
-   mOpen:function(b){ SCENE.mk=b.dataset.k; go('merchant') },
+   mOpen:function(b){ SCENE.mk=b.dataset.k; peekView('merchant','Merchant') },
    mRisk:function(b){ var kv=b.dataset.k.split('|'); var apply=function(){ SCENE.mRisk=SCENE.mRisk||{}; SCENE.mRisk[kv[0]]=kv[1]; drawApp(VIEW); toast(kv[1]==='paused'?'Paused. Authorizations from this merchant are declined with 05 until you resume.':'Updated.') };
     if(kv[1]!=='paused') return apply(); var m=MERCHANTS.filter(function(x){return x.k===kv[0]})[0];
     askDialog({t:'Pause '+(m?m.n:'this merchant')+'?', p:'Every authorization from this merchant is declined with 05 until you resume. Captured transactions still settle.', ok:'Pause merchant', danger:true, go:apply}) },
@@ -9396,7 +9423,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    txDay:function(b){ SCENE.txDay=b.dataset.k; SCENE.txs='all'; go('transactions') },
    txDayClear:function(){ SCENE.txDay=''; drawApp(VIEW); },
    txOpen:function(b){ var x=TXNS.filter(function(t){return t.id===b.dataset.k})[0]; if(!x) return;
-     if(VIEW==='transactions'){ SCENE.txId=x.id; var want=(SCENE.txRow===x.id?null:x.id); SCENE.txRow=want; drawApp(VIEW);
+     if(VIEW==='transactions'){ SCENE.txId=x.id; SCENE.txRow=null; peekView('transaction','Transaction'); return;
+       var want=(SCENE.txRow===x.id?null:x.id); SCENE.txRow=want; drawApp(VIEW);
        if(!want || document.querySelector('tr.is-expand .txin')) return;
        SCENE.txRow=null; drawApp(VIEW) }
      SCENE.txId=x.id; openPanel(txPanel(x), b.closest?b.closest('tr'):b) },
@@ -9490,9 +9518,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ackRule:function(b){ SCENE.acked=SCENE.acked||{}; SCENE.acked[b.dataset.k]=true; drawApp(VIEW); },
    upload:function(b){ SCENE.up=SCENE.up||{}; SCENE.up[b.dataset.k]=true; drawApp(VIEW); },
    thirdSend:function(){ var t=$('#tpOrg'); SCENE.third=(t&&t.value.trim())||'Meridian Processing'; go('agreement'); toast('Agreement sent'); },
-   alert:function(b){ SCENE.ak=b.dataset.k; go('alert') },
+   alert:function(b){ SCENE.ak=b.dataset.k; peekView('alert','Alert') },
    agPartner:function(b){ SCENE.bk=b.dataset.k; paintShell(); go('partner') },
    agAlert:function(){ go('alerts') },
+   agWvOpen:function(){ SCENE.relTab='wv'; go('releases') },
    agBook:function(){ SCENE.agBooked=true; drawApp(VIEW); keep('#booked'); toast('Window booked'); taskDone('A3') },
    /* a reminder leaves the portal, so the dialog says who gets it and what it carries before it goes */
    repClear:function(){ SCENE.repFocus=null; SCENE.repFocusQ=null; drawApp(VIEW, true); focusMain() },
@@ -9547,7 +9576,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    inviteSend:function(){ var t=$('#invName'); if(t&&!t.value.trim()){ SCENE.invErr='Enter a name and email.'; drawApp(VIEW); var f=$('#invName'); if(f) f.focus(); return } SCENE.invErr=null; SCENE.invName=null; dropDraft('invName'); SCENE.invited=(t&&t.value.trim().split(',')[0])||'Owen Reyes'; SCENE.invite=false; drawApp(VIEW); },
    alOpen:function(b){ SCENE.alOpen = SCENE.alOpen===b.dataset.k ? null : b.dataset.k; drawApp(VIEW); },
    certGroup:function(b){ SCENE.cg = SCENE.cg===b.dataset.g ? null : b.dataset.g; drawApp(VIEW); },
-   product:function(b){ SCENE.pk=b.dataset.k; go('product') },
+   product:function(b){ SCENE.pk=b.dataset.k; peekView('product','Product') },
+   peekPartner:function(b){ SCENE.bk=b.dataset.k; paintShell(); peekView('partner','Partner') },
+   pnlGo:function(b){ closePanel(); go(b.dataset.k) },
    request:function(b){ SCENE.pk=b.dataset.k; go('request') },
    sendReq:function(){ var ins=$$('.req .gn-in, .gn-ask .gn-in'); SCENE.reqAns=[(ins[0]&&ins[0].value.trim())||'Apple Pay, Google Pay',(ins[1]&&ins[1].value.trim())||'About 400,000']; SCENE.sent=true; mark('sent'); drawApp(VIEW); toast('Request sent') },
    reqStatus:function(){ SCENE.pk='wallet'; go('request') }
@@ -9733,7 +9764,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var openT=secH('Open items', nn(open.length,'item'))+(open.length?tbl2([['Item'],['Kind'],['Since'],['Status']], open.map(function(o){ return {c:[esc(o.t), esc(o.kind), esc(o.since), o.st], act:o.act||'go2', k:o.act?o.k:o.go} })):'<p class="gn-empty">Nothing is open on the network’s side.</p>');
    /* where to go from here */
    var links='<div class="gn-actions inset">'+goLink('Partner page','data-go2="partner"')+(AGENT.ptx?goLink('Transactions','data-go2="ptx"'):'')+(AGENT.pperf?goLink('Performance','data-go2="pperf"'):'')+goLink('Cases','data-go2="cases"')+'</div>';
-   return head+f+openT+ident+contacts+idents+contracts+products+envT+people+links;
+   var pfT=tab('pfTab','over');
+   return head+f+ptabs('pfTab',[['over','Overview'],['ids','Identifiers'],['contracts','Contracts'],['products','Products'],['env','Environments'],['people','People']],'over')+(pfT==='ids'?idents:pfT==='contracts'?contracts:pfT==='products'?products:pfT==='env'?envT:pfT==='people'?people+links:openT+ident+contacts);
  };
  /* the profile's top in the slide-over: identity and what is open, with the two ways on */
  function agfPanel(b){ var x=BOOKX[b.k], X=agfX(b), st=bookStage(b), open=agfOpen(b), ids=agfIds(b), lead=(x.lead||'').split(', ');
@@ -10281,7 +10313,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    +doc(I.known.map(function(r){ return [r[0], esc(r[1]), r[2]] }))
    +'<p class="para">Nothing here is confirmed by '+esc(I.co)+'.</p>';
 
-  return head+next+f+who+said+trail+answer+known;
+  var inT=tab('inTab','over');
+  return head+next+f+ptabs('inTab',[['over','The opportunity'],['said','What they said'],['explored','What she explored'],['company','The company']],'over')+(inT==='said'?said:inT==='explored'?trail+answer:inT==='company'?known:who);
  };
 
  /* taking it: Brightline Bank becomes the open partner, the page reads as taken and the count goes. Nothing is
@@ -10472,7 +10505,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  PARTNER.insights=function(){
    var head=ph('Insights', 'How you compare with participants of similar size and mix.');
    if(!live()) return head+'<div class="emp"><b>Nothing to compare yet.</b><span>The comparison is drawn from your first fourteen days of authorizations.</span></div>';
-   return head+insWho()+insStanding()+insNoticed()+insSpread()+insRec();
+   var inT=tab('insTab','stand');
+   return head+ptabs('insTab',[['stand','Where you stand'],['spread','The spread']],'stand')+(inT==='spread'?insSpread():insWho()+insStanding()+insNoticed()+insRec());
  };
  /* what the network noticed on her traffic and already holds: the act's thesis in one row. Drawn
     only while an alert is in hand, and it opens the alert. */
@@ -11089,7 +11123,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    /* the clock control left the rail on September 7 (Rich). setNow(), nextDeadline() and DAY0 stay: tools/_r27.js drives them from the console. */
    $$('#rail [data-panel]').forEach(function(a){ a.onclick=function(){ setPanel(+a.dataset.panel) } });
    $$('#rail [data-seat]').forEach(function(a){ a.onclick=function(){ setSeat(a.dataset.seat) } });
-   $$('#rail [data-then]').forEach(function(a){ a.onclick=function(){ var st=(p.then||[])[+a.dataset.then]; if(!st) return; setSeat(st.seat); if(st.nk) SCENE.nk=st.nk; if(st.view){ VIEW=st.view; repaint(); paintRail() } } });
+   $$('#rail [data-then]').forEach(function(a){ a.onclick=function(){ var st=(p.then||[])[+a.dataset.then]; if(!st) return; setSeat(st.seat); if(st.nk) SCENE.nk=st.nk; if(st.set){ var kv=st.set.split('='); SCENE[kv[0]]=kv[1] } if(st.view){ VIEW=st.view; repaint(); paintRail() } } });
    $('#capT').onclick=function(){ showCap=!showCap; paintRail(); measure(); };
    $('#pPrev').onclick=function(){ setPanel(Math.max(1, PANEL-1)) };
    $('#pNext').onclick=function(){ setPanel(Math.min(PANELS.length, PANEL+1)) };
