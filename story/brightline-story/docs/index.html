@@ -3500,6 +3500,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .st-fold-x{font-size:13px; padding:8px 24px 0}
 .pk-lead{margin:16px 0 0; max-width:var(--gn-measure-body); line-height:var(--gn-leading-body)}
 .gn-pager .fs-i .fs-t{border-bottom:1px dashed var(--g400)}
+.pk-case .inbox-p, .pk-case .inbox-c{width:auto; border:0; padding:0} .pk-case .inbox-c{margin-top:24px; padding-top:16px; border-top:1px solid var(--gn-rule)} .pk-case .inbox-h h2{font-size:22px}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
@@ -5441,6 +5442,9 @@ window.GNChart=(function(){
     and one link to the record's own page. Never the page itself inside the panel. */
  function peek(o){ var foot=(o.acts||'')+(o.go?goLink(o.goLabel||'Open the page','data-act="pnlGo" data-k="'+esc(o.go)+'"'+(o.set?' data-set="'+esc(o.set)+'"':'')):'');
    openPanel(panelShell(esc(o.title), {kicker:o.kicker||'', line:o.line||''}, (o.lead?'<p class="pk-lead">'+o.lead+'</p>':'')+(o.facts&&o.facts.length?doc(o.facts):'')+(o.body||''), foot), o.from) }
+ /* a case opens beside the list: the thread, the composer, the context. Acts on it redraw the panel. */
+ function casePeek(id, from){ SCENE.caseSel=id; var c=agCases().filter(function(x){return x.id===id})[0]; if(!c) return;
+   openPanel('<div class="gn-panel-top"><span>Case '+esc(c.id)+'</span><button class="gn-panel-x" data-act="pnlClose" aria-label="Close"><svg class="i" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div><div class="gn-panel-body pk-case">'+AGENT.cases(null,null,'panel')+'</div>', from) }
  function panelShell(title, meta, body, foot){ return '<div class="gn-panel-top"><span>'+esc(meta.kicker||'')+'</span><button class="gn-panel-x" data-act="pnlClose" aria-label="Close"><svg class="i" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div><div class="gn-panel-ttl"><h2 id="pnlT">'+title+'</h2><div class="gn-panel-meta">'+(meta.line||'')+'</div></div><div class="gn-panel-body">'+body+'</div>'+(foot?'<div class="gn-panel-foot">'+foot+'</div>':'') }
  function closeDialog(confirmed){ var d=$('#dlg'); if(!d) return; d.hidden=true; $('#scrim').classList.remove('is-on'); var f=DLG_FROM; DLG_FROM=null; if(!confirmed && f && document.contains(f) && f!==document.body) f.focus(); else if(!confirmed) focusMain() }
  /* one polite live region for what changes without a page change: the needs-you count, the offline banner. Cleared and set again so the same words are read twice when they happen twice. */
@@ -8229,11 +8233,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return head+form+onfile;
  };
  PARTNER.alerts=function(){
-   var open=ALERTS.filter(function(a){return a.st==='inhand'}), coming=ALERTS.filter(function(a){return a.st==='coming'}), done=ALERTS.filter(function(a){return a.st==='resolved'});
-   var head=ph('Alerts', 'Open alerts on your traffic and who is handling each.');
-   var t=function(list){ return '<div class="nt-grid">'+list.map(function(a){ return '<article class="gn-notice is-link" data-act="alert" data-k="'+a.k+'"><div class="gn-notice-h">'+(a.st==='inhand'?sw('In hand','wa'):a.st==='coming'?sw('Coming',''):word('Fixed'))+'<span>'+esc(a.product)+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.p)+'</p><div class="gn-notice-f">'+av(a.owner,'a24')+'<span>'+esc(PEOPLE[a.owner].n)+', '+esc(a.when)+'</span></div></article>' }).join('')+'</div>' };
-   return head+secH('Being handled', open.length+' by Discover')+(open.length?t(open):empty('Nothing open. The network has not flagged anything on your traffic.'))
-    +secH('Coming', coming.length+' to plan for')+t(coming)+secH('Resolved', done.length+' this year')+t(done);
+   var open=ALERTS.filter(function(a){return a.st==='inhand'&&!(SCENE.resolved||{})[a.k]}), coming=ALERTS.filter(function(a){return a.st==='coming'}), done=ALERTS.filter(function(a){return a.st==='resolved'||(SCENE.resolved||{})[a.k]});
+   var head=ph('Alerts', '<b>'+(open.length?nn(open.length,'alert')+' in hand at Discover.':'Nothing open on your traffic.')+'</b> '+coming.length+' coming, '+done.length+' resolved this year.');
+   var alT=tab('alTab','inhand'), list=alT==='coming'?coming:alT==='done'?done:open;
+   var tb=tbrow(['<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" placeholder="Search alerts" aria-label="Search"></form>', fsel('alProd','all',[['all','Any product']].concat(CAT.map(function(p){return [p.k,p.t]})),'Product')], '<span class="gn-link" data-act="noop">Columns</span>');
+   var t=tbl2([['Alert'],['Product'],['Since'],['Who holds it'],['Status'],['']], list.map(function(a){ var o=PEOPLE[a.owner]||{n:''}, res=(SCENE.resolved||{})[a.k], handled=(SCENE.alDone||{})[a.k], asked=(SCENE.alAsk||{})[a.k];
+     var act = a.st==='coming'&&a.k==='rel' ? (SCENE.alAck?sw('Acknowledged','ok'):'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="ack">Acknowledge the rules</button>') : a.st==='inhand'&&!res ? (asked?sw('Asked '+esc(o.n.split(' ')[0]),''):'<span class="gn-link" data-act="alAskOpen" data-k="'+a.k+'">Ask '+esc(o.n.split(' ')[0])+'</span>') : '';
+     return {c:[esc(a.t)+'<em>'+esc(a.p.split('. ')[0])+'.</em>', esc(a.product), esc(a.when), esc(o.n), res?word('Resolved'):handled?sw('Handled on your side','ok'):a.st==='inhand'?sw('In hand','wa'):a.st==='coming'?sw('Coming',''):word('Fixed'), act], act:'alert', k:a.k} }));
+   return head+ptabs('alTab',[['inhand','In hand',String(open.length)],['coming','Coming',String(coming.length)],['done','Resolved',String(done.length)]],'inhand')+tb+(list.length?t:empty(alT==='inhand'?'Nothing open. The network has not flagged anything on your traffic.':alT==='coming'?'Nothing coming.':'Nothing resolved this year.'));
  };
  PARTNER.alert=function(){
    var a=ALERTS.filter(function(x){return x.k===SCENE.ak})[0]||ALERTS[0], o=PEOPLE[a.owner];
@@ -8589,8 +8596,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  function devAlertCard(a){ return '<article class="gn-notice"><div class="gn-notice-h">'+(a.st?sw(a.st,a.tone):a.kind==='action'?sw('Action needed','wa'):sw('For information',''))+'<span>'+ENVN[envSel()]+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.d)+'</p><div class="gn-notice-f">'+goLink(a.act,'data-go2="'+a.go+'"')+'</div></article>' }
  DEV.alerts=function(){
    var als=devAlerts(), act=als.filter(function(a){return a.kind==='action'}), info=als.filter(function(a){return a.kind!=='action'});
-   var head=ph('Alerts', 'What is failing or about to expire.');
-   return head+(act.length?secH('Action needed', nn(act.length,'alert'))+'<div class="nt-grid">'+act.map(devAlertCard).join('')+'</div>':'')+(info.length?secH('For information')+'<div class="nt-grid">'+info.map(devAlertCard).join('')+'</div>':'')+(als.length?'':'<div class="emp"><b>No alerts.</b><span>Delivery failures, expiring certificates, and version changes appear here.</span></div>');
+   var head=ph('Alerts', '<b>'+(act.length?nn(act.length,'alert')+' need'+(act.length===1?'s':'')+' you.':'Nothing needs you.')+'</b> '+info.length+' for information, in '+ENVN[envSel()]+'.');
+   var dvT=tab('dvAlTab','act'), list=dvT==='info'?info:act;
+   var tb=tbrow(['<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" placeholder="Search alerts" aria-label="Search"></form>', envSwitch()], '<span class="gn-link" data-act="noop">Columns</span>');
+   var t=tbl2([['Alert'],['Environment'],['What to do'],['Status'],['']], list.map(function(a){ return {c:[esc(a.t)+'<em>'+esc(a.d)+'</em>', ENVN[envSel()], esc(a.act||''), a.st?sw(a.st,a.tone):a.kind==='action'?sw('Action needed','wa'):sw('For information',''), a.go?goLink(a.act,'data-go2="'+a.go+'"'):''], act:'dvAlert', k:a.k} }));
+   return head+ptabs('dvAlTab',[['act','Action needed',String(act.length)],['info','For information',String(info.length)]],'act')+tb+(list.length?t:empty(dvT==='act'?'No alerts. Nothing is failing or about to expire.':'Nothing for information.'));
  };
  /* ── Docs: API reference. Nav by resource with the object first; parameters as rows with type and requirement; code beside. ── */
  function refNav(curk, q){
@@ -9203,14 +9213,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      : '<p class="gn-empty">'+(!docsIn?'The review opens when the three documents are received.':mayDecide?'Clear all six areas to clear the review.':agWho('riskArea'))+'</p>';
    return head+docs+secH('Six areas', okN+' of 6 cleared')+rowsT+decide;
  };
- AGENT.cases=function(){
-   var all=agCases(), who=tab('caseWho','mine'), seg=tab('caseSeg','open');
+ AGENT.cases=function(sk,c,mode){
+   var all=agCases(), who=tab('caseWho','all'), seg=tab('caseSeg','open');
    var me=agSeat().who;
    var list=all.filter(function(c){ return (seg==='all' || (seg==='open'?c.st!=='resolved':c.st===seg)) && (who==='all' || (who==='mine'?c.owner===me:!c.owner)) })
      .sort(function(a,b){ var ra=a.st==='resolved'?2:a.st==='waiting'?1:0, rb=b.st==='resolved'?2:b.st==='waiting'?1:0; return ra-rb || caseDue(a)-caseDue(b) });
    var open_=all.filter(function(c){return c.st!=='resolved'}), late=open_.filter(function(c){return c.st==='open'&&caseDue(c)<0}), un=open_.filter(function(c){return !c.owner});
-   var head=ph('Cases', 'Questions and issues raised by your partners and by the network.');
-   var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || list[0] || all[0];
+   var head=ph('Cases', '<b>'+(late.length?nn(late.length,'reply')+' overdue.':open_.filter(function(c){return c.st==='open'}).length?nn(open_.filter(function(c){return c.st==='open'}).length,'reply')+' due.':'No reply is due.')+'</b> '+open_.length+' open across the book, '+un.length+' unassigned.');
+   var sel=SCENE.caseSel && all.filter(function(c){return c.id===SCENE.caseSel})[0] || null;
    var bar=(SCENE.caseFrom?caseInsight(list, who, seg):'')+toolbar(tabs('caseWho',[['mine','Mine',ct(open_.filter(function(c){return c.owner===me}).length)],['un','Unassigned',ct(un.length)],['all','Everyone',String(open_.length)]],'mine'), tabs('caseSeg',[['open','Open'],['waiting','Waiting on partner'],['resolved','Resolved'],['all','All']],'open'));
    var rows='<div class="inbox-l" role="listbox" aria-label="Cases">'+(list.length?list.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return '<div class="inbox-i'+(sel&&sel.id===c.id?' is-on':'')+(c.sev==='High'?' is-high':'')+'" role="option" aria-selected="'+(sel&&sel.id===c.id)+'" data-act="agCase" data-k="'+c.id+'"><b>'+esc(c.t)+'</b><span>'+esc(b?b.n:'')+' · '+esc(c.by)+(c.owner?'':' · unassigned')+'</span><span>'+caseDueWord(c)+'</span></div>' }).join(''):'<p class="gn-empty">Nothing here.</p>')+'</div>';
    var pane='', ctx='';
@@ -9235,7 +9245,15 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       +(docLink?'<div class="inbox-cb"><div class="gn-eyebrow">From the docs</div><b>'+docLink+'</b><span>Public developer site</span></div>':'')
       +'<div class="inbox-cb"><div class="gn-eyebrow">Related</div><b>'+relLink+'</b></div>'
       +'<div class="inbox-cb"><div class="gn-eyebrow">History</div>'+acts.map(function(a){ return '<span class="inbox-ev"><b>'+esc(a[0])+'</b> '+esc(a[1])+' · '+esc(a[2])+'</span>' }).join('')+'</div></aside>'; }
-   return head+bar+'<div class="inbox inbox--3">'+rows+pane+ctx+'</div>';
+   if(mode==='panel') return pane+ctx;
+   var cst=tab('caseSeg','open'), byState=function(st){ return all.filter(function(c){ return st==='open'?c.st==='open':c.st===st }) };
+   var tabsRow=ptabs('caseSeg',[['open','Open',String(byState('open').length)],['waiting','Waiting on a partner',String(byState('waiting').length)],['hold','On hold',String(byState('hold').length)],['resolved','Resolved',String(byState('resolved').length)]],'open');
+   var tb=tbrow(['<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" placeholder="Search by partner or case" aria-label="Search"></form>', fsel('caseWho', who, [['all','Everyone'],['mine','Assigned to me'],['un','Unassigned']], 'Assigned')], '<span class="gn-link" data-act="noop">Columns</span>');
+   var shown=all.filter(function(c){ return (cst==='open'?c.st==='open':c.st===cst) && (who==='all' || (who==='mine'?c.owner===me:!c.owner)) }).sort(function(a,b){ return caseDue(a)-caseDue(b) });
+   var t=tbl2([['Partner'],['Case'],['Area'],['Why it is yours'],['Reply',1],['']], shown.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0], ownr=PEOPLE[c.owner];
+     var why = c.owner===me ? 'Assigned to you' : !c.owner ? 'Unassigned'+(CASE_ROUTE[c.area]?', usually '+esc(personName(CASE_ROUTE[c.area])):'') : 'With '+esc(ownr?ownr.n:'');
+     return {c:[esc(b?b.n:''), esc(c.t)+'<em>'+esc(c.id)+' \u00b7 '+esc(c.by)+(c.sev==='High'?' \u00b7 High':'')+'</em>', esc(c.area), why, c.st==='open'?slaWord(caseDue(c)):caseDueWord(c), c.st!=='resolved'&&agCanDo('agCaseReply')?'<button class="gn-btn gn-btn--sm'+(caseDue(c)<0&&c.st==='open'?' gn-btn--primary':'')+'" data-act="agCase" data-k="'+c.id+'">Reply</button>':''], act:'agCase', k:c.id, cls:c.st==='open'&&caseDue(c)<0?'is-hot':''} }));
+   return head+tabsRow+tb+(shown.length?t:empty(cst==='open'?'No case is open.':'Nothing here.'));
  };
  AGENT.releases=function(){
    var head=ph('Compliance', 'Releases, mandates and attestations, and who has met each.');
@@ -9388,7 +9406,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
        acts:(n.due&&!acked?'<button class="gn-btn gn-btn--primary" data-act="ntAck" data-k="'+n.k+'">Acknowledge</button>':acked?sw('Acknowledged','ok'):''), go:'notice', goLabel:'Open the notice', from:b}) },
    threadSend:function(){ var t=$('#thrBox'); SCENE.thread=(t&&t.value.trim())||'Thanks Sonia. Priya has what she needs for now.'; drawApp(VIEW); toast('Message sent'); },
    ruleClose:function(){ SCENE.rule=null; drawApp(VIEW); },
-   alAskOpen:function(b){ SCENE.alAskOpen=b.dataset.k; drawApp(VIEW); var t=$('#alAskBox'); if(t) t.focus() },
+   alAskOpen:function(b){ SCENE.alAskOpen=b.dataset.k; if(VIEW==='alerts'){ closePanel(); SCENE.ak=b.dataset.k; go('alert') } else drawApp(VIEW); var t=$('#alAskBox'); if(t) t.focus() },
    alAskClose:function(){ SCENE.alAskOpen=null; drawApp(VIEW); },
    alAskSend:function(b){ SCENE.alAsk=SCENE.alAsk||{}; SCENE.alAsk[b.dataset.k]=true; SCENE.alAskOpen=null; drawApp(VIEW); toast('Sent to Marcus Bell') },
    alHandled:function(b){ SCENE.alDone=SCENE.alDone||{}; SCENE.alDone[b.dataset.k]=true; drawApp(VIEW); toast('Marked as handled') },
@@ -9588,7 +9606,13 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ackRule:function(b){ SCENE.acked=SCENE.acked||{}; SCENE.acked[b.dataset.k]=true; drawApp(VIEW); },
    upload:function(b){ SCENE.up=SCENE.up||{}; SCENE.up[b.dataset.k]=true; drawApp(VIEW); },
    thirdSend:function(){ var t=$('#tpOrg'); SCENE.third=(t&&t.value.trim())||'Meridian Processing'; go('agreement'); toast('Agreement sent'); },
-   alert:function(b){ SCENE.ak=b.dataset.k; go('alert') },
+   alert:function(b){ SCENE.ak=b.dataset.k; var a=ALERTS.filter(function(x){return x.k===b.dataset.k})[0]; if(!a || VIEW!=='alerts') return go('alert');
+     var o=PEOPLE[a.owner]||{n:'',r:'',org:''}, res=(SCENE.resolved||{})[a.k], asked=(SCENE.alAsk||{})[a.k], handled=(SCENE.alDone||{})[a.k];
+     peek({kicker:'Alert', title:a.t, line:esc(a.product)+' \u00b7 '+esc(a.when), lead:esc(a.p),
+       facts:[['Owner', esc(o.n), esc(o.r)+(o.org?', '+esc(o.org):'')],['Status', res?word('Resolved'):handled?sw('Handled on your side','ok'):a.st==='inhand'?sw('In hand','wa'):a.st==='coming'?sw('Coming',''):word('Fixed'), a.took?esc(a.took):'']].concat(a.ask?[['What the network asks of you', esc(a.ask), '']]:[]),
+       body:a.steps&&a.steps.length?secH('What the network did')+tbl2([['When'],['Step']], a.steps.map(function(x){ return ['<span class="gn-num">'+esc(x[0])+'</span>', esc(x[1])] })):'',
+       acts:(a.st==='inhand'&&!res&&!handled?'<button class="gn-btn" data-act="alHandled" data-k="'+a.k+'">Handled on our side</button>':'')+(a.st==='inhand'&&!res?(asked?sw('Asked '+esc(o.n.split(' ')[0])+', just now',''):'<button class="gn-btn gn-btn--primary" data-act="alAskOpen" data-k="'+a.k+'">Ask '+esc(o.n.split(' ')[0])+'</button>'):''),
+       go:'alert', goLabel:'Open the alert', from:b}) },
    agPartner:function(b){ SCENE.bk=b.dataset.k; paintShell(); go('partner') },
    agAlert:function(){ go('alerts') },
    agWvOpen:function(){ SCENE.relTab='wv'; go('releases') },
@@ -9628,13 +9652,13 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    mFromClear:function(){ SCENE.mFrom=null; SCENE.msort='vol'; SCENE.mrisk='all'; drawApp(VIEW); focusMain() },
    dspFromClear:function(){ SCENE.dspFrom=null; SCENE.df2='open'; drawApp(VIEW); focusMain() },
    askTx:function(b){ if(b.dataset.k==='cnp-declined'){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom='card-not-present declines, yesterday' } go('transactions') },
-   agCase:function(b){ SCENE.caseSel=b.dataset.k; go('cases') },
-   agCaseReply:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; var me=agSeat().who; SCENE.caseReplies=SCENE.caseReplies||{}; (SCENE.caseReplies[b.dataset.k]=SCENE.caseReplies[b.dataset.k]||[]).push([me, 'Just now', v]); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]=b.dataset.close?'resolved':'waiting'; SCENE.caseOwner=SCENE.caseOwner||{}; if(!(agCases().filter(function(c){return c.id===b.dataset.k})[0]||{}).owner) SCENE.caseOwner[b.dataset.k]=me; paintShell(); drawApp(VIEW); keep('#agReply, .inbox-i.is-on'); toast(b.dataset.close?'Reply sent and case resolved':'Reply sent') },
-   agCaseNote:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); keep('#agReply'); return } SCENE.caseErr=null; SCENE.caseNotes=SCENE.caseNotes||{}; (SCENE.caseNotes[b.dataset.k]=SCENE.caseNotes[b.dataset.k]||[]).push([agSeat().who, 'Just now', v]); drawApp(VIEW); keep('#agReply'); toast('Note added') },
-   agCaseStatus:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); focusMain(); toast(kv[1]==='hold'?'On hold':'Reopened') },
-   agCaseAssign:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseOwner=SCENE.caseOwner||{}; SCENE.caseOwner[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); focusMain(); toast('Handed to '+personName(kv[1])) },
+   agCase:function(b){ SCENE.caseSel=b.dataset.k; if(VIEW!=='cases') go('cases'); casePeek(b.dataset.k, b) },
+   agCaseReply:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); if(panelOn()&&SCENE.caseSel) casePeek(SCENE.caseSel); keep('#agReply'); return } SCENE.caseErr=null; var me=agSeat().who; SCENE.caseReplies=SCENE.caseReplies||{}; (SCENE.caseReplies[b.dataset.k]=SCENE.caseReplies[b.dataset.k]||[]).push([me, 'Just now', v]); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]=b.dataset.close?'resolved':'waiting'; SCENE.caseOwner=SCENE.caseOwner||{}; if(!(agCases().filter(function(c){return c.id===b.dataset.k})[0]||{}).owner) SCENE.caseOwner[b.dataset.k]=me; paintShell(); drawApp(VIEW); keep('#agReply, .inbox-i.is-on'); toast(b.dataset.close?'Reply sent and case resolved':'Reply sent') },
+   agCaseNote:function(b){ var t=$('#agReply'), v=(t&&t.value.trim())||''; if(!v){ SCENE.caseErr=b.dataset.k; drawApp(VIEW); if(panelOn()&&SCENE.caseSel) casePeek(SCENE.caseSel); keep('#agReply'); return } SCENE.caseErr=null; SCENE.caseNotes=SCENE.caseNotes||{}; (SCENE.caseNotes[b.dataset.k]=SCENE.caseNotes[b.dataset.k]||[]).push([agSeat().who, 'Just now', v]); drawApp(VIEW); keep('#agReply'); toast('Note added') },
+   agCaseStatus:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); if(panelOn()&&SCENE.caseSel) casePeek(SCENE.caseSel); focusMain(); toast(kv[1]==='hold'?'On hold':'Reopened') },
+   agCaseAssign:function(b){ var kv=b.dataset.k.split('|'); SCENE.caseOwner=SCENE.caseOwner||{}; SCENE.caseOwner[kv[0]]=kv[1]; SCENE.menu=null; paintShell(); drawApp(VIEW); if(panelOn()&&SCENE.caseSel) casePeek(SCENE.caseSel); focusMain(); toast('Handed to '+personName(kv[1])) },
    agCanned:function(b){ var kv=b.dataset.k.split('|'), a=CANNED.filter(function(x){return x[0]===kv[1]})[0]; SCENE.menu=null; drawApp(VIEW); var t=$('#agReply'); if(t&&a){ t.value=(t.value?t.value+' ':'')+a[1]; t.focus() } },
-   agCaseClose:function(b){ SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]='resolved'; drawApp(VIEW); focusMain(); toast('Case resolved') },
+   agCaseClose:function(b){ SCENE.caseSt=SCENE.caseSt||{}; SCENE.caseSt[b.dataset.k]='resolved'; drawApp(VIEW); if(panelOn()&&SCENE.caseSel) casePeek(SCENE.caseSel); focusMain(); toast('Case resolved') },
    agMessage:function(b){ var k=b.dataset.k, bk=BOOK.filter(function(x){return x.k===k})[0], lead=((BOOKX[k]||{}).lead||'').split(', ')[0]||(bk&&bk.n);
      askDialog({t:'Message '+lead+'?', p:'Sent to their portal and their email. Their reply comes to Your turn.', ok:'Send', body:'<label class="gn-field"><span class="gn-field-l">Message</span><textarea class="gn-in" id="dlgMsg" rows="3"></textarea></label>', go:function(){ var f=$('#dlgMsg'), v=(f&&f.value.trim())||'Checking in ahead of the quarterly review.'; SCENE.agMsgs=SCENE.agMsgs||{}; (SCENE.agMsgs[k]=SCENE.agMsgs[k]||[]).unshift({t:v, at:NOW}); drawApp(VIEW); focusMain(); toast('Message sent to '+lead) }}) },
    agRemind:function(b){ var k=b.dataset.k, bk=BOOK.filter(function(x){return x.k===k})[0], lead=((BOOKX[k]||{}).lead||'').split(', ')[0]||(bk&&bk.n)||'the partner';
@@ -9651,6 +9675,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    inviteClose:function(){ SCENE.invite=false; drawApp(VIEW); },
    inviteSend:function(){ var t=$('#invName'); if(t&&!t.value.trim()){ SCENE.invErr='Enter a name and email.'; drawApp(VIEW); var f=$('#invName'); if(f) f.focus(); return } SCENE.invErr=null; SCENE.invName=null; dropDraft('invName'); SCENE.invited=(t&&t.value.trim().split(',')[0])||'Owen Reyes'; SCENE.invite=false; drawApp(VIEW); },
    alOpen:function(b){ SCENE.alOpen = SCENE.alOpen===b.dataset.k ? null : b.dataset.k; drawApp(VIEW); },
+   dvAlert:function(b){ var a=devAlerts().filter(function(x){return x.k===b.dataset.k})[0]; if(!a) return;
+     peek({kicker:a.kind==='action'?'Action needed':'For information', title:a.t, line:ENVN[envSel()], lead:esc(a.d), facts:[['Status', a.st?sw(a.st,a.tone):a.kind==='action'?sw('Action needed','wa'):sw('For information',''), '']],
+       acts:a.go?'<button class="gn-btn gn-btn--primary" data-act="pnlGo" data-k="'+esc(a.go)+'">'+esc(a.act||'Open')+'</button>':'', from:b}) },
    certGroup:function(b){ SCENE.cg = SCENE.cg===b.dataset.g ? null : b.dataset.g; drawApp(VIEW); },
    peekPartner:function(b){ var bk=BOOK.filter(function(x){return x.k===b.dataset.k})[0]; if(!bk) return; var x=BOOKX[bk.k], st=bookStage(bk), d=daysIn(bk), nx=typeof bk.next==='string'?bk.next:bk.next[STAGE], turn=bk.k==='brightline'?(turnRows()[0]||{}).turn||'\u2014':bk.turn||'\u2014', lead=(x.lead||'').split(', ');
      peek({kicker:'Partner', title:bk.n, line:esc(bk.kind)+' \u00b7 '+esc(st)+(bookSince(bk)?', since '+esc(bookSince(bk)):''), lead:turn==='You'?'Your move: '+esc(nx||'')+(d?', waiting '+daysWord(d):'')+'.':(nx&&nx!=='\u2014'?esc(nx)+(turn!=='\u2014'?', with '+esc(turn):'')+(d?', '+daysWord(d)+' waiting':'')+'.':'Nothing waiting.'),
