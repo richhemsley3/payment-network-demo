@@ -7204,8 +7204,11 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    /* panel 9. Getting started retires at go-live, so the reading panel 7 opened
       arrives here instead: the same instrument, on the home that replaced its page. */
    if(live() && !c && tab('gs','mine')==='all'){
-     var WS=stepState();
-     return ph('Where it landed', wholeRead(WS, true))
+     var WS=stepState(), WF=ftState(), WT=STEPS.length+FT_STEPS.length;
+     /* openHead, not ph: this page leads with a state rather than its own name, and the
+        page-ins read .gn-open as "this page has already made its reading" and stay out. */
+     return openHead('Overview \u00b7 '+ORG.n, (WS.done+WF.done)+' of '+WT+' done, both tracks',
+        'The last of them on '+esc(LAUNCH.target)+'. Nothing was carried over.')
       + wholeProcess(WS, true)
       + '<p class="para">'+goLink('Open the home','data-act="gsMine"')+'</p>';
    }
