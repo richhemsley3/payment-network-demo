@@ -3525,7 +3525,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 #mn[data-density="compact"] .gn-hl{padding:10px 24px; margin-top:12px} #mn[data-density="compact"] .gn-hl b{margin-top:2px}
 #mn[data-density="compact"] .gn-figs--cards{gap:12px}
 #mn[data-density="compact"] .gn-figs--cards .gn-fig{padding:12px 16px}
-#mn[data-density="compact"] .gn-hl small{display:inline; margin:0 0 0 6px}
+#mn[data-density="compact"] .gn-hl small{display:block; margin:2px 0 0}
 
 /* ── one text edge (Rich, September 11: "horizontal padding issues where items are misaligned") ─────────
    The page's text edge is 24px in from the content column: the head, section titles, figures and table
@@ -3547,6 +3547,11 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 /* a split pane whose table carries a pager: the pager stays under the table and the detail keeps its column */
 .split > .gn-table-foot{grid-column:1} .split > .det{grid-column:2; grid-row:1 / span 2}
 @media (max-width:1100px){ .split > .det{grid-column:1; grid-row:auto} }
+/* cards in the page's flow start on the text edge, like the figure cards; inside a grid or a pane the grid places them */
+#mn .gn-notice, #mn .gn-setup, #mn .al, #mn .just, #mn .dt-lead, #mn .csum{margin-left:24px; margin-right:24px}
+#mn .nt-grid .gn-notice, #mn .split .gn-notice, #mn .split .just, #mn .fr .gn-notice, #mn .fr .just, #mn .sbx .gn-setup, #mn .deal2 .just, #mn .ov-tiles .gn-notice{margin-left:0; margin-right:0}
+/* no left coloured rails (Rich's standing rule): a row that needs the reader says so in its status word */
+.gn-table tr.is-hot td:first-child, .gn-row.is-hot{box-shadow:none}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
