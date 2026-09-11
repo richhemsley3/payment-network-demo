@@ -3258,8 +3258,8 @@ body.nonav .mn{max-width:none; padding:0 48px 64px}
 /* first-time steps */
 .fts{padding:0 24px}
 .ft{display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:16px; align-items:center; padding:16px 0; border-bottom:1px solid var(--g150)}
-.ft i{width:24px; height:24px; border-radius:50%; border:1px solid var(--g200); display:grid; place-items:center} .ft i svg{width:12px; height:12px; fill:none; stroke:#fff; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
-.ft.is-done i{background:var(--primary); border-color:var(--primary)} .ft.is-now i{border-color:var(--burst); box-shadow:0 0 0 3px rgba(49,68,183,.14)}
+.ft>i{width:24px; height:24px; border-radius:50%; border:1px solid var(--g200); display:grid; place-items:center} .ft>i svg{width:12px; height:12px; fill:none; stroke:#fff; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+.ft.is-done>i{background:var(--primary); border-color:var(--primary)} .ft.is-now>i{border-color:var(--burst); box-shadow:0 0 0 3px rgba(49,68,183,.14)}
 .ft-b b{display:block; font-weight:600} .ft-b span{display:block; font-size:13px; color:var(--g550); margin-top:2px}
 .ft-r{display:flex; gap:12px; align-items:center; min-width:120px; justify-content:flex-end}
 .fts:not(.cur) .ft-b b{font-weight:400}
@@ -3497,6 +3497,7 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .tb3 .fs-i .fs-t{display:inline-flex; align-items:center; height:32px; padding:0 30px 0 12px; border:1px solid var(--g200); border-radius:6px; color:var(--g900); background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23696A75' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 10px center/14px}
 .tb3 .fs-i:hover .fs-t{border-color:var(--g400); color:var(--g900)}
 .tb3 .gn-in--sm{width:240px}
+.st-fold-x{font-size:13px; padding:8px 24px 0}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
@@ -8311,6 +8312,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var phases=['Evaluate','Build','Certify','Launch'];
    var bars='<div class="p5">'+phases.map(function(ph,i){ var xs=FT_STEPS.filter(function(x){return x.ph===ph}), d=xs.filter(function(x){return F.st[x.k]==='done'}).length; var pct=Math.round(100*d/xs.length);
      return '<div class="p5-r"><span class="p5-t">'+(i+1)+'. '+esc(ph)+'</span><div class="p5-bar"><i style="--w:'+pct+'%"></i></div><span class="gn-num">'+d+' of '+xs.length+'</span>'+(d===xs.length?word('Done'):ph===F.phase?sw('Now',''):d?sw('Open',''):sw('Later',''))+'</div>' }).join('')+'</div>';
+   /* Rich, September 11: the outline is one line until she asks for it */
+   if(!SCENE.stepsOpen){ var pi=phases.indexOf(F.phase), nxp=phases[pi+1], cur=FT_STEPS.filter(function(x){return F.st[x.k]==='now'})[0];
+     bars='<div class="st-fold"><span><b>'+(pi+1)+' of '+phases.length+', '+esc(F.phase)+'</b>'+(cur?' \u00b7 '+esc(cur.t):'')+'</span><span class="st-fold-r">'+F.done+' of '+FT_STEPS.length+' steps done'+(nxp?' \u00b7 next, '+esc(nxp):'')+' \u00b7 <span class="gn-link" data-act="stepsOpen">Show all phases</span></span></div>' }
+   else bars=bars+'<div class="st-fold-x"><span class="gn-link" data-act="stepsOpen">Show only this phase</span></div>';
    var steps=phases.map(function(ph){ var xs=FT_STEPS.filter(function(x){return x.ph===ph}); var isCur=ph===F.phase;
      return secH(esc(ph), xs.filter(function(x){return F.st[x.k]==='done'}).length+' of '+xs.length)+'<div class="fts'+(isCur?' cur':'')+'">'+xs.map(function(x){ var st=F.st[x.k];
        /* one phase carries the solid buttons; open steps elsewhere are links */
