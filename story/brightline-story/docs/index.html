@@ -3554,6 +3554,12 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .gn-table tr.is-hot td:first-child, .gn-row.is-hot{box-shadow:none}
 #mn .nt-grid{margin-left:24px; margin-right:24px} #mn .split .nt-grid, #mn .fr .nt-grid{margin-left:0; margin-right:0}
 
+/* the header answer carries the whole answer now: its state, the paragraphs, the English source, what it read */
+.hdr-res .ask-h{margin:4px 16px 0; font-size:15px; line-height:1.45} .hdr-res .ask-h b{font-weight:600}
+.hdr-res .ask-en{color:var(--gn-text-secondary)}
+.hdr-res .ask-read{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 20px; padding:4px 16px 8px}
+.hdr-res .ask-read span{display:block; font-size:13px; color:var(--gn-text-caption)} .hdr-res .ask-read b{display:block; font-weight:400; font-size:14px} .hdr-res .ask-read em{display:block; font-style:normal; font-size:13px; color:var(--gn-text-caption)}
+
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
 .hdr-res .ask-home{border-bottom:0; margin-bottom:0; padding-bottom:0}
@@ -4313,10 +4319,10 @@ body.mode-prep #prepbar{display:flex}
   {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', start:{gs:'all'}, press:{sel:'[data-act="gsMine"]', t:'Open the home'}, then:[{seat:'marcus', sel:'[data-act="hoTick"][data-k="live"]', t:'Clear live operation'}],
    emo:'Quiet, shared pride.',
    d:'The reading panel 7 opened, at the moment both tracks finish. Getting started has retired, so it arrives on the home that replaced it. Nobody calls a meeting.'},
-  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support', start:{devDraft:1}, press:{sel:'[data-act="devAsk"]', t:'Ask'},
+  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'overview', start:{topDraft:'Do wallet device tokens change anything in our authorization message?'}, press:{sel:'#topQ', t:'Ask'},
    emo:'Relief, then confidence.',
    d:'Priya asks in plain words whether a capability Brightline has not taken yet fits what she has built. The answer confirms rather than hedges, because it read her own configuration first and says which values it read.'},
-  {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'jsearch', start:{jsDraft:1}, press:{sel:'[data-act="jsGo"]', t:'検索'},
+  {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'reporting', start:{topDraft:'係争の応答期限が20日に短くなると、実装側では何を変更する必要がありますか。'}, press:{sel:'#topQ', t:'検索'},
    emo:'Surprised, then impressed.',
    d:'In Tokyo, Aiko Mori asks in Japanese about a requirement inside a policy update. One search answers across the operating rules, the release material and the implementation manuals, in her language, with the English beside it.'},
   {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases', start:{relDraft:'v9'}, press:{sel:'[data-act="relPub"]', t:'Publish'}, then:[{seat:'dana', sel:'.ov-tile [data-go2="notices"]', t:'Open notices'}],
@@ -6197,7 +6203,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, peekPartner:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, peekPartner:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, agWvOpen:1, relOpen:1, bookClear:1, go2:1, xpPlanOpen:1, xpPlanSend:1, peekPartner:1, pnlGo:1, pnlClose:1, pgPrev:1, pgNext:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -6281,7 +6287,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, 
    return base }
  function navFor_partnerHook(){}
    if(P==='partner'){
-     if((PEOPLE[k]||{}).lang==='ja' && live()) return pnNavPlace([['jsearch','Search','','RUN'],['reporting','Reporting','','RUN'],['transactions','Transactions','','RUN'],['notices','Notices','','GROW'],['agreement','Agreements','','ACCOUNT']]);
+     if((PEOPLE[k]||{}).lang==='ja' && live()) return pnNavPlace([['reporting','Reporting','','RUN'],['transactions','Transactions','','RUN'],['notices','Notices','','GROW'],['agreement','Agreements','','ACCOUNT']]);
      if(k==='ruth') return pnNavPlace([['agreement','Agreements','']]); /* a Signer sees the agreement, to sign it, and nothing else */
      /* before the deal is confirmed there is nothing to overview and nobody to
         invite: the deal, the people, what it would involve, what we hold */
@@ -6416,7 +6422,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, 
     offer these), and next, the questions worth asking after its answer. */
  var ASK_SUGGEST={
    partner:['Why did card-not-present approvals fall?','Show me declines at Cedar Books yesterday','Which merchants have the most disputes?','What needs me today?','How do I counter a dispute?'],
-   developer:['What happened to latency overnight?','Which deliveries failed?','Which requests errored yesterday?','How do I rotate the production key?','Where does certification stand?'],
+   developer:['Do wallet device tokens change anything in our authorization message?','What happened to latency overnight?','Which deliveries failed?','Which requests errored yesterday?','How do I rotate the production key?','Where does certification stand?'],
    agent:['Which partners are behind plan?','Which cases are unassigned?','What is waiting on partners?','Why is Marlow at risk?','How do I hand a partner to operations?','Which partner has case_1182?']
  };
  /* the questions to try before the partner is live, and before the developer has production */
@@ -6444,7 +6450,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, 
    /* the report from the question: card-not-present approvals, with the drop, where it happened and why */
    {m:/card.?not.?present|cnp|e-?commerce|online/, q:['Why did card-not-present approvals fall?'], a:function(){ var q=this.q, raw=this.raw, d=lastDay(), d7=DAILY30[DAILY30.length-8], drop=(d[3]-d7[3]).toFixed(1); if(/\bwho\b|which merchant/.test(q)) return null;
      var c=CNP_MERCH.mch_cedar; return {a:'Card not present approved at '+d[3]+'% yesterday against '+d[2]+'% overall, level with seven days ago. The fall is at Cedar Books, '+c.y+'% against its seven-day '+c.w+'%, after a gateway change on June 1. Marcus Bell has the gateway on a call at 11:00 AM.',
-       do:[askDo('Open the report', function(){ SCENE.repFocus='cnp'; SCENE.repFocusQ=raw; go('reporting') }), askDo('Card-not-present declines, yesterday', function(){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom=raw; go('transactions') }), ['The alert','alerts']]} },
+       do:[askDo('Card-not-present declines, yesterday', function(){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom=raw; go('transactions') }), ['The alert','alerts']]} },
      next:[['Which merchant?','Which merchants fell on card not present?'],['Show yesterday’s declines','Show card-not-present declines yesterday'],['Who is handling it?','Who is handling the card-not-present alert?']], live:true},
    /* who has the alert */
    {m:/\bwho\b.*(handl|own|on it|working|looking)|in hand/, q:['Who is handling the card-not-present alert?'], a:function(){ return {a:'Marcus Bell has the gateway on a call at 11:00 AM and the alert is in hand. Marcus Bell runs your relationship and sees the same alert.', do:[askDo('The alert', function(){ ACT.alert({dataset:{k:'cnp'}}) }), ['Your Discover team','discover']], next:['Why did card-not-present approvals fall?','Who should I call?']} }, live:true},
@@ -6489,7 +6495,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, 
      var slow=reqLog().filter(function(r){ return (r.ms||0)>(o.ms||400) });
      if(o.ms||/\b(show|list|which requests)\b/.test(q)) return {a:(slow.length?nn(slow.length,'request')+' answered over '+(o.ms||400)+' ms yesterday, '+(clockSpan(slow)||'overnight')+', each under stand-in while one issuer was slow.':'No request answered over '+(o.ms||400)+' ms yesterday.')+' Your p50 held at 44 ms.', do:[askDo('Requests over '+(o.ms||400)+' ms', function(){ SCENE.env='prod'; SCENE.lf='slow'; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=raw; go('logs') })], next:['What happened to latency overnight?','Which requests errored yesterday?']};
      return {a:'p99 was 210 ms yesterday against 160 ms seven days ago. The climb sits in one hour, 2 to 3 AM, when one issuer answered in 400 to 500 ms and the network answered '+si+' of your authorizations under stand-in. Your p50 held at 44 ms.',
-       do:[askDo('Open the report', function(){ SCENE.devRep='latency'; SCENE.devRepQ=raw; SCENE.env='prod'; go('overview') }), askDo('Requests over 400 ms', function(){ SCENE.env='prod'; SCENE.lf='slow'; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=raw; go('logs') })]} },
+       do:[askDo('Requests over 400 ms', function(){ SCENE.env='prod'; SCENE.lf='slow'; SCENE.lm='all'; SCENE.q=''; SCENE.logFrom=raw; go('logs') })]} },
      next:[['Show the slow requests','Show requests over 400 ms'],'Which requests errored yesterday?','Which deliveries failed?'], live:true},
    /* errors, filtered to the path or the status the question names */
    {m:/\berrors?\b|\berrored\b|4\d\d|5\d\d|failing requests|what failed/, q:['Which requests errored yesterday?','Show errors on authorizations','Show 422 errors'], a:function(){ var q=this.q, raw=this.raw, path=(q.match(/authorizations?|captures?|settlements?|tokens?|provision/)||[''])[0].replace(/s$/,''), code=(q.match(/\b(4\d\d|5\d\d)\b/)||[])[1]; if(/deliver|webhook/.test(q) && !code) return null; if(code==='409'||code==='503') return null;
@@ -6525,11 +6531,11 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, pgPrev:1, pgNext:1, pnlGo:1, 
      var st=bookStage(b), p=BOOK_PLAN[b.k], h=(BOOKX[b.k]||{}).health, a=b.n+' is '+String(st).toLowerCase();
      if(p && st!=='Live') a+= p.slip ? ', '+p.slip+' days behind plan at '+p.step.charAt(0).toLowerCase()+p.step.slice(1)+'. '+p.why+' '+(p.move==='The network'?'The move is yours.':'The move is '+p.move+'’s.') : ', on plan for '+p.target+'. '+(p.why||''); else a+='.';
      if(h && h!=='good') a+=' Health is '+h+': '+healthWhy(b)+'.';
-     return {a:a.replace(/\s+/g,' ').trim(), do:[['Its page','agPartner',b.k]].concat(p&&st!=='Live'?[askDo('Partners against plan', function(){ SCENE.agRep='plan'; SCENE.agRepQ=raw; go('bookrep') })]:[]), next:['Which partners are behind plan?',['Its cases','What is waiting on partners?']]} }},
+     return {a:a.replace(/\s+/g,' ').trim(), do:[['Its page','agPartner',b.k]].concat(p&&st!=='Live'?[askDo('Onboarding partners', function(){ SCENE.bookSeg='onb'; SCENE.bookFrom=raw; go('book') })]:[]), next:['Which partners are behind plan?',['Its cases','What is waiting on partners?']]} }},
    /* the report from the question: partners against plan */
    {m:/behind|slip|against plan|on plan|on track|miss.*(date|go.?live|target)|late partners|which partners are late/, q:['Which partners are behind plan?'], a:function(){ var q=this.q, raw=this.raw, onb=BOOK.filter(function(b){ return bookStage(b)!=='Live' && BOOK_PLAN[b.k] }), behind=onb.filter(function(b){return BOOK_PLAN[b.k].slip>0}).sort(function(a,b){return BOOK_PLAN[b.k].slip-BOOK_PLAN[a.k].slip}), on=onb.filter(function(b){return !BOOK_PLAN[b.k].slip});
      return {a:(behind.length?behind.length+' of '+onb.length+' onboarding partners are behind plan: '+behind.map(function(b){ var p=BOOK_PLAN[b.k]; return b.n+' '+p.slip+' days, held at '+p.step.charAt(0).toLowerCase()+p.step.slice(1) }).join(', and ')+'.':'Every onboarding partner is on plan.')+(on.length?' '+on.map(function(b){return b.n}).join(' and ')+(on.length>1?' are':' is')+' on plan.':''),
-       do:[askDo('Open the report', function(){ SCENE.agRep='plan'; SCENE.agRepQ=raw; go('bookrep') }), askDo('Onboarding partners', function(){ SCENE.bookSeg='onb'; SCENE.bookFrom=raw; go('book') })],
+       do:[askDo('Onboarding partners', function(){ SCENE.bookSeg='onb'; SCENE.bookFrom=raw; go('book') })],
        next:(behind[0]?[['Why is '+behind[0].n.split(' ')[0]+' late?','Where does '+behind[0].n+' stand?']]:[]).concat(['What is waiting on partners?','Which cases are unassigned?'])} }},
    /* cases filtered the way the question asks */
    {m:/waiting on (a |the )?partner|what.*waiting|who owes|waiting for/, q:['What is waiting on partners?'], a:function(){ var raw=this.raw, w=agCases().filter(function(c){return c.st==='waiting'}); return {a:w.length?nn(w.length,'case')+' wait'+(w.length===1?'s':'')+' on a partner: '+w.map(function(c){return c.t+' ('+(BOOK.filter(function(b){return b.k===c.k})[0]||{n:c.k}).n+')'}).join(', ')+'.':'No case is waiting on a partner.', do:[askDo('Cases waiting on partners', function(){ SCENE.caseWho='all'; SCENE.caseSeg='waiting'; SCENE.caseFrom=raw; go('cases') })]} }, next:['Which cases are unassigned?','What is overdue today?']},
@@ -6625,7 +6631,13 @@ function askMatch(n, one, many){ return nn(n, one, many)+(n===1?' matches':' mat
    var doH = r.do&&r.do.length ? '<div class="ask-do">'+r.do.map(function(d){ var act=d.length>2?d[1]:'go:'+d[1]; return askOpt('data-res="'+esc(act)+'" data-k="'+esc(d[2]||'')+'"', d[0], '', 'ask-go') }).join('')+'</div>' : '';
    var nx=askNext(P, r, v), nxH = nx.length ? '<div class="ask-do ask-next"><span class="ask-l">Ask next</span>'+nx.map(function(x){ return askQ(x[1], x[0], 'ask-go ask-nx') }).join('')+'</div>' : '';
    var how = r.how ? '<div class="gn-menu-h">How</div><ol class="ask-how">'+r.how.map(function(s){ return '<li>'+esc(s)+'</li>' }).join('')+'</ol>' : '';
-   return '<div class="ask"><div class="gn-menu-h">Answer</div><p class="ask-a">'+esc(r.a)+'</p>'+doH+how+nxH+'</div>' }
+   /* the whole answer lives here (Rich, September 11: no ask page on any portal): its state, the answer, the English
+      source where the answer is in another language, and what it read, each with where it came from */
+   var headH = r.head ? '<p class="ask-h"><b>'+esc(r.head)+'</b>'+(r.st?' '+sw(r.st[0],r.st[1]):'')+'</p>' : '';
+   var body = r.ps ? r.ps.map(function(t){ return '<p class="ask-a">'+esc(t)+'</p>' }).join('') : '<p class="ask-a">'+esc(r.a)+'</p>';
+   var enH = r.en ? '<div class="gn-menu-h">'+esc(r.enH||'English')+'</div>'+r.en.map(function(t){ return '<p class="ask-a ask-en">'+esc(t)+'</p>' }).join('') : '';
+   var readH = r.read ? '<div class="gn-menu-h">'+esc(r.readH||'What the answer read')+'</div><div class="ask-read">'+r.read.map(function(x){ return '<div><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b>'+(x[2]?'<em>'+esc(x[2])+'</em>':'')+'</div>' }).join('')+'</div>' : '';
+   return '<div class="ask"><div class="gn-menu-h">'+esc(r.ansH||'Answer')+'</div>'+headH+body+enH+readH+doH+how+(r.noNext?'':nxH)+'</div>' }
  /* the empty field: recent questions, three to try, three things to do */
  function askHome(P){ var rec=askRecentNow(P), low=rec.map(function(s){return s.toLowerCase()}), acts=askActs(P), ex=askExamples(P).concat(askPool(P)).filter(function(s,i,a){ return low.indexOf(s.toLowerCase())<0 && a.indexOf(s)===i }).slice(0,3);
    var recH = rec.length ? '<div class="gn-menu-h">Recent</div>'+rec.map(function(s){ return askQ(s) }).join('')+askOpt('data-askclear="1"', 'Clear recent questions', '', 'ask-clear') : '';
@@ -6686,7 +6698,7 @@ function askMatch(n, one, many){ return nn(n, one, many)+(n===1?' matches':' mat
      if(e.key==='ArrowDown'){ if(i<bs.length-1) bs[i+1].focus(); e.preventDefault() } else if(e.key==='ArrowUp'){ if(i>0) bs[i-1].focus(); else q.focus(); e.preventDefault() }
      else if(e.key==='Home'){ if(bs.length) bs[0].focus(); e.preventDefault() } else if(e.key==='End'){ if(bs.length) bs[bs.length-1].focus(); e.preventDefault() }
      else if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); resShow(false); ASK_QUIET=true; q.focus() } } }
- function runRes(act,k,v,P){ var q=$('#topQ'); resShow(false); if(ASK_HIT) askRemember(P, ASK_HIT); if(q) q.value=''; SEATS=[SEAT];
+ function runRes(act,k,v,P){ var q=$('#topQ'); resShow(false); delete SCENE.topDraft; if(ASK_HIT) askRemember(P, ASK_HIT); if(q) q.value=''; SEATS=[SEAT];
    if(act==='ref'){ SCENE.refQ=v; go('spec') } else if(act==='txq'){ SCENE.txQ=v; go('transactions') } else if(act==='bookq'){ SCENE.bookQ=v; go('book') }
    else if(act==='epGo'){ SCENE.epId=k; SCENE.ept=undefined; go('webhooks') } else if(act==='logGo'){ SCENE.logId=k; go('logs') } else if(act==='delGo'){ var ep=devEndpoints()[0]; if(ep){ SCENE.epId=ep.id; SCENE.ept='del' } SCENE.delId=k; SCENE.df='all'; go('webhooks') }
    else if(act==='askfn'){ var fn=ASK_FN[+k]; if(fn) fn() } else if(act.indexOf('go:')===0){ go(act.slice(3)) } else if(act==='agPartner'){ SCENE.bk=k; paintShell(); go('partner') } else if(ACT[act]) ACT[act]({dataset:{k:k}}) }
@@ -6932,7 +6944,7 @@ function asstExtra(pg, o){ var a=asst(), x={p:'', ev:[], acts:[]}, S=SCENE;
     if(a.by==='who'){ x.p+=(x.p?' ':'')+'Whose move: '+Object.keys(BOOK_PLAN).filter(function(k){ return BOOK_PLAN[k].slip>0 }).map(function(k){ var bp=BOOK_PLAN[k], bb=BOOK.filter(function(z){return z.k===k})[0]; return (bb?bb.n.split(' ')[0]:k)+' '+(bp.move==='The network'?'yours':'theirs') }).join(', ')+'.' } }
   return x }
 /* ── the surface ── */
-function askInsight(o){
+function askInsight(o){ return ''; /* Rich, September 11: the answer lives only in the header panel, never as a strip on a page */
   var pg=asstPage(), a=asst(), q=o.q||'', now=pg?asstTrack(pg, q):'', x=pg?asstExtra(pg, o):null; a=asst();
   var p=o.p||''; if(x&&x.p) p+=(p?' ':'')+x.p;
   var cmp=pg?asstCmp(pg):null, cmpOn=cmp&&a.cmp&&cmp.opts.some(function(z){return z[0]===a.cmp}); if(cmpOn) p+=(p?' ':'')+cmp.text(a.cmp);
@@ -7064,7 +7076,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      go(k); } });
    $$('[data-act]', t).forEach(function(b){ b.onclick=function(){ SCENE.topMenu=false; ACT[b.dataset.act] && ACT[b.dataset.act](b) } });
    var pm=$('.hdr-menu .gn-menu-panel', t); if(pm) wireMenu(pm, function(){ SCENE.topMenu=false; paintTop(w,P); var u=$('.hdr-u'); if(u) u.focus() });
-   var q=$('#topQ'); if(q){ q.oninput=function(){ paintTopRes(P) }; q.onfocus=function(){ q.removeAttribute('aria-activedescendant'); if(ASK_QUIET){ ASK_QUIET=false; return } if(!q.value.trim()) paintTopRes(P) }; q.onkeydown=function(e){ var box=$('#topRes'); if(e.key==='ArrowDown' && box && !box.hidden){ var f=box.querySelector('button'); if(f){ f.focus(); e.preventDefault() } return }
+   var q=$('#topQ'); if(q){ if(SCENE.topDraft && !q.value) q.value=SCENE.topDraft; q.oninput=function(){ paintTopRes(P) }; q.onclick=function(){ if(q.value.trim() && $('#topRes').hidden) paintTopRes(P) }; q.onfocus=function(){ q.removeAttribute('aria-activedescendant'); if(ASK_QUIET){ ASK_QUIET=false; return } paintTopRes(P) }; q.onkeydown=function(e){ var box=$('#topRes'); if(e.key==='ArrowDown' && box && !box.hidden){ var f=box.querySelector('button'); if(f){ f.focus(); e.preventDefault() } return }
      if(e.key==='Enter' && box && !box.hidden){ var f1=box.querySelector('button'); if(f1){ f1.click(); return } }
      if(e.key!=='Enter') return; var v=q.value.trim(); if(!v) return; SEATS=[SEAT];
      if(P==='developer'){ SCENE.refQ=v; go('spec') }
@@ -7792,7 +7804,6 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var head=ph('Reporting', live()?'Live since May 14. Fourteen days shown; the network keeps thirteen months.':'Starts with your first transaction.');
    var cat=secH('Reports you receive', REPORTS.length+' reports')+'<div class="rep-grid">'+REPORTS.map(function(r){ return '<article class="rep"><div class="rep-h"><h3>'+esc(r.t)+'</h3>'+spark(r.shape)+'</div><span class="rep-w">'+esc(r.when)+'</span><p>'+esc(r.d)+'</p></article>' }).join('')+'</div>';
    if(!live()) return ph('Reporting', 'Report recipients and how each one receives them.')+secH('Set up reporting')+setup('report')+cat;
-   if(SCENE.repFocus==='cnp') return cnpReport(head);
    var m=tab('rep','auth'), days=+tab('repd','14'), cmp=SCENE.repCmp;
    var series=DAILY30.slice(-days), prevS=DAILY30.slice(-days*2, -days);
    var idx=m==='auth'?1:m==='appr'?2:4, opts=m==='auth'?{fmt:fmtK}:m==='appr'?{min:95,max:98,fmt:function(v){return v.toFixed(1)+'%'}}:{min:0.8,max:1.6,fmt:function(v){return '$'+v.toFixed(2)+'M'}};
@@ -8461,7 +8472,6 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  }
  DEV.overview=function(sk,c){
    var S=devState(), a=envAvail(), e=envSel(), log=reqLog();
-   if(!c && SCENE.devRep==='latency' && live()) return devLatencyReport();
    if(c) return '<div class="rec-h"><b>'+ENVN[e]+'</b><span>'+(a.sandbox?ENVH[e]+', key issued':'provisioning')+'</span></div>'+checklist(S);
    if(!live()) return DEV.start(sk,c);
    var dvAlerts=(typeof devAlerts==='function')?devAlerts():[];
@@ -8841,24 +8851,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return head+caught+table+win;
  };
  DEV.support=function(){
-   /* panel 10: the answer arrives here, the way the latency report arrives on Overview.
-      What it read comes before what it says, because that is why it can confirm. */
-   if(SCENE.devQ){
-     var Q=DEVQ;
-     return ph('Support', 'Environment status and how to reach support.')
-      + askInsight({q:Q.q, tone:'good', head:Q.head, st:['Compatible','ok'], p:Q.p, acts:Q.acts,
-                    clear:'devQClear', clearLabel:'Back to Support'})
-      + secH('What the answer read', nn(Q.read.length,'value')+' from your own configuration')
-      + doc(Q.read.map(function(r){ return [r[0], esc(r[1]), r[2]] }));
-   }
-   var head=ph('Support', '<b>Sandbox'+(STAGE>=4?', certification':'')+(STAGE>=5?' and production are':' is')+' open.</b> Ask in plain words, open a case, or reach the people who work your account.');
-   /* the question is asked here, in plain words. The answer reads Brightline's own configuration. */
-   var ask=secH('Ask', 'Answered from your own configuration')+'<form class="gn-ask inset" onsubmit="return false"><textarea class="gn-in" id="devQBox" rows="2" placeholder="Ask in plain words">'+(SCENE.devDraft?esc(DEVQ.q):'')+'</textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="devAsk">Ask</button></div></form>';
+   var head=ph('Support', '<b>Sandbox'+(STAGE>=4?', certification':'')+(STAGE>=5?' and production are':' is')+' open.</b> Open a case, or reach the people who work your account. Questions go in the search above.');
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
    var always=secH('Channels')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
-   var spT=tab('supTab','ask');
-   return head+ptabs('supTab',[['ask','Ask'],['cases','Cases'],['env','Environments'],['people','Contacts']],'ask')+(spT==='cases'?casesSection():spT==='env'?status:spT==='people'?ppl+always:ask);
+   var spT=tab('supTab','cases');
+   return head+ptabs('supTab',[['cases','Cases'],['env','Environments'],['people','Contacts']],'cases')+(spT==='env'?status:spT==='people'?ppl+always:casesSection());
  };
  DEV.case=function(){ return casePage('Support','data-go2="support"') };
 
@@ -9203,7 +9201,6 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return head+f+ch+t+why+acts;
  }
  AGENT.bookrep=function(){
-   if(SCENE.agRep==='plan') return planReport();
    var R=BOOK_REPORT;
    var head=ph('Book report', '<b>'+BOOK.filter(function(b){return bookStage(b)==='Live'}).length+' of '+BOOK.length+' partners live.</b> Median first conversation to live is 74 days against a target of 78. Live acquirers approve at 96.4% against the network\u2019s 96.1%.', '<span class="gn-link" data-act="dl">Export</span>')+tbrow([fsel('brPeriod','q',[['q','This quarter'],['y','This year']],'Period'), fsel('brStage','all',[['all','Every stage'],['onb','Onboarding'],['live','Live']],'Stage'), fsel('brCmp','net',[['net','The network'],['prev','Previous quarter']],'Compare')]);
    var liveN=BOOK.filter(function(b){return bookStage(b)==='Live'}).length;
@@ -9442,8 +9439,6 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    journey:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
    group2:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
    stepsOpen:function(){ SCENE.stepsOpen=!SCENE.stepsOpen; repaint() },
-   devQClear:function(){ delete SCENE.devQ; repaint() },
-   devAsk:function(){ var t=$('#devQBox'); if(t && !t.value.trim()){ t.focus(); return } SCENE.devQ=1; delete SCENE.devDraft; drawApp(VIEW) },
    /* leaves the go-live reading for the ordinary home underneath it */
    gsMine:function(){ SCENE.gs='mine'; repaint() },
    back:function(){ SEATS=[SEAT]; SCENE.group='plan'; go('start') },
@@ -10322,7 +10317,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      st:yours.length?['Your move','wa']:null,
      p:behind.map(function(b){ var p=BOOK_PLAN[b.k]; return b.n+' is '+p.slip+' days behind at '+p.step.charAt(0).toLowerCase()+p.step.slice(1)+', '+(p.move==='The network'?'your move':'their move') }).join('. ')+(behind.length?'.':''),
      figs:behind.slice(0,3).map(function(b){ return pgFig(b.n, BOOK_PLAN[b.k].slip+' days', 'lands '+BOOK_PLAN[b.k].now) }),
-     acts:[['Partners against plan','data-act="askRep" data-k="plan"']], ask:'Which partners are behind plan?'} };
+     acts:[['Onboarding partners','data-act="askBook" data-k="onb"']], ask:'Which partners are behind plan?'} };
 
  /* ── what is coming due ─────────────────────────────────────────────
     Non-compliance is a clock rather than an event: the expensive failure is a date that passes, not a rule
@@ -10417,6 +10412,21 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  });
  Object.assign(READ_ACTS, {insAsk:1});
  if(typeof AG_READ!=='undefined') Object.assign(AG_READ, {insAsk:1});
+
+ /* panel 10: Priya asks in the header whether wallet device tokens change her message. The answer confirms
+    because it read her own configuration, and it says which values it read. */
+ setTimeout(function(){ /* registered once every dataset has loaded: DEVQ and JSEARCH are declared later in the script */
+ if(typeof ASK!=='undefined' && ASK.developer) ASK.developer.unshift({ m:/wallet|device token/, q:[DEVQ.q],
+   a:function(){ return {a:DEVQ.head+'. '+DEVQ.p, head:DEVQ.head, st:['Compatible','ok'], ps:[DEVQ.p], read:DEVQ.read, readH:'What the answer read, from your configuration',
+     do:[['Release 26.2 notes','changelog'],['The credential field','spec']], next:['Which API version is current?','What happens when a card is reissued?']} } });
+ /* panel 11: Aiko asks in Japanese in the header. One answer across the rules, the release material and the
+    manuals, in her language, the English source beneath, and this partner's own waiver read from the record. */
+ if(typeof ASK!=='undefined' && ASK.partner) ASK.partner.unshift({ m:/応答期限|係争|response window|20 days/, q:[JSEARCH.q],
+   a:function(){ var ja=locJA(), A=JSEARCH.a.map(function(t){ return t===null?jsWaiver(true):t }), E=JSEARCH.aEn.map(function(t){ return t===null?jsWaiver(false):t });
+     return {a:(ja?A:E).join(' '), ansH:ja?'回答':'Answer', head:ja?JSEARCH.head:JSEARCH.headEn, ps:ja?A:E, en:ja?E:null, enH:'英語の原文', noNext:true,
+       read:JSEARCH.src.map(function(x){ return [ja?x[0]:x[2], x[1], ''] }), readH:ja?'参照した資料':'What the answer read',
+       do:[[ja?'免除の記録を見る':'The waiver on file','agreement'],[ja?'お知らせ v9.0':'The v9.0 notice','notice','v9']]} } });
+ }, 0);
 
 /* ═══ Agent Portal, inbound track: panel 2, the opportunity that arrives from the public developer site already
    carrying what the engineer explored. Owned by the inbound track. Loaded at the end of js.txt at the INBOUND
@@ -11220,24 +11230,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
                : 'Brightline Bank has a waiver on the response window until '+until+'. Until that date 30 days applies, and the window becomes 20 days when the waiver ends.' }
    return ja ? 'ブライトライン銀行には応答期限の免除は登録されていません。2027年1月1日から20日が適用されます。免除が必要な場合はお知らせのページから申請できます。'
              : 'Brightline Bank holds no waiver on the response window, so 20 days applies from January 1, 2027. A waiver can be requested from the notice.' }
- PARTNER.jsearch=function(){
-   var S=JSEARCH, ja=locJA();
-   /* the search is made from the page. The panel starts with the question typed and not yet sent. */
-   if(!SCENE.jsRan){
-     return ph(ja?'検索':'Search', ja?'運用規則、リリース資料、実装マニュアルを横断して回答します。':'One search across the operating rules, the release material and the implementation manuals.')
-      +'<form class="gn-ask inset" onsubmit="return false"><textarea class="gn-in" id="jsBox" rows="3" placeholder="'+(ja?'日本語で質問できます':'Ask in your own language')+'">'+(SCENE.jsDraft?esc(S.q):'')+'</textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="jsGo">'+(ja?'検索':'Search')+'</button></div></form>';
-   }
-   var head=ph(ja?S.head:S.headEn, ja?'質問：「'+S.q+'」':'From your question: “'+S.qEn+'”', '<span class="gn-link" data-act="jsClear">'+(ja?'レポートへ':'All reporting')+'</span>');
-   var src=secH(ja?'参照した資料':'What the answer read', ja?'3つの資料と契約書':'Three sources and the contract')
-     +'<div class="jsrc">'+S.src.map(function(x){ return '<span><b>'+esc(ja?x[0]:x[2])+'</b> '+esc(x[1])+'</span>' }).join('')+'</div>';
-   var body=secH(ja?'回答':'The answer', ja?'英語の原文を併記':'The English source alongside')
-     +'<div class="jpair"><div><span class="gn-eyebrow">'+(ja?'日本語':'Japanese')+'</span>'+S.a.map(function(t){ return '<p>'+esc(t===null?jsWaiver(true):t)+'</p>' }).join('')+'</div>'
-     +'<div><span class="gn-eyebrow">'+(ja?'英語の原文':'English')+'</span>'+S.aEn.map(function(t){ return '<p class="en">'+esc(t===null?jsWaiver(false):t)+'</p>' }).join('')+'</div></div>';
-   var acts='<div class="gn-actions inset">'+goLink(ja?'免除の記録を見る':'The waiver on file','data-go2="agreement"')+goLink(ja?'お知らせ v9.0':'The v9.0 notice','data-act="notice" data-k="v9"')+'</div>';
-   return head+src+body+acts;
- };
- Object.assign(ACT, { jsClear:function(){ delete SCENE.jsRan; go('reporting') }, jsGo:function(){ var t=$('#jsBox'); if(t && !t.value.trim()){ t.focus(); return } SCENE.jsRan=1; drawApp(VIEW) } });
- Object.assign(READ_ACTS, { jsClear:1, jsGo:1 });
+ /* Aiko's Search page is gone (Rich, September 11): she asks in the header, and the answer is there */
  /* she lands on the answer, so the sidebar carries it while she is the reader */
  AGENT_NAV_EXTRA;
 
