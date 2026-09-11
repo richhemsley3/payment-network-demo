@@ -3522,10 +3522,31 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 #mn[data-density="compact"] .gn-doc-l{display:block; margin-bottom:2px}
 #mn[data-density="compact"] .gn-doc-v{display:inline}
 #mn[data-density="compact"] .gn-doc-p{display:inline; margin-left:8px}
-#mn[data-density="compact"] .gn-hl{padding:10px 0; margin-top:12px} #mn[data-density="compact"] .gn-hl b{margin-top:2px}
+#mn[data-density="compact"] .gn-hl{padding:10px 24px; margin-top:12px} #mn[data-density="compact"] .gn-hl b{margin-top:2px}
 #mn[data-density="compact"] .gn-figs--cards{gap:12px}
 #mn[data-density="compact"] .gn-figs--cards .gn-fig{padding:12px 16px}
 #mn[data-density="compact"] .gn-hl small{display:inline; margin:0 0 0 6px}
+
+/* ── one text edge (Rich, September 11: "horizontal padding issues where items are misaligned") ─────────
+   The page's text edge is 24px in from the content column: the head, section titles, figures and table
+   text already sit there, and rules run the full width. Every block added since sits on it too. */
+#mn .gn-tabs{padding-left:24px; padding-right:24px}
+#mn .gn-hl{padding-left:24px; padding-right:24px}
+#mn .tb3{padding-left:24px; padding-right:24px}
+#mn .st-fold{padding-left:24px; padding-right:24px}
+#mn .ov-tiles, #mn .tiles, #mn .gc-grid{margin-left:24px; margin-right:24px}
+#mn .heat, #mn .heat-k{margin-left:24px; margin-right:24px}
+#mn .dt-p{padding-left:24px; padding-right:24px}
+#mn .sbx, #mn .spec{padding-left:24px; padding-right:24px}
+#mn .gn-ask.inset{margin-left:24px; margin-right:24px}
+#mn > .gn-seg, #mn .gn-page-head + .gn-seg{margin-left:24px}
+#mn > .gn-code--ink, #mn .gn-section + .para + .gn-code--ink{margin-left:24px; margin-right:24px}
+#mn .gn-table-foot{padding-left:24px; padding-right:24px}
+/* a plan row that can be picked bleeds like a table row: the fill runs 24px past the text edge, the text stays on it */
+#mn .p5{margin-left:24px; margin-right:24px} #mn .p5-pick{margin:0 -24px; padding:16px 24px; width:calc(100% + 48px)}
+/* a split pane whose table carries a pager: the pager stays under the table and the detail keeps its column */
+.split > .gn-table-foot{grid-column:1} .split > .det{grid-column:2; grid-row:1 / span 2}
+@media (max-width:1100px){ .split > .det{grid-column:1; grid-row:auto} }
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
