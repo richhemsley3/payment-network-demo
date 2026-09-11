@@ -10733,11 +10733,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* ── panel 16 · what adding a product costs now, against what joining cost ── */
  PARTNER.relearn=function(){
    var now=xpNow(), was=xpWas(), prod=(typeof XP!=='undefined'&&XP.t)?XP.t:'Wallets';
-   var head=ph('Adding '+esc(prod), 'The same two tracks as joining, against what joining took.');
-   var read='<div class="gn-open"><b>'+now+' steps, against '+was+' the first time.</b>'
-     +'<span>Both sides move at once, the way they did before. Nothing either of you already gave is asked for again. '
-     +goLink('Start the request','data-go2="expand"')+'</span></div>';
-   return head+read+secH('Both tracks', 'This time, against the first time')+xpTracks(true);
+   /* the count is the page's own subtitle. It is a sentence about state, so it is not a
+      filled strip and not a second heading. */
+   var head=ph('Adding '+esc(prod),
+     '<b>'+now+' steps, against '+was+' the first time.</b> Both sides move at once, the way they did before, and nothing either of you already gave is asked for again.',
+     goLink('Start the request','data-go2="expand"'));
+   return head+secH('Both tracks', 'This time, against the first time')+xpTracks(true);
  };
  PARTNER_NAV_EXTRA;
 
