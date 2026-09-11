@@ -7674,25 +7674,29 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  PARTNER.risk=function(){
    var up=SCENE.up||{}; var got=RISK_DOCS.filter(function(d){return up[d.k]||STAGE>=4}).length, all=got===RISK_DOCS.length;
    var status = STAGE>=4 || SCENE.riskCleared ? 'cleared' : all ? 'review' : 'open'; /* cleared at signature, or the moment the network clears it */
-   var head=backTo('Get approved to join','data-act="journey" data-g="approve"')+ph('Risk review', 'Discover reviews six areas from the three documents you send.', status==='cleared'?word('Done'):status==='review'?sw('In review','wa'):sw(got+' of '+RISK_DOCS.length+' documents',''));
+   var head=backTo('Get approved to join','data-act="journey" data-g="approve"')+ph('Risk review \u00b7 Get approved to join', '<b>'+(status==='cleared'?'Cleared.':status==='review'?'All three documents received, in review.':got+' of '+RISK_DOCS.length+' documents received.')+'</b> Discover reviews six areas from the three documents you send. The agreement is issued when all six pass.');
+   var S1=stepState(), xs=STEPS.filter(function(x){return x.g==='approve'}), dn=xs.filter(function(x){return S1.st[x.k]==='done'}).length, ix=xs.map(function(x){return x.k}).indexOf('risk'), nxt=xs[ix+1];
+   var progLine='<div class="gn-progress"><div class="gn-progress-n"><b>'+dn+' of '+xs.length+'</b><span>steps done in this part</span></div><div class="gn-bar gn-bar--thin"><i style="--w:'+Math.round(100*dn/xs.length)+'%"></i></div></div>'
+     +'<div class="st-fold"><span><b>Step '+(ix+1)+' of '+xs.length+'</b> \u00b7 Risk review</span><span class="st-fold-r">'+dn+' done'+(nxt?' \u00b7 next, '+esc(nxt.t):'')+' \u00b7 <span class="gn-link" data-act="journey" data-g="approve">Show all steps</span></span></div>';
    var strip = status==='review' ? '<div class="just"><b>In review.</b><span>Each area updates as it clears. The agreement is issued when all six pass.</span></div>' : status==='cleared' ? '<div class="just ok"><b>Cleared.</b><span>All six areas passed. Agreement issued.</span></div>' : '';
    var areas=secH('What Discover reviews', 'Six areas')+doc(RISK_AREAS.map(function(a){ return [a[0], esc(a[1]), ''] }).map(function(c,i){ return [c[0], c[1]+'<div class="gn-doc-s">'+(status==='cleared'?word('pass'):status==='review'?sw('In review','wa'):sw('Awaiting documents',''))+'</div>', ''] }));
    var onfile=secH('From your account', String(known().length)+' details')+'<p class="para">Company details fill the questionnaire from your account.</p>';
+   var firstMissing=(RISK_DOCS.filter(function(d){ return !(up[d.k]||STAGE>=4) })[0]||{}).k;
    var docs=secH('From you', got+' of '+RISK_DOCS.length)+'<div class="ds-grid three">'+RISK_DOCS.map(function(d){ var ok=up[d.k]||STAGE>=4;
-     return '<article class="dsh"><span class="gn-eyebrow">'+esc(d.area)+'</span><h3>'+esc(d.t)+'</h3><span class="dsh-m">'+esc(d.d)+'</span><div class="dsh-s">'+(ok?word('Received'):'<button class="gn-btn gn-btn--sm" data-act="upload" data-k="'+d.k+'">'+(d.k==='ctl'?'Open the questionnaire':'Upload')+'</button>')+'</div></article>' }).join('')+'</div>';
+     return '<article class="dsh"><span class="gn-eyebrow">'+esc(d.area)+'</span><h3>'+esc(d.t)+'</h3><span class="dsh-m">'+esc(d.d)+'</span><div class="dsh-s">'+(ok?word('Received'):'<button class="gn-btn gn-btn--sm'+(firstMissing===d.k?' gn-btn--primary':'')+'" data-act="upload" data-k="'+d.k+'">'+(d.k==='ctl'?'Open the questionnaire':'Upload')+'</button>')+'</div></article>' }).join('')+'</div>';
    var who=secH('Who is involved')+'<div class="sc-p inset">'+['dana','marcus'].map(function(k){return av(k,'a28')}).join('')+'<span>Dana, Marcus and the network’s risk team</span></div>';
-   return head+strip+areas+onfile+docs+who;
+   return head+progLine+strip+docs+onfile+areas+who;
  };
  /* ── phase 1 · a third party under the confidentiality agreement ── */
  PARTNER.third=function(){
-   var head=backTo('Agreements','data-go2="agreement"')+ph('Add a third party', 'Send a confidentiality agreement to a processor or vendor.');
+   var head=backTo('Agreements','data-go2="agreement"')+ph('Add a third party \u00b7 Agreements', '<b>'+(SCENE.third?'Sent to '+esc(SCENE.third)+'.':'One agreement per organization.')+'</b> A processor or vendor that will see network material signs its own confidentiality agreement.');
    var done = SCENE.third ? '<div class="just ok"><b>Sent to '+esc(SCENE.third)+'.</b><span>Access to network material opens when they sign. '+goLink('Agreements','data-go2="agreement"')+'</span></div>' : '';
    var form = SCENE.third ? '' : '<div class="sc"><div class="sc-h"><span class="sc-k">Third party</span><h2>Add a third party</h2><p>One agreement per organization.</p></div><form class="gn-ask" onsubmit="return false"><label class="gn-field"><span class="gn-field-l">Organization</span><input class="gn-in" id="tpOrg" placeholder="Meridian Processing"></label><label class="gn-field"><span class="gn-field-l">Contact</span><input class="gn-in" placeholder="legal@meridianprocessing.example"></label><label class="gn-field"><span class="gn-field-l">What they will see<small>the specification, the rules, or both</small></span><select class="gn-in"><option>Technical specification</option><option>Operating rules</option><option>Both</option></select></label><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="thirdSend">Send their agreement</button><span class="gn-link cancel" data-go2="agreement">Cancel</span></div></form></div>';
    return head+done+form;
  };
  PARTNER.integrations=function(){
    var sb=SCENE.sandbox||STAGE>=3, signed=STAGE>=4;
-   var head=ph('Integrations', 'How far your integration has progressed.', '<a class="gn-btn" href="mailto:priya@brightline.example">Ask Priya</a>');
+   var head=openHead('Integrations \u00b7 '+ORG.n, STAGE>=5?'Production live since May 14. Certificate expires April 2, 2027':signed?'Certification '+(SCENE.validated||STAGE>=5?'validated':'in progress')+', production at activation':sb?'Sandbox open, certification after signature':'Sandbox opens when Discover provisions it', 'How far your integration has progressed, and the values the network holds for it.', '<a class="gn-btn" href="mailto:priya@brightline.example">Ask Priya</a>');
    var env=secH('Environments')+envTiles();
    var cred=secH('Credentials', sb?'Held by Priya Raghavan':'Issued when the sandbox opens')+doc([
      ['Held by','Priya Raghavan, lead integration engineer','Named by you, March 9'],
@@ -7710,8 +7714,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var perf = live() ? secH('API performance', 'Production, 24 hours')+figs([['Requests','48,211',''],['Errors','3.2%','1,543 requests'],['Issuer answer, median','44 ms','p99 210 ms'],['Availability','99.98%','30 days']], 'gn-figs--compact') : '';
    /* Rich, September 11: settings-style pages take a page tab per group */
    var igT=tab('igTab','env');
-   var igTabs=ptabs('igTab',[['env','Environments'],['perf','Performance'],['cred','Credentials'],['cert','Certification'],['spec','Specification'],['ids','Identifiers'],['keys','Keys']],'env');
-   return head+igTabs+(igT==='perf'?perf:igT==='cred'?cred:igT==='cert'?cert:igT==='spec'?spec:igT==='ids'?ids:igT==='keys'?keys:env);
+   var igTabs=ptabs('igTab',[['env','Environments'],['cred','Credentials and keys'],['cert','Certification'],['spec','Specification'],['ids','Identifiers']],'env');
+   return head+igTabs+(igT==='cred'?cred+keys:igT==='cert'?cert:igT==='spec'?spec:igT==='ids'?ids:env+perf);
  };
  /* the card-not-present report: what a question opens. Fourteen days of the rate against the overall,
     where the traffic sits by merchant, the declines behind it, and the alert that explains the drop. */
@@ -8431,7 +8435,17 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var w2='<div class="wg"><div class="wg-h"><h2>Webhooks</h2>'+goLink('Open','data-go2="webhooks"')+'</div>'+doc([['Endpoints', String(eps.length), eps.length?eps.filter(function(x){return x.on}).length+' active':'none'],['Last delivery', e==='prod'?'June 2, 6:02 AM':eps.length?'May 8, 4:40 PM':'—', ''],['Failed, 24 hours', e==='prod'?'1':'0', '']])+'</div>';
    var w3='<div class="wg"><div class="wg-h"><h2>API version</h2>'+goLink('Changelog','data-go2="changelog"')+'</div>'+doc([['Yours','v4.2','current'],['Latest','v4.2',''],['Retiring','v3, December 31, 2026','no calls from you on v3']])+'</div>';
    var w4='<div class="wg"><div class="wg-h"><h2>Limits and expiry</h2>'+goLink('API keys','data-go2="keys"')+'</div>'+doc([['Rate limit', e==='prod'?'1,240 of 5,000 a minute':'40 of 500 a minute', 'peak, 24 hours'],['Certificate', e==='prod'?PROD_CERT.expires:'March 9, 2027', e==='prod'?certLeft():'sandbox'],['Secret rotation', 'October 2', 'next due']])+'</div>';
-   return head+chk+f+dcards+recentErr+'<div class="wg-grid">'+w1+w2+w3+w4+'</div>';
+   /* the Home layout (Rich, September 11): what needs her, the figures, then the areas of the integration by category */
+   var certLeftT=(typeof certLeft==='function')?certLeft():'';
+   var areas=tiles([
+     {t:'Alerts', n:als.length, s:dvAct.length?sw(nn(dvAct.length,'need')+(dvAct.length===1?'s':'')+' you','wa'):sw('Nothing open','ok'), d:als.length?esc(als[0].t)+'.':'Nothing failing or about to expire.', a:'Open alerts', go:'alerts'},
+     {t:'Webhooks', n:eps.length, s:e==='prod'?sw('1 delivery failing','wa'):eps.length?sw('Delivering','ok'):sw('No endpoints',''), d:eps.length?eps.filter(function(x){return x.on}).length+' active. Last delivery '+(e==='prod'?'June 2, 6:02 AM':'May 8, 4:40 PM')+'.':'Add an endpoint to receive events.', a:'Open webhooks', go:'webhooks'},
+     {t:'API keys', n:keys.length, s:keys.some(function(k){return k.grace!==undefined})?sw('One rotating','wa'):sw('In use','ok'), d:(keys[0]?'Last used '+esc(keys[0].last||'today')+'. ':'')+(STAGE>=5?'3 of 3':STAGE>=4?'2 of 3':'1 of 3')+' certificates uploaded.', a:'Open API keys', go:'keys'},
+     {t:'Certification', s:STAGE>=5||SCENE.validated?sw('Validated','ok'):STAGE>=4?sw('In progress','wa'):sw('Opens at signature',''), d:STAGE>=5?'Passed May 8, validated end to end.':STAGE>=4?certPassing()+' of '+certTotal()+' cases passing.':'Cases open at signature.', a:'Open certification', go:'cert'},
+     {t:'Configuration', s:STAGE>=5||SCENE.cfgOk?sw('Confirmed','ok'):STAGE>=4?sw('Needs you','wa'):sw('At signature',''), d:STAGE>=4?CONFIG.length+' values from the agreement, '+(SCENE.cfgOk||STAGE>=5?'all confirmed.':'to confirm before certification.'):'Read from the agreement once it is signed.', a:'Open configuration', go:'config'},
+     {t:'Limits and expiry', s:sw('Inside','ok'), d:(e==='prod'?'1,240 of 5,000 a minute at peak. Certificate expires '+esc(PROD_CERT.expires)+(certLeftT?', '+esc(certLeftT):'')+'.':'40 of 500 a minute. Sandbox certificate expires March 9, 2027.')+' Secret rotation due October 2.', a:'Open API keys', go:'keys'}
+   ]);
+   return head+f+secH('By area')+areas;
  };
 
  /* ── API keys: objects you create, reveal, rotate, expire ── */
@@ -8593,8 +8607,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      ['Activation', F.st.date==='done'?word('Done'):F.st.date==='dgn'?sw(SCENE.actDate?'Scheduled':'Not yet scheduled','wa'):sw('After certification',''), F.st.date==='done'?'May 14, 6:00 AM ET, Marcus Bell':SCENE.actDate||'Marcus Bell schedules it once the three objects above are ready', '']
    ];
    var t=tbl2([['Object'],['Status'],['Detail'],['']], rows.map(function(r){ return [esc(r[0]), r[1], esc(r[2]), r[3]] }));
-   var first = lv ? secH('First hour', 'May 14')+figs([['Authorizations','2,104','first at 6:04 AM'],['Approved','96.9%',''],['Median issuer answer','43 ms',''],['Webhook deliveries','2,118','0 failed']])+secH('Since then')+healthFigs('gn-figs--compact') : secH('On the day')+'<p class="para">Activation is at 6:00 AM ET on the scheduled day. Production traffic appears in Logs from the first authorization.</p>';
-   return head+secH('Readiness', F.st.chain==='done'&&F.st.prodep==='done'?'Ready':'')+t+first;
+   var first = lv ? figs([['Authorizations','2,104','first at 6:04 AM'],['Approved','96.9%',''],['Median issuer answer','43 ms',''],['Webhook deliveries','2,118','0 failed']])+doc([['Activated','May 14, 6:00 AM ET','Marcus Bell'],['First authorization','6:04 AM','approved in 41 ms'],['First settlement','May 15, 6:02 AM','$1.39M net']]) : secH('On the day')+'<p class="para">Activation is at 6:00 AM ET on the scheduled day. Production traffic appears in Logs from the first authorization.</p>';
+   var glT=tab('glTab','ready');
+   return head+ptabs('glTab',[['ready','Readiness'],['first',lv?'The first hour':'On the day']],'ready')+(glT==='first'?first:t);
  };
  /* ── Alerts: what is failing, expiring, changing; each names an action ── */
  function devAlertCard(a){ return '<article class="gn-notice"><div class="gn-notice-h">'+(a.st?sw(a.st,a.tone):a.kind==='action'?sw('Action needed','wa'):sw('For information',''))+'<span>'+ENVN[envSel()]+'</span></div><h3>'+esc(a.t)+'</h3><p>'+esc(a.d)+'</p><div class="gn-notice-f">'+goLink(a.act,'data-go2="'+a.go+'"')+'</div></article>' }
@@ -8781,13 +8796,14 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       + secH('What the answer read', nn(Q.read.length,'value')+' from your own configuration')
       + doc(Q.read.map(function(r){ return [r[0], esc(r[1]), r[2]] }));
    }
-   var head=ph('Support', 'Environment status and how to reach support.');
+   var head=ph('Support', '<b>Sandbox'+(STAGE>=4?', certification':'')+(STAGE>=5?' and production are':' is')+' open.</b> Ask in plain words, open a case, or reach the people who work your account.');
    /* the question is asked here, in plain words. The answer reads Brightline's own configuration. */
    var ask=secH('Ask', 'Answered from your own configuration')+'<form class="gn-ask inset" onsubmit="return false"><textarea class="gn-in" id="devQBox" rows="2" placeholder="Ask in plain words">'+(SCENE.devDraft?esc(DEVQ.q):'')+'</textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="devAsk">Ask</button></div></form>';
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
    var always=secH('Channels')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
-   return head+ask+casesSection()+status+ppl+always;
+   var spT=tab('supTab','ask');
+   return head+ptabs('supTab',[['ask','Ask'],['cases','Cases'],['env','Environments'],['people','Contacts']],'ask')+(spT==='cases'?casesSection():spT==='env'?status:spT==='people'?ppl+always:ask);
  };
  DEV.case=function(){ return casePage('Support','data-go2="support"') };
 
@@ -10891,13 +10907,15 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       on his side and comes back to this page with the plan on it (Rich, September 11). */
    if(!sent && !SCENE.xpPlan) return ph('Add Wallets', '<b>Request started '+esc(dayName(NOW))+'.</b> Marcus Bell builds the plan from your record and sends it here. Nothing to answer yet.')
      + secH('Both tracks', 'This time, against the first time')+xpTracks(true);
+   var steps5=['Review and send','Discover approves','Schedule A amendment','Countersignature','Activation'];
+   var progLine=sent?'':'<div class="gn-progress"><div class="gn-progress-n"><b>0 of '+steps5.length+'</b><span>steps done</span></div><div class="gn-bar gn-bar--thin"><i style="--w:0%"></i></div></div><div class="st-fold"><span><b>Step 1 of '+steps5.length+'</b> \u00b7 Review and send</span><span class="st-fold-r">next, Discover approves \u00b7 <span class="gn-link" data-go2="relearn">Show all steps</span></span></div>';
    var planLine = (!sent && SCENE.xpPlan) ? '<div class="just"><b>Plan from Marcus Bell, sent just now.</b><span>'+n+' answers are on file from your record. '+nn(xpNew().length,'answer')+' the network cannot know '+(xpNew().length===1?'is':'are')+' yours to enter below.</span></div>' : '';
    var head=ph('Add Wallets',
      sent ? 'Sent to Discover with '+n+' answers carried from your record.'
           : 'Confirm what the network already holds and answer what it cannot know.',
      sent ? xpSentWord() : '');
    return sent ? head + xpSentBody(rows, n) + xpWorth() + xpNext()
-               : head + planLine + xpWorth() + xpConfirm(rows, n, done) + xpAsk() + xpNext() + (canAct('expand') ? xpSendBlock(rows) : '');
+               : head + progLine + planLine + xpWorth() + xpConfirm(rows, n, done) + xpAsk() + xpNext() + (canAct('expand') ? xpSendBlock(rows) : '');
  };
  function xpSentWord(){ var rs=SCENE.reqBl||'review'; return rs==='approved'?word('Approved'):rs==='declined'?sw('Declined','no'):sw('In review','wa') }
 
