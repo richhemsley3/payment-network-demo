@@ -9287,7 +9287,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    runCall:function(){ SCENE.ran=true; drawApp(VIEW); },
    feasible:function(){ var t=$('#feasBox'); SCENE.feasible=(t&&t.value.trim())||'Feasible. Our ISO 8583 maps onto Acceptance directly; tokens are a small addition.'; drawApp(VIEW); toast('Feasibility confirmed'); },
    fire:function(){ var i=+tab('card',0), t=TESTS[i], r=TESTRES[t[0]]; SCENE.fired=i; SCENE.ran=true; SCENE.log=(SCENE.log||[]).concat([['Just now', t[0], t[1], (r.j.match(/"response_code": "(\d+)"/)||[0,'00'])[1], r.ms]]); drawApp(VIEW); },
-   sign:function(){ askDialog({t:'Sign the participation agreement?', p:'PA-2026-0341 binds Brightline Bank Payments LLC to the schedule as issued. Two signatures on your side, one on ours. Contracting opens the same day.', ok:'Sign for Brightline Bank', go:function(){ SCENE.signed=true; repaint(); toast('Signed. Contracting opens today.') }}) },
+   sign:function(){ askDialog({t:'Sign the participation agreement?', p:'PA-2026-0341 binds Brightline Bank Payments LLC to the schedule as issued. Two signatures on your side, one on ours. Contracting opens the same day.', ok:'Sign for Brightline Bank', go:function(){ SCENE.signed=true; SCENE.group=null; /* the part is complete, so Getting started returns to the hub */ repaint(); toast('Signed. Contracting opens today.') }}) },
    certCheck:function(){ SCENE.certOk=true; drawApp(VIEW); toast('CONN-02 passed. 21 of 21.') },
    certRun:function(){ SCENE.certRan=true; drawApp(VIEW); toast('Run complete against the contracts and waivers on file') },
    certSubmit:function(){ SCENE.certSubmitted=true; drawApp(VIEW); toast('Submitted for validation') },
