@@ -4229,59 +4229,62 @@ body.mode-prep #prepbar{display:flex}
  /* ── the ten panels. Each sets a seat, a stage and a screen. ─── */
  /* Eighteen panels in six acts, from the script's second version (notes/storyboard-v2.md).
     Paraphrased into story voice; nothing is copied from the document. */
+ /* a panel declares the state it starts in (start) and the one control the viewer presses to
+    move it (press). Every panel performs its action; none arrives on the result. A panel with
+    no press is one where the network moves and the seat reads it. */
  var PANELS = [
-  {n:1,  act:1, t:'The First Look',               seat:'priya', stage:0, view:'site',
+  {n:1,  act:1, t:'The First Look',               seat:'priya', stage:0, view:'site', press:{t:'Try it out', why:'the sandbox, from the marketing page'},
    emo:'Curious, and quickly convinced.',
    d:'Priya finds the public site while weighing issuer processing for Brightline Bank. No invitation and nobody to call. Try it out puts her on the sandbox, where a preview account gets her a key of her own, and one authorization comes back approved. Then she names Dana as the person who decides, and asks the network to reach out.'},
-  {n:2,  act:1, t:'The Opportunity Surfaces',     seat:'marcus', stage:1, view:'inbound',
+  {n:2,  act:1, t:'The Opportunity Surfaces',     seat:'marcus', stage:1, view:'inbound', press:{t:'Reply to Dana Iverson'},
    emo:'Surprised her engineer found it first.',
    d:'The account Priya created is the first the network knows of Brightline Bank, and it arrives carrying what she read, what she ran, and who she said decides this. Marcus replies to Dana rather than cold-calling her, and neither side starts from nothing.'},
-  {n:3,  act:1, t:'Built Around Her',             seat:'dana',  stage:1, view:'deal',
+  {n:3,  act:1, t:'Built Around Her',             seat:'dana',  stage:1, view:'deal', press:{t:'Confirm the deal'},
    emo:'Surprised, then flattered.',
    d:'Dana opens a page built for Brightline Bank: the products that fit, what the network needs, nothing to fill in yet. The same page she will still be using years from now.'},
   {n:4,  act:1, t:'The Go-Ahead',                 seat:'priya', stage:2, view:'start',
    emo:'Validated.',
    d:'Dana says Brightline Bank is serious, and Priya’s own session opens further: the sandbox, the requirements, the configuration she could not see before. Nothing restarts.'},
-  {n:5,  act:1, t:'Her Own Time, Her Own Terms',  seat:'priya', stage:3, view:'start',
+  {n:5,  act:1, t:'Her Own Time, Her Own Terms',  seat:'priya', stage:3, view:'start', press:{t:'Open the reference'},
    emo:'Empowered.',
    d:'A technical environment already shaped around Brightline Bank, with the path in view: how many steps, which are required and which are not, before she spends real time.'},
-  {n:6,  act:1, t:'The Green Light',              seat:'dana',  stage:4, view:'start',
+  {n:6,  act:1, t:'The Green Light',              seat:'dana',  stage:4, view:'start', press:{t:'Continue'},
    emo:'Confidence, then momentum.',
    d:'Priya says it is feasible and Dana signs. The site she had been reading becomes her own: four things she and Priya already gave are carried forward and named, and what is left is the administrative work, with the documents to provide in it. Priya\u2019s own Getting started moves to integration.'},
-  {n:7,  act:2, t:'The Same Picture From Every Seat', seat:'dana', stage:4, view:'start', scene:{gs:'all'},
+  {n:7,  act:2, t:'The Same Picture From Every Seat', seat:'dana', stage:4, view:'start', press:{sel:'[data-tab="gs:all"]', t:'Everything'},
    emo:'Calm control.',
    d:'Dana switches from her own steps to the whole process. Her administrative track and Priya\u2019s technical one, read from one place, with no status call and nobody to ask.'},
-  {n:8,  act:2, t:'Never Stuck for Long',         seat:'priya', stage:4, view:'cert',
+  {n:8,  act:2, t:'Never Stuck for Long',         seat:'priya', stage:4, view:'cert', press:{t:'Upload chain'},
    emo:'Frustration, then confidence.',
    d:'A step fails mid-configuration. The logs are already open, the cause is already named, and it is settled in the same session rather than becoming a ticket.'},
-  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', scene:{gs:'all'},
+  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', start:{gs:'all'}, press:{sel:'[data-act="gsMine"]', t:'Open the home'},
    emo:'Quiet, shared pride.',
    d:'The reading panel 7 opened, at the moment both tracks finish. Getting started has retired, so it arrives on the home that replaced it. Nobody calls a meeting.'},
-  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support', scene:{devQ:1},
+  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support', start:{devDraft:1}, press:{sel:'[data-act="devAsk"]', t:'Ask'},
    emo:'Relief, then confidence.',
    d:'Priya asks in plain words whether a capability Brightline has not taken yet fits what she has built. The answer confirms rather than hedges, because it read her own configuration first and says which values it read.'},
-  {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'jsearch',
+  {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'jsearch', start:{jsDraft:1}, press:{sel:'[data-act="jsGo"]', t:'検索'},
    emo:'Surprised, then impressed.',
    d:'In Tokyo, Aiko Mori asks in Japanese about a requirement inside a policy update. One search answers across the operating rules, the release material and the implementation manuals, in her language, with the English beside it.'},
-  {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases',
+  {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases', start:{relDraft:'v9'}, press:{sel:'[data-act="relPub"]', t:'Publish'},
    emo:'Informed, not blindsided.',
    d:'A release carries a policy change. It reaches Brightline Bank’s record as a dated, versioned item the moment Marcus publishes it, rather than an attachment that can be missed.'},
-  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notices',
+  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notice', start:{nk:'v9'}, press:{sel:'[data-act="wvAsk"]', t:'Request a waiver'},
    emo:'A formal process, not a favour.',
    d:'Brightline Bank cannot meet one clause yet, so Dana asks for a waiver on the same record. Marcus decides, and the reasoning sits where both sides read it.'},
-  {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert',
+  {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert', start:{certRerun:1}, press:{sel:'[data-act="certRun"]', t:'Run the cases'},
    emo:'Confidence, on both sides.',
    d:'The tests say what they are testing against: the contracts and the waivers on file. The transaction log underneath is searchable from both seats, so neither takes the other’s word.'},
   {n:15, act:5, t:'Noticed Before She Had to Ask', seat:'dana', stage:6, view:'alerts',
    emo:'Told before she asked.',
    d:'Something moves in the traffic and the network says so before Dana asks. The alert names what changed, who holds it, and what to look at next.'},
-  {n:16, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights',
+  {n:16, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights', press:{t:'Ask about decisioning'},
    emo:'Genuine interest.',
    d:'Unasked, Dana is shown how Brightline Bank compares with participants like it, and what a capability they have not taken would be worth. The numbers underneath open.'},
-  {n:17, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'relearn',
+  {n:17, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products', press:{sel:'#nav [data-go="expand"], nav [data-go="expand"]', t:'Add a product'},
    emo:'Familiar ease.',
    d:'Dana asks for a new product from the same place the relationship started. Business and technical run side by side again, and both are far shorter this time.'},
-  {n:18, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand',
+  {n:18, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand', start:{xpStarted:1}, press:{t:'Confirm and send'},
    emo:'Ease, and loyalty.',
    d:'The request arrives filled in from what Brightline Bank already established, down to the technical contacts, with what the product is expected to be worth beside it. She confirms rather than supplies.'}
  ];
@@ -5613,7 +5616,7 @@ window.GNChart=(function(){
  /* which sidebar item a view belongs to. Some jobs are more than one screen — adding a
     product is what it costs and then the request — and the sidebar shows one item for
     the job. Both painters read this, or the second one undoes the first. */
- function navKey(v){ return v==='frames' ? frameNav(SEAT) : v==='relearn' ? 'expand' : v }
+ function navKey(v){ return v==='frames' ? frameNav(SEAT) : v==='relearn' ? 'expand' : v==='notice' ? 'notices' : v==='alert' ? 'alerts' : v==='product' ? 'products' : v }
  function go(v){
    if(typeof closePanel==='function') closePanel(); /* a navigation closes the slide-over: the record it showed belongs to the list it came from */
    VIEW=v;
@@ -6136,7 +6139,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={devQClear:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -6190,7 +6193,11 @@ var READ_ACTS={devQClear:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames
  }
  /* before signature the partner portal is the pre-customer portal. Panel 5
     opens on the unsigned agreement and the signature widens it. */
- function pre(){ return STAGE<4 || (PANEL===5 && !SCENE.signed) }
+ /* a panel is named, never numbered, where the code needs one: the rail has been renumbered once
+    already and every constant in here went stale with it */
+ function PN(t){ var p=PANELS.filter(function(x){return x.t===t})[0]; return p?p.n:-1 }
+ function atPanel(t){ return PANEL===PN(t) }
+ function pre(){ return STAGE<4 || (atPanel('The Green Light') && !SCENE.signed) }
  function live(){ return STAGE>=5 }
  function known(){ return KNOW.filter(function(f){
    if(f.at>STAGE) return false;
@@ -7389,7 +7396,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var signed=!pre(), early=STAGE<4 && !SCENE.issued; /* the network issuing the agreement from its side makes it ready to sign here */
    var headAct = (!signed && !early) ? '<button class="gn-btn gn-btn--primary" data-act="sign">Sign for Brightline Bank</button>' : '';
    var head=ph('Agreements', 'What you have signed and acknowledged.', headAct);
-   var just = signed && PANEL===5 ? '<div class="just"><b>Agreement signed.</b><span>Configuration is open for your engineer. '+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
+   var just = signed && atPanel('The Green Light') ? '<div class="just"><b>Agreement signed.</b><span>Configuration is open for your engineer. '+goLink('Getting started','data-go2="start"')+'</span></div>' : '';
    var parties=[['Brightline Bank Payments LLC','Your team. Executed with the deal.',word('Done')]].concat(SCENE.third?[[esc(SCENE.third),'Third party. Sent for signature.',sw('Sent','wa')]]:[]);
    var ack=SCENE.acked||{}, nAck=RULES.filter(function(r){return ack[r.k]||STAGE>=3}).length;
    var shelf='<div class="ds-grid">'+[
@@ -7768,7 +7775,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    return head+f+ch+cyc+acct+fees+inv;
  };
  /* ── notices: the reason a partner signs in on a Tuesday ── */
- function noticesOpen(){ var ack=SCENE.acked||{}; return NOTICES.filter(function(n){ if(n.liveOnly && !live()) return false; if(n.pre && live()) return false; if(n.go==='rules' && (ack[n.k]||STAGE>=3)) return false; if(n.k==='maint' && STAGE>=3) return false; return true }) }
+ function noticesOpen(){ var ack=SCENE.acked||{}; return NOTICES.filter(function(n){ if(SCENE.relDraft===n.k && !(SCENE.relPub||{})[n.k]) return false; if(n.liveOnly && !live()) return false; if(n.pre && live()) return false; if(n.go==='rules' && (ack[n.k]||STAGE>=3)) return false; if(n.k==='maint' && STAGE>=3) return false; return true }) }
  /* a notice with an acknowledgement date: days left while it is open, overdue once the date passes */
  function ntDue(n){ return n.due && !(SCENE.ntAck||{})[n.k] ? daysLeft(n.due) : null }
  function ntLate(n){ var d=ntDue(n); return d!==null && d<0 }
@@ -8288,7 +8295,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    st.key = STAGE>=4 || (SCENE.keys||[]).length ? 'done' : a.sandbox ? 'now' : 'wait';
    st.ep  = STAGE>=4 || devEndpoints().length ? 'done' : a.sandbox ? 'now' : 'wait';
    st.cfg = S.st.cfg==='done' ? 'done' : signed ? 'now' : 'wait';
-   st.cert= S.st.cert==='done' ? 'done' : signed && (SCENE.cfgOk||PANEL===7) ? 'now' : 'wait';
+   st.cert= S.st.cert==='done' ? 'done' : signed && (SCENE.cfgOk||atPanel('Never Stuck for Long')) ? 'now' : 'wait';
    st.window = STAGE>=5 ? 'done' : signed ? 'dgn' : 'wait';
    st.chain = STAGE>=5 || SCENE.prodChain ? 'done' : STAGE>=4 && !pre() ? 'now' : 'wait';
    st.prodep = STAGE>=5 || SCENE.prodEp ? 'done' : STAGE>=4 && !pre() ? 'now' : 'wait';
@@ -8623,7 +8630,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    st.spec = STAGE>=4 ? 'done' : SCENE.read ? 'done' : called ? 'now' : 'wait';
    st.feas = STAGE>=4 ? 'done' : SCENE.feasible ? 'done' : SCENE.read ? 'now' : 'wait';
    st.cfg  = live_ ? 'done' : signed ? (SCENE.cfgOk?'done':'now') : 'wait';
-   st.cert = live_ ? 'done' : signed ? (SCENE.cfgOk||PANEL===7?'now':'wait') : 'wait';
+   st.cert = live_ ? 'done' : signed ? (SCENE.cfgOk||atPanel('Never Stuck for Long')?'now':'wait') : 'wait';
    st.prod = live_ ? 'done' : 'wait';
    var open=DEV_STEPS.filter(function(x){return st[x.k]!=='done'}).length;
    var cur=DEV_STEPS.filter(function(x){return st[x.k]==='now'})[0] || DEV_STEPS.filter(function(x){return st[x.k]!=='done'})[0];
@@ -8635,7 +8642,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
     One button at a time: Upload chain while the snag is open, Check the chain once the chain is
     up, Submit for validation once every case is seen and passing. */
  function certCases(){
-   var snagLive = STAGE===4 && PANEL===7 && !SCENE.certOk;
+   var snagLive = STAGE===4 && atPanel('Never Stuck for Long') && !SCENE.certOk;
    return CERT.groups.map(function(g){ return {n:g.n, cases:g.cases.map(function(x){ var d=CERT_CASES[x[0]]||{};
      var seen = STAGE<4 ? null : (x[0]==='CONN-02' ? (SCENE.certOk ? '2:44 PM' : (snagLive ? '2:21 PM' : '2:44 PM')) : d.seen||'May 6, 2:44 PM');
      var res = seen===null ? null : (x[0]==='CONN-02' && snagLive) ? 'fail' : 'pass';
@@ -8651,7 +8658,15 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       +'<p class="para">Cases open at signature. Your host sends each one to cert.api.dgn.com; a case turns green when the network sees it.</p>'+certBasis()
       +groups.map(function(g){ return secH(esc(g.n), nn(g.cases.length,'case'))+tbl2([['Case'],['What it checks'],['Who sends it']], g.cases.map(function(x){ return [ '<i class="gn-mono">'+esc(x.id)+'</i>', esc(x.t), x.by==='network'?'The network':'Your host' ] })) }).join('');
    }
-   var snagLive = STAGE===4 && PANEL===7 && !SCENE.certOk, snag=CERT.snag;
+   var snagLive = STAGE===4 && atPanel('Never Stuck for Long') && !SCENE.certOk, snag=CERT.snag;
+   /* panel 14: the terms changed since the last run, so the suite is run again from here. The cases
+      are generated from the contracts and waivers on file, which the notice above the run says. */
+   if(SCENE.certRerun && !SCENE.certRan){
+     var wvA=wvFor('brightline').filter(function(x){return x.st==='approved'});
+     return ph('Certification', 'Test cases generated from your configuration and run from your host.', '<button class="gn-btn gn-btn--primary" data-act="certRun">Run the cases</button>')
+      +'<p class="para">'+(wvA.length?'A waiver was approved on '+esc(wvA[0].on||'the record')+' and nothing has run against it yet.':'The terms on file changed and nothing has run against them yet.')+' The run sends '+total+' cases from your host to cert.api.dgn.com and keeps the log of each.</p>'+certBasis()
+      +figs([['Cases', String(total), 'from your configuration'],['Last run', 'May 6', 'validated May 8'],['Against', wvA.length?'1 waiver':'No waivers', 'and the contracts on file'],['Log', 'Kept', 'searchable from both seats']], 'gn-figs--compact');
+   }
    var ready = seen===total && pass===total && STAGE<5 && !SCENE.certSubmitted;
    var status = STAGE>=5 || SCENE.validated ? word('Validated') : SCENE.certSubmitted ? sw('Submitted','') : ready ? '<button class="gn-btn gn-btn--primary" data-act="certSubmit">Submit for validation</button>' : sw('In progress','wa');
    var head=c?'':ph('Certification', 'Test cases generated from your configuration and run from your host.', status)
@@ -8659,7 +8674,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      +figs([['Seen', seen+' of '+total, 'by the network'],['Passing', pass+' of '+total, seen<total?'not yet seen: '+(total-seen):''],['Window', winMoved()?SCENE.winReq:CERT.window, winMoved()?'confirmed by Ana Okafor':'Ana Okafor validates'],['Validation', STAGE>=5?'Passed May 8':SCENE.validated?'Passed today':SCENE.certSubmitted?'Booked':'Pending', STAGE>=5||SCENE.validated?'end to end':'after submission']]);
    /* the snag: what the network saw, what it worked out, and the one thing to do next */
    var caught='';
-   if(STAGE===4 && PANEL===7){
+   if(STAGE===4 && atPanel('Never Stuck for Long')){
      var diag = SCENE.diagnosed, up = SCENE.certUp, ok = SCENE.certOk;
      var stw = ok ? word('Passed') : up ? sw('Chain uploaded','wa') : sw('Failed','no');
      var foot = ok ? '<div class="al-f">Passed at 2:44 PM. The network sees the full chain. Nothing else to do on this case.</div>'
@@ -8671,7 +8686,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       +'<div class="al-s">'+snag.caught.slice(0, diag?4:1).map(function(s){ return '<div><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div>'
       +'<div class="gn-eyebrow inset">What the network saw</div>'+ink('TLS handshake  203.0.113.40 → cert.api.dgn.com:443  '+esc(snag.at)+'\nclient certificate: CN=api.brightline.example\nchain: leaf → (missing intermediate) → root\nresult: handshake_failed','sm')
       +foot+'</article>';
-     if(!diag && !ok){ setTimeout(function(){ if(PANEL===7 && !SCENE.diagnosed){ SCENE.diagnosed=true; drawApp(VIEW) } }, MOTION?2400:0) }
+     if(!diag && !ok){ setTimeout(function(){ if(atPanel('Never Stuck for Long') && !SCENE.diagnosed){ SCENE.diagnosed=true; drawApp(VIEW) } }, MOTION?2400:0) }
    }
    if(c) return head+caught+rows(groups.map(function(g){ var p=g.cases.filter(function(x){return x.res==='pass'}).length;
      return {t:esc(g.n), r:'<span class="gn-num">'+p+' of '+g.cases.length+'</span>'+(p===g.cases.length?word('pass'):sw(p+' of '+g.cases.length,'no'))} }),'gn-rows--compact');
@@ -8701,10 +8716,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       + doc(Q.read.map(function(r){ return [r[0], esc(r[1]), r[2]] }));
    }
    var head=ph('Support', 'Environment status and how to reach support.');
+   /* the question is asked here, in plain words. The answer reads Brightline's own configuration. */
+   var ask=secH('Ask', 'Answered from your own configuration')+'<form class="gn-ask inset" onsubmit="return false"><textarea class="gn-in" id="devQBox" rows="2" placeholder="Ask in plain words">'+(SCENE.devDraft?esc(DEVQ.q):'')+'</textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="devAsk">Ask</button></div></form>';
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
    var always=secH('Channels')+doc(DGN_SUPPORT.map(function(x){ return [x[0], esc(x[1]), x[2]] }));
-   return head+casesSection()+status+ppl+always;
+   return head+ask+casesSection()+status+ppl+always;
  };
  DEV.case=function(){ return casePage('Support','data-go2="support"') };
 
@@ -8854,7 +8871,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var rows=healthRows(b, cur, daysIn(b), isLive, lr); var bad=rows.filter(function(r){ return r[3]==='wa' })[0]; return bad?bad[1]+(bad[2]?', '+bad[2].charAt(0).toLowerCase()+bad[2].slice(1):''):'' }
  function stepOwner(x){ var o=(NET_PART[x.k]||{}).own; return o==='network'?'The network':o==='both'?'Both sides':'Partner' }
  function stepStatus(r, b){ if(r.x.k==='agr' && b.k==='brightline' && r.st==='now' && (SCENE.issued||STAGE>=3)) return sw('Waiting on Brightline Bank',''); if(r.st==='done') return word('Done'); if(r.st==='now'){ var o=stepOwner(r.x), a=stepAction(b, r), mine=a.indexOf('agRemind')<0 && a.indexOf('gn-status')<0; /* whose move it is follows the action on the step, not only who owns it: an issued agreement waits on the partner's signature */ return o==='Both sides'?sw('In progress','wa'):mine?sw('Your turn','wa'):sw('Waiting on '+b.n,'') } if(r.st==='dgn') return sw('In review','wa'); if(r.st==='eng') return sw('With their engineer',''); return sw('Later',''); }
- function relAcked(r, b){ if(r.acked.indexOf(b.k)>=0) return true; if(b.k==='brightline' && r.k==='v9' && (SCENE.ntAck||{}).v9) return true; if((SCENE.acks||{})[r.k+'|'+b.k]) return true; return false }
+ function relAcked(r, b){ if(SCENE.relDraft===r.k && !(SCENE.relPub||{})[r.k]) return false; if(r.acked.indexOf(b.k)>=0) return true; if(b.k==='brightline' && r.k==='v9' && (SCENE.ntAck||{}).v9) return true; if((SCENE.acks||{})[r.k+'|'+b.k]) return true; return false }
  /* after an act redraws the page, focus goes to what the act became (the row, the card, the next control), else to the page title */
  /* a decision on a request asks first; a decline carries a note to the partner */
  function reqDecide(product, partner, when, go){ askDialog({t:'Approve '+product+' for '+partner+'?', p:product+' activates for '+partner+' on '+when+'. The partner sees it on their Products page.', ok:'Approve', go:function(){ go(); paintShell(); drawApp(VIEW); focusMain(); toast('Request approved') }}) }
@@ -8865,7 +8882,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* every certification window booked in the month, from the calendar and what was booked in the session */
  function certWindows(){ var w=CERT_CAL.weeks.reduce(function(a,x){ return a.concat(x[1]) },[]); if(SCENE.agBooked) w=w.concat([['Halcyon Acquiring',19,'booked']]); return w.concat(SCENE.winOk||[]) }
  /* what the network sees passing in Brightline Bank's window: the same count Priya's Certification page shows, one short only while the panel-7 snag is open */
- function certPassing(){ var t=certTotal(); return STAGE>=5 ? t : (STAGE===4 && PANEL===7 && !SCENE.certOk) ? t-1 : t }
+ function certPassing(){ var t=certTotal(); return STAGE>=5 ? t : (STAGE===4 && atPanel('Never Stuck for Long') && !SCENE.certOk) ? t-1 : t }
  /* the certification calendar with everything booked so far: the book's windows, Halcyon once booked, every confirmed request */
  function calWeeks(){ return CERT_CAL.weeks.map(function(w){ var items=w[1].slice(); if(SCENE.agBooked && w[0]==='May 11 to 15') items.push(['Halcyon Acquiring',19,'booked']); (SCENE.winOk||[]).forEach(function(r){ if(r[1]===w[0]) items.push([r[0],r[0]==='Brightline Bank'?21:19,'booked']) }); return [w[0], items] }) }
  function winFree(week){ var w=calWeeks().filter(function(x){return x[0]===week})[0]; return w ? CERT_CAL.capacity-w[1].length : 0 }
@@ -9075,7 +9092,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    /* validation is the network's action once the partner's host has submitted; while it is on screen it is the one solid button */
    var val = STAGE===4 && SCENE.certSubmitted && !SCENE.validated;
    var bookBtn = SCENE.agBooked ? '<span id="booked">'+sw('Booked May 11 to 15','')+'</span>' : '<button class="gn-btn gn-btn--sm'+(val?'':' gn-btn--primary')+'" data-act="agBook">Book May 11 to 15</button>';
-   var blLine = certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&PANEL===7&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.');
+   var blLine = certTotal()+' cases from configuration. '+(STAGE>=5?'Passed May 8, validated end to end.':SCENE.validated?'Validated end to end today.':STAGE>=4?certPassing()+' of '+certTotal()+' seen and passing.'+(STAGE===4&&atPanel('Never Stuck for Long')&&!SCENE.certOk?' CONN-02 failed on the certificate chain, which ended one link early. The full chain is with the partner’s engineer.':'')+(SCENE.certSubmitted?' Submitted for validation.':''):'Window booked when configuration is confirmed.');
    var tl=secH('Windows', 'By week')+tbl2([['Partner'],['Week'],['Cases',1],['What the network sees'],['']], [
      {c:['Brightline Bank', 'May 4 to 8', String(certTotal()), esc(blLine), val?'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agValidate">Validate</button>':word(STAGE>=5||SCENE.validated?'Done':STAGE>=4?'Now':'soon')], act:'agPartner', k:'brightline'},
      {c:['Tallgrass Payments', 'May 11 to 15', '31', 'Three fare-capping cases fail on one rounding rule. The rule has been sent.', word('soon')], act:'agPartner', k:'tallgrass'},
@@ -9157,7 +9174,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var open_=BOOK.filter(function(b){ return !relAcked(r,b) });
    var mand=RELEASES.filter(function(x){ return x.kind==='Mandate' && BOOK.some(function(b){ return !relAcked(x,b) }) }).length;
    var late = r.by && daysLeft(r.by)<0; /* the acknowledgement date has passed on the clock */
-   var f=figs([['Mandates open', String(mand), 'need acknowledgement'],['Acknowledged', (BOOK.length-open_.length)+' of '+BOOK.length, r.t],['Effective', r.eff, r.by?(late?'acknowledgement was due '+r.by:'acknowledge by '+r.by):'no acknowledgement needed']], 'gn-figs--compact');
+   /* panel 12: a release drafted and not yet published. Publishing puts it on every partner record at once. */
+   var draft = SCENE.relDraft===r.k && !(SCENE.relPub||{})[r.k], justPub=(SCENE.relPub||{})[r.k];
+   var f=figs([['Mandates open', String(mand), 'need acknowledgement'],['Acknowledged', draft?'0 of '+BOOK.length:(BOOK.length-open_.length)+' of '+BOOK.length, draft?'not yet published':r.t],['Effective', r.eff, r.by?(late?'acknowledgement was due '+r.by:'acknowledge by '+r.by):'no acknowledgement needed']], 'gn-figs--compact');
+   var pubRow = draft ? '<div class="just"><b>Drafted, not yet published.</b><span>'+esc(r.t)+' carries '+nn((POLICY[r.k]||[]).length,'policy change')+'. Publishing puts it on all '+BOOK.length+' partner records as a dated, versioned item, and opens the acknowledgement.</span><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="relPub" data-k="'+esc(r.k)+'">Publish to '+BOOK.length+' partners</button></div></div>'
+     : justPub ? '<div class="just ok"><b>Published '+esc(justPub===true?'just now':justPub)+'.</b><span>On all '+BOOK.length+' partner records, version '+esc(r.t.replace(/^.*?v?(\d+(\.\d+)?).*$/,'$1'))+', effective '+esc(r.eff)+'. Each partner sees it in Notices.</span></div>' : '';
    var segs=tabs('agRel', RELEASES.map(function(x){ var n=BOOK.filter(function(b){return !relAcked(x,b)}).length; return [x.k, x.t.split(',')[0], ct(n)] }), RELEASES[0].k);
    var rowsT=tbl2([['Partner'],['Stage'],['Acknowledged'],['']], BOOK.map(function(b){ var ok=relAcked(r,b), rem=(SCENE.reminded||{})[r.k+'|'+b.k];
      return {c:[esc(b.n), esc(bookStage(b)), ok?word('Done'):late?sw('Overdue','no'):r.by?sw('Not yet','wa'):sw('Not yet',''), ok||!r.by?'':rem!==undefined?'<span class="gn-mute">Reminded '+esc(agoWord(NOW-rem))+'</span>':'<span class="gn-link" data-act="agRemind" data-k="'+b.k+'" data-rel="'+r.k+'" aria-label="Remind '+esc(b.n)+'">Remind</span>'], act:'agPartner', k:b.k} }));
@@ -9167,7 +9188,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var attTl=secH('Attestations due', att.filter(function(x){return !x.got && x.left<30}).length+' within 30 days')+timeline(months.map(function(m){ return {day:m, items:att.filter(function(x){ return x.a.due.replace(/ \d+,/,'')===m }).map(function(x){ return {t:x.a.due.replace(/,.*$/,'').replace(/^\w+ /,''), title:esc(x.b.n), d:esc(x.a.doc), r:x.got?word('Done'):x.left<0?sw('Overdue','no'):x.left<30?sw(daysWord(x.left)+' left','wa'):sw(daysWord(x.left)+' left',''), act:'agPartner', k:x.b.k} }) } }));
    var wv=waivers().filter(function(w){return w.rel===r.k}).sort(function(a,b){ var o={requested:0,approved:1,declined:2}; return o[a.st]-o[b.st] || (b.at||0)-(a.at||0) });
    var wvT=(POLICY[r.k]||[]).length?secH('Waivers', wv.filter(function(w){return w.st==='requested'}).length+' to decide')+(wv.length?tbl2([['Partner'],['Clause'],['Term asked'],['Requested'],['Status'],['']], wv.map(function(w){ var b=BOOK.filter(function(x){return x.k===w.k})[0]; return {c:[esc(b?b.n:w.k), esc(wvClause(w).t), esc(w.term), esc(w.on), wvWord(w)+(w.st!=='requested'?' <span class="gn-mute">'+esc(w.by)+', '+esc(w.on)+'</span>':''), w.st==='requested'?'<span class="nw"><span class="gn-link" data-act="wvApprove" data-k="'+w.id+'">Approve</span> · <span class="gn-link" data-act="wvDecline" data-k="'+w.id+'">Decline</span></span>':''], act:'agPartner', k:w.k} })):'<p class="para">No partner has asked to set a clause of this release aside.</p>')+'<p class="para">An approved waiver is on file here, on the partner’s page and in the partner’s Agreements.</p>':'';
-   return head+f+segs+secH(esc(r.t), esc(r.kind)+', effective '+esc(r.eff))+rowsT+wvT+attTl;
+   if(draft) return head+f+segs+secH(esc(r.t), esc(r.kind)+', '+sw('Draft','wa'))+pubRow+secH('Policy changes', nn((POLICY[r.k]||[]).length,'clause'))+tbl2([['Clause'],['Today'],['From '+esc(r.eff)],['Waiver term']], (POLICY[r.k]||[]).map(function(c){ return [esc(c.t), esc(c.from), esc(c.to), esc(c.term)] }));
+   return head+f+segs+secH(esc(r.t), esc(r.kind)+', effective '+esc(r.eff))+pubRow+rowsT+wvT+attTl;
  };
  AGENT.golives=function(){
    var st=function(g){ return g[2]==='{live}'?(STAGE>=5?'Live':'Scheduled'):g[2]==='scheduled'?'Scheduled':g[2] };
@@ -9242,6 +9264,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    group2:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
    stepsOpen:function(){ SCENE.stepsOpen=!SCENE.stepsOpen; repaint() },
    devQClear:function(){ delete SCENE.devQ; repaint() },
+   devAsk:function(){ var t=$('#devQBox'); if(t && !t.value.trim()){ t.focus(); return } SCENE.devQ=1; delete SCENE.devDraft; drawApp(VIEW) },
    /* leaves the go-live reading for the ordinary home underneath it */
    gsMine:function(){ SCENE.gs='mine'; repaint() },
    back:function(){ SEATS=[SEAT]; SCENE.group='plan'; go('start') },
@@ -9250,6 +9273,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    shareOpen:function(){ SCENE.share=true; drawApp(VIEW); var t=$('#shareTo'); if(t) t.focus() },
    shareSend:function(){ var t=$('#shareTo'); SCENE.shared=(t&&t.value.trim())||'priya@brightline.example'; drawApp(VIEW); toast('Link sent') },
    pub:function(){ toast('Not available in this prototype') },
+   relPub:function(b){ SCENE.relPub=SCENE.relPub||{}; SCENE.relPub[b.dataset.k]=true; drawApp(VIEW); toast('Published. On '+BOOK.length+' partner records.') },
    testlog:function(){ var n=TESTLOG.length, first=TESTLOG[0]?TESTLOG[0].t:Date.now(); askDialog({t:'Session log', p:n+' steps over '+Math.round((Date.now()-first)/60000)+' minutes, from panel '+(TESTLOG[0]?TESTLOG[0].panel:PANEL)+'. '+(tasksReached().length?'Tasks reached: '+tasksReached().join(', ')+'. ':'')+'Copy puts the steps on the clipboard as JSON for the test notes.', body:'<textarea class="gn-in gn-in--mono" id="logBox" rows="6" readonly aria-label="Session log">'+esc(JSON.stringify(TESTLOG))+'</textarea>', ok:'Copy', go:function(){ var fail=function(){ toast('Select the log and copy it') }; try{ navigator.clipboard.writeText(JSON.stringify(TESTLOG)).then(function(){ toast('Session log copied') }, fail) }catch(e){ fail() } }}) },
   signout:function(){ askDialog({t:'Signed out', p:'Your session ended. Sign in again to pick up where you left off. What you typed is kept.', ok:'Sign in', only:true, go:function(){ toast('Signed in as '+seat().n) }}) },
    next:function(){ setPanel(Math.min(PANELS.length, PANEL+1)) },
@@ -9265,6 +9289,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    fire:function(){ var i=+tab('card',0), t=TESTS[i], r=TESTRES[t[0]]; SCENE.fired=i; SCENE.ran=true; SCENE.log=(SCENE.log||[]).concat([['Just now', t[0], t[1], (r.j.match(/"response_code": "(\d+)"/)||[0,'00'])[1], r.ms]]); drawApp(VIEW); },
    sign:function(){ askDialog({t:'Sign the participation agreement?', p:'PA-2026-0341 binds Brightline Bank Payments LLC to the schedule as issued. Two signatures on your side, one on ours. Contracting opens the same day.', ok:'Sign for Brightline Bank', go:function(){ SCENE.signed=true; repaint(); toast('Signed. Contracting opens today.') }}) },
    certCheck:function(){ SCENE.certOk=true; drawApp(VIEW); toast('CONN-02 passed. 21 of 21.') },
+   certRun:function(){ SCENE.certRan=true; drawApp(VIEW); toast('Run complete against the contracts and waivers on file') },
    certSubmit:function(){ SCENE.certSubmitted=true; drawApp(VIEW); toast('Submitted for validation') },
    catalog:function(){ go('catalog') },
    ruleOpen:function(b){ SCENE.rule=b.dataset.k; drawApp(VIEW); },
@@ -10283,7 +10308,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       Brightline Bank. On this panel Marcus has not opened them and the page says so. Until he takes this one
       the fallback is the partner with something waiting on him. Taking it makes Brightline Bank the open
       partner, and the sidebar gains the name as the record does. */
-   if(PANEL===2 && portalOf()==='agent' && SCENE.bk===undefined && !inTaken()) SCENE.bk='northbank';
+   if(atPanel('The Opportunity Surfaces') && portalOf()==='agent' && SCENE.bk===undefined && !inTaken()) SCENE.bk='northbank';
    inShell0();
   };
   paintShell.inBook=true;
@@ -10580,7 +10605,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 /* ═══ Panel 18, nothing to start over: the expansion request arriving filled in from what the partner already established. Owned by the expand track.
    Loaded at the EXPAND marker at the end of js.txt: every renderer, helper and act exists.
    Add pages as PARTNER.name=function(){} or AGENT.name=function(){}, acts with Object.assign(ACT,{}),
-   reads with Object.assign(READ_ACTS,{}) or AG_READ, nav with PARTNER_NAV_EXTRA / AGENT_NAV_EXTRA. ═══ */
+   reads with Object.assign(READ_ACTS,{ xpStart:1,}) or AG_READ, nav with PARTNER_NAV_EXTRA / AGENT_NAV_EXTRA. ═══ */
  var PARTNER_NAV_EXTRA = (typeof PARTNER_NAV_EXTRA!=='undefined') ? PARTNER_NAV_EXTRA : [];
  PARTNER_NAV_EXTRA.push(['expand','Add a product','','Grow']);
  /* js.txt's navFor runs pnNavPlace on the Japanese, Signer and pre-customer lists but returns the
@@ -10688,6 +10713,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  /* ── the page ─────────────────────────────────────────────────────────────── */
  PARTNER.expand=function(){
    var sent=!!SCENE.sent, rows=xpRows(), n=rows.length, done=xpDone();
+   /* panel 17: Add a product opens on what it will take this time, against the first time. The
+      request itself starts from there. */
+   if(!sent && !SCENE.xpStarted) return PARTNER.relearn();
    var head=ph('Add Wallets',
      sent ? 'Sent to Discover with '+n+' answers carried from your record.'
           : 'Confirm what the network already holds and answer what it cannot know.',
@@ -10793,7 +10821,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
       filled strip and not a second heading. */
    var head=ph('Adding '+esc(prod),
      '<b>'+now+' steps, against '+was+' the first time.</b> Both sides move at once, the way they did before, and nothing either of you already gave is asked for again.',
-     goLink('Start the request','data-go2="expand"'));
+     '<button class="gn-btn gn-btn--primary" data-act="xpStart">Start the request</button>');
    return head+secH('Both tracks', 'This time, against the first time')+xpTracks(true);
  };
  PARTNER_NAV_EXTRA;
@@ -10837,7 +10865,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
  /* ── acts ─────────────────────────────────────────────────────────────────── */
  function xpSet(k){ SCENE.xpOk=SCENE.xpOk||{}; SCENE.xpOk[k]=1 }
- Object.assign(ACT, {
+ Object.assign(ACT, { xpStart:function(){ SCENE.xpStarted=1; go('expand') },
    xpRow:function(b){ var k=b.dataset.k; SCENE.xpOpen = SCENE.xpOpen===k ? null : k; SCENE.xpEdit=null; SCENE.xpFixErr=null; drawApp(VIEW); keep('[data-act="xpRow"][data-k="'+k+'"]') },
    xpOne:function(b){ var k=b.dataset.k; xpSet(k); drawApp(VIEW); keep('[data-act="xpRow"][data-k="'+k+'"]'); toast('Answer confirmed') },
    xpGrp:function(b){ var g=b.dataset.k, gr=xpGroups().filter(function(x){return x.k===g})[0]; if(!gr) return;
@@ -10921,6 +10949,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
              : 'Brightline Bank holds no waiver on the response window, so 20 days applies from January 1, 2027. A waiver can be requested from the notice.' }
  PARTNER.jsearch=function(){
    var S=JSEARCH, ja=locJA();
+   /* the search is made from the page. The panel starts with the question typed and not yet sent. */
+   if(!SCENE.jsRan){
+     return ph(ja?'検索':'Search', ja?'運用規則、リリース資料、実装マニュアルを横断して回答します。':'One search across the operating rules, the release material and the implementation manuals.')
+      +'<form class="gn-ask inset" onsubmit="return false"><textarea class="gn-in" id="jsBox" rows="3" placeholder="'+(ja?'日本語で質問できます':'Ask in your own language')+'">'+(SCENE.jsDraft?esc(S.q):'')+'</textarea><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="jsGo">'+(ja?'検索':'Search')+'</button></div></form>';
+   }
    var head=ph(ja?S.head:S.headEn, ja?'質問：「'+S.q+'」':'From your question: “'+S.qEn+'”', '<span class="gn-link" data-act="jsClear">'+(ja?'レポートへ':'All reporting')+'</span>');
    var src=secH(ja?'参照した資料':'What the answer read', ja?'3つの資料と契約書':'Three sources and the contract')
      +'<div class="jsrc">'+S.src.map(function(x){ return '<span><b>'+esc(ja?x[0]:x[2])+'</b> '+esc(x[1])+'</span>' }).join('')+'</div>';
@@ -10930,8 +10963,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var acts='<div class="gn-actions inset">'+goLink(ja?'免除の記録を見る':'The waiver on file','data-go2="agreement"')+goLink(ja?'お知らせ v9.0':'The v9.0 notice','data-act="notice" data-k="v9"')+'</div>';
    return head+src+body+acts;
  };
- Object.assign(ACT, { jsClear:function(){ go('reporting') } });
- Object.assign(READ_ACTS, { jsClear:1 });
+ Object.assign(ACT, { jsClear:function(){ delete SCENE.jsRan; go('reporting') }, jsGo:function(){ var t=$('#jsBox'); if(t && !t.value.trim()){ t.focus(); return } SCENE.jsRan=1; drawApp(VIEW) } });
+ Object.assign(READ_ACTS, { jsClear:1, jsGo:1 });
  /* she lands on the answer, so the sidebar carries it while she is the reader */
  AGENT_NAV_EXTRA;
 
@@ -10980,7 +11013,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    if(typeof closePanel==='function') closePanel();
    var p=PANELS.filter(function(x){return x.n===n})[0]; if(!p) return;
    PANEL=n; seen[n]=1; STAGE=p.stage; SEAT=p.seat; SEATS=p.seats||[p.seat]; VIEW=p.view;
-   SCENE=p.scene?JSON.parse(JSON.stringify(p.scene)):{}; showCap=true; sitePage='home'; /* a panel may declare the state it opens in */
+   SCENE=p.start?JSON.parse(JSON.stringify(p.start)):{}; showCap=true; sitePage='home'; /* the state the panel starts in, before its press */
    /* a stale override from the earlier numbering sent panel 10 to a partner view that
       does not exist in the Developer Portal, so it fell through to Overview. Panels
       declare their own view and scene now. */
