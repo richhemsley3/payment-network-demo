@@ -3501,6 +3501,9 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .pk-lead{margin:16px 0 0; max-width:var(--gn-measure-body); line-height:var(--gn-leading-body)}
 .gn-pager .fs-i .fs-t{border-bottom:1px dashed var(--g400)}
 .pk-case .inbox-p, .pk-case .inbox-c{width:auto; border:0; padding:0} .pk-case .inbox-c{margin-top:24px; padding-top:16px; border-top:1px solid var(--gn-rule)} .pk-case .inbox-h h2{font-size:22px}
+/* the reading in the head: the scope in a quieter voice, the ways in as links on the line */
+.pg-read p{max-width:none} .pg-scope{color:var(--gn-text-caption)} .pg-links{display:inline-flex; gap:16px; margin-left:12px; white-space:nowrap}
+.pg-hl{margin-top:16px}
 
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
@@ -10316,15 +10319,25 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      if(seen[k[0]+'|'+k[1]] || seen[k[0]+'|']) f.remove() });
    if(box.querySelectorAll('.gn-fig').length < 2) box.remove();
  }
+ /* The reading is the page's own state (Rich, September 11): the bold first sentence of the line beneath the
+    H1, the evidence after it, the scope and the date at the end in a quieter voice, and the ways in as links
+    on the same line. Its figures are a highlights row at body size beneath the head. No strip, no eyebrow. */
  function pgPlace(){
    var mn=$('#mn'); if(!mn) return;
-   var old=$('.pgin', mn); if(old) old.remove();
+   var old=$('.pgin', mn); if(old) old.remove(); var oldH=$('.pg-hl', mn); if(oldH) oldH.remove();
    if(pgAsked()) return;
    var o=pgFor(); if(!o) return;
    if(mn.querySelector('.gn-open, .gn-open-h')) return;
    var head=$('.gn-page-head', mn); if(!head) return;
-   var d=document.createElement('div'); d.innerHTML=pgRender(o);
-   var el=d.firstChild; head.parentNode.insertBefore(el, head.nextSibling); pgTrimFigs(el, mn); wireApp(el);
+   var box=head.firstElementChild, p=head.querySelector('p');
+   var links=(o.acts||[]).map(function(a){ return goLink(a[0], a[1]) }).concat(o.ask?[pgAsk(o.ask)]:[]).join('');
+   var line='<b>'+esc(o.head)+(/[.!?]$/.test(o.head)?'':'.')+'</b>'+(o.st?' '+sw(o.st[0],o.st[1]):'')+(o.p?' '+o.p:'')
+     +((o.scope||o.as)?' <span class="pg-scope">'+esc(o.scope||'')+(o.scope&&o.as?', ':'')+esc(o.as||'')+'.</span>':'')
+     +(links?'<span class="pg-links">'+links+'</span>':'');
+   if(p) p.innerHTML=line; else if(box) box.insertAdjacentHTML('beforeend','<p>'+line+'</p>');
+   head.classList.add('pg-read');
+   if(o.figs&&o.figs.length){ var d=document.createElement('div'); d.innerHTML=hlRow(o.figs.map(function(x){ return [x.l, x.v, x.n] })); var el=d.firstChild; el.classList.add('pg-hl'); head.parentNode.insertBefore(el, head.nextSibling) }
+   wireApp(head);
  }
  (function(){ var d0=drawApp; drawApp=function(v, top){ d0(v, top); pgPlace() } })();
 
