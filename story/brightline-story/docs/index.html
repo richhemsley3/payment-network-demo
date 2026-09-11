@@ -3469,6 +3469,13 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .nt-grid{display:grid; gap:12px; margin-top:16px}
 @media (min-width:1100px){ .nt-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))} }
 
+/* the current technical step's guidance: practical lines on the page, and the deep
+   reference one link away. Only the step she is on carries it. */
+.ft-g{display:block; margin-top:8px}
+.ft-g i{display:block; font-style:normal; font-size:var(--gn-type-label); color:var(--gn-text-caption); line-height:var(--gn-leading-body); padding-left:12px; text-indent:-12px; max-width:var(--gn-measure-body)}
+.ft-g i::before{content:'\00b7\00a0'; color:var(--gn-text-quiet)}
+.ft-g em{display:block; font-style:normal; margin-top:8px}
+
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
 .hdr-res .ask-home{border-bottom:0; margin-bottom:0; padding-bottom:0}
@@ -4202,10 +4209,10 @@ body.mode-prep #prepbar{display:flex}
  var PANELS = [
   {n:1,  act:1, t:'The First Look',               seat:'priya', stage:0, view:'site',
    emo:'Curious, and quickly convinced.',
-   d:'Priya finds the public site while weighing issuer processing for Brightline Bank. No invitation and nobody to call. Try it out puts her on the sandbox, where a preview account gets her a key of her own; she sends one authorization against the reference and it comes back approved. Then she shares it with the person who can sign.'},
+   d:'Priya finds the public site while weighing issuer processing for Brightline Bank. No invitation and nobody to call. Try it out puts her on the sandbox, where a preview account gets her a key of her own, and one authorization comes back approved. Then she names Dana as the person who decides, and asks the network to reach out. Then she shares it with the person who can sign.'},
   {n:2,  act:1, t:'The Opportunity Surfaces',     seat:'marcus', stage:1, view:'inbound',
    emo:'Surprised her engineer found it first.',
-   d:'The account Priya created is the first the network knows of Brightline Bank, and it arrives carrying what she read and what she ran. When Dana asks to know more the record is already open, so neither side makes a cold call.'},
+   d:'The account Priya created is the first the network knows of Brightline Bank, and it arrives carrying what she read, what she ran, and who she said decides this. Marcus replies to Dana rather than cold-calling her, and neither side starts from nothing.'},
   {n:3,  act:1, t:'Built Around Her',             seat:'dana',  stage:1, view:'deal',
    emo:'Surprised, then flattered.',
    d:'Dana opens a page built for Brightline Bank: the products that fit, what the network needs, nothing to fill in yet. The same page she will still be using years from now.'},
@@ -4215,21 +4222,21 @@ body.mode-prep #prepbar{display:flex}
   {n:5,  act:1, t:'Her Own Time, Her Own Terms',  seat:'priya', stage:3, view:'start',
    emo:'Empowered.',
    d:'A technical environment already shaped around Brightline Bank, with the path in view: how many steps, which are required and which are not, before she spends real time.'},
-  {n:6,  act:1, t:'The Green Light',              seat:'dana',  stage:4, view:'agreement',
+  {n:6,  act:1, t:'The Green Light',              seat:'dana',  stage:4, view:'start',
    emo:'Confidence, then momentum.',
-   d:'Priya says it is feasible and Dana signs. Everything the two of them entered carries forward, and the plan ahead narrows to what Brightline Bank actually took.'},
-  {n:7,  act:2, t:'The Same Picture From Every Seat', seat:'dana', stage:4, view:'frames',
+   d:'Priya says it is feasible and Dana signs. The site she had been reading becomes her own: four things she and Priya already gave are carried forward and named, and what is left is the administrative work, with the documents to provide in it. Priya\u2019s own Getting started moves to integration.'},
+  {n:7,  act:2, t:'The Same Picture From Every Seat', seat:'dana', stage:4, view:'start', scene:{gs:'all'},
    emo:'Calm control.',
-   d:'Dana reads business milestones, Priya reads technical progress, Marcus watches from the network. One record underneath, and no status call.'},
+   d:'Dana switches from her own steps to the whole process. Her administrative track and Priya\u2019s technical one, read from one place, with no status call and nobody to ask.'},
   {n:8,  act:2, t:'Never Stuck for Long',         seat:'priya', stage:4, view:'cert',
    emo:'Frustration, then confidence.',
    d:'A step fails mid-configuration. The logs are already open, the cause is already named, and it is settled in the same session rather than becoming a ticket.'},
-  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'frames',
+  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', scene:{gs:'all'},
    emo:'Quiet, shared pride.',
-   d:'Business and technical readiness land at the same moment. Nobody calls a meeting, and all three learn it at once.'},
-  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support',
+   d:'The reading panel 7 opened, at the moment both tracks finish. Getting started has retired, so it arrives on the home that replaced it. Nobody calls a meeting.'},
+  {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support', scene:{devQ:1},
    emo:'Relief, then confidence.',
-   d:'Priya asks about a rollout in plain words. The answer carries what other partners met in the same change, so she is not the first to find it.'},
+   d:'Priya asks in plain words whether a capability Brightline has not taken yet fits what she has built. The answer confirms rather than hedges, because it read her own configuration first and says which values it read.'},
   {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'jsearch',
    emo:'Surprised, then impressed.',
    d:'In Tokyo, Aiko Mori asks in Japanese about a requirement inside a policy update. One search answers across the operating rules, the release material and the implementation manuals, in her language, with the English beside it.'},
@@ -4248,7 +4255,7 @@ body.mode-prep #prepbar{display:flex}
   {n:16, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights',
    emo:'Genuine interest.',
    d:'Unasked, Dana is shown how Brightline Bank compares with participants like it, and what a capability they have not taken would be worth. The numbers underneath open.'},
-  {n:17, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products',
+  {n:17, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'relearn',
    emo:'Familiar ease.',
    d:'Dana asks for a new product from the same place the relationship started. Business and technical run side by side again, and both are far shorter this time.'},
   {n:18, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand',
@@ -4493,6 +4500,17 @@ body.mode-prep #prepbar{display:flex}
    agr:  'Risk review cleared. Next: sign the participation agreement.',
    scope:'Team named. Next: confirm what you are building.',
    plan: 'Agreement signed. Next: confirm the project plan.',
+   /* after signature the remaining work is administrative, and Marcus says what is
+      actually next rather than falling back to a step that closed three panels ago */
+   bank: 'Agreement signed. Next: confirm where settlement lands.',
+   term: 'Settlement account confirmed. Next: how you accept.',
+   report:'Next: who receives your reports.',
+   disp: 'Next: who handles disputes at activation.',
+   bal:  'Next: how you balance each day.',
+   ids:  'Discover is issuing your identifiers and ranges.',
+   keys: 'Your engineer holds the keys. Next: certification.',
+   cert: 'Configuration confirmed. Certification is booked for May 4.',
+   live: 'Certification passed. Activation is Thursday.',
    done: 'Live since May 14. Your account is with day-to-day support.'
  }};
 
@@ -4905,18 +4923,35 @@ body.mode-prep #prepbar{display:flex}
  };
 
  /* ══ developer portal: first-time steps by phase, and alerts ═══════════ */
+
+ /* panel 10. Priya asks whether a capability Brightline has not taken yet fits what she
+    has already built. The answer confirms rather than hedges because it reads her own
+    configuration first, and says which values it read. */
+ var DEVQ = {
+  q:'Do wallet device tokens change anything in our authorization message?',
+  head:'Nothing changes in the message you send',
+  p:'A wallet device token arrives in the field your platform already reads. You accept network tokens today, so the same code path handles a wallet token without a change. The one addition is a wallet indicator on the credential, and it is absent until wallets are enabled on your connection.',
+  read:[
+   ['Products live','Acceptance, Disputes and Tokens','Schedule A of your participation agreement'],
+   ['Token vault','Live since May 14','Your configuration'],
+   ['API version','v4.2','The version your production keys call'],
+   ['Authorization endpoint','POST /acceptance/v1/authorizations','Your integration, last 24 hours']
+  ],
+  acts:[['Release 26.2 notes','data-go2="changelog"'],['The credential field','data-go2="spec"']]
+ };
+
  var FT_STEPS = [
-  {k:'call',   ph:'Evaluate', t:'Send your first request', d:'Use a test card from the console.', act:'Open Test cards', go:'sandbox'},
-  {k:'spec',   ph:'Evaluate', t:'Read the reference', d:'Seven endpoints. Start with Acceptance.', act:'Open the reference', go:'spec'},
-  {k:'feas',   ph:'Evaluate', t:'Confirm feasibility', d:'Closes the technical review.', act:'Confirm', go:''},
-  {k:'key',    ph:'Build',    t:'Create a key for your service', d:'One key per service, with only the permissions it needs.', act:'Create key', go:'keys'},
-  {k:'ep',     ph:'Build',    t:'Add a webhook endpoint', d:'Receive signed events. Verify the signature and return 2xx.', act:'Add endpoint', go:'webhooks'},
-  {k:'cfg',    ph:'Build',    t:'Confirm configuration', d:'Generates the certification cases.', act:'Open Configuration', go:'config'},
-  {k:'cert',   ph:'Certify',  t:'Pass certification', d:'Run the suite until all cases pass.', act:'Open Certification', go:'cert'},
-  {k:'window', ph:'Certify',  t:'Certification window', d:'Booked by Discover after a passing run. Validated end to end.', act:'', go:'cert'},
-  {k:'chain',  ph:'Launch',   t:'Upload the production certificate chain', d:'Required for mutual TLS in production.', act:'Upload chain', go:'golive'},
-  {k:'prodep', ph:'Launch',   t:'Add a production endpoint', d:'Production events use a separate URL and secret.', act:'Add endpoint', go:'golive'},
-  {k:'date',   ph:'Launch',   t:'Activation', d:'Scheduled by Discover. 6:00 AM ET.', act:'', go:'golive'}
+  {k:'call',   ph:'Evaluate', t:'Send your first request', d:'Use a test card from the console.', act:'Open Test cards', go:'sandbox', g:['The console sends on your own sandbox key. There is nothing to install.','The card number picks the answer. The amount does not.'], ref:['Test cards','sandbox']},
+  {k:'spec',   ph:'Evaluate', t:'Read the reference', d:'Seven endpoints. Start with Acceptance.', act:'Open the reference', go:'spec', g:['Acceptance is the endpoint everything else hangs off. Start there.','Every response carries a request id and a round trip in milliseconds.'], ref:['API reference','spec']},
+  {k:'feas',   ph:'Evaluate', t:'Confirm feasibility', d:'Closes the technical review.', act:'Confirm', go:'', g:['Says whether the integration fits from your side.','Closes the technical half of the review. Dana signs the other half.'], ref:['Configuration','config']},
+  {k:'key',    ph:'Build',    t:'Create a key for your service', d:'One key per service, with only the permissions it needs.', act:'Create key', go:'keys', g:['One key per service, carrying only the permissions that service needs.','A sandbox key never reaches certification or production.'], ref:['API keys','keys']},
+  {k:'ep',     ph:'Build',    t:'Add a webhook endpoint', d:'Receive signed events. Verify the signature and return 2xx.', act:'Add endpoint', go:'webhooks', g:['Verify the signature before you read the body.','Return 2xx quickly and do the work afterwards. Anything else is retried.'], ref:['Event reference','events']},
+  {k:'cfg',    ph:'Build',    t:'Confirm configuration', d:'Generates the certification cases.', act:'Open Configuration', go:'config', g:['Read from the agreement. What you confirm here generates your certification cases.','A value you cannot change is one the network owns.'], ref:['Configuration','config']},
+  {k:'cert',   ph:'Certify',  t:'Pass certification', d:'Run the suite until all cases pass.', act:'Open Certification', go:'cert', g:['Cases are generated from your own configuration, not from a generic suite.','A run keeps its logs, so a failure can be read afterwards.'], ref:['Certification','cert']},
+  {k:'window', ph:'Certify',  t:'Certification window', d:'Booked by Discover after a passing run. Validated end to end.', act:'', go:'cert', g:['Booked by Discover after a run passes.','The window validates end to end, settlement files included.'], ref:['Certification','cert']},
+  {k:'chain',  ph:'Launch',   t:'Upload the production certificate chain', d:'Required for mutual TLS in production.', act:'Upload chain', go:'golive', g:['Production uses a different chain from certification.','Upload before the activation date or connectivity fails on the day.'], ref:['Go-live','golive']},
+  {k:'prodep', ph:'Launch',   t:'Add a production endpoint', d:'Production events use a separate URL and secret.', act:'Add endpoint', go:'golive', g:['Production events use their own URL and their own signing secret.','The sandbox secret does not carry over.'], ref:['Webhooks','webhooks']},
+  {k:'date',   ph:'Launch',   t:'Activation', d:'Scheduled by Discover. 6:00 AM ET.', act:'', go:'golive', g:['Scheduled by Discover, 6:00 AM ET.','The first authorization usually arrives within minutes.'], ref:['Go-live','golive']}
  ];
  var DEV_ALERTS = [
   {k:'chain-stg', kind:'action', t:'Staging certificate chain not uploaded', d:'Required for certification. Connectivity cases fail without it.', act:'Upload chain', go:'keys', from:3, until:4, clear:'certUp'},
@@ -5552,13 +5587,17 @@ window.GNChart=(function(){
    return String(Math.round(v));
  }
  function navOn(a, on){ a.classList.toggle('on', on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current') }
+ /* which sidebar item a view belongs to. Some jobs are more than one screen — adding a
+    product is what it costs and then the request — and the sidebar shows one item for
+    the job. Both painters read this, or the second one undoes the first. */
+ function navKey(v){ return v==='frames' ? frameNav(SEAT) : v==='relearn' ? 'expand' : v }
  function go(v){
    if(typeof closePanel==='function') closePanel(); /* a navigation closes the slide-over: the record it showed belongs to the list it came from */
    VIEW=v;
    window.scrollTo(0,0);
    if(v==='site'){ drawSite(); arm(); return }
    drawApp(v);
-   $$('#nav a').forEach(function(a){ navOn(a, a.dataset.go===v) });
+   $$('#nav a').forEach(function(a){ navOn(a, a.dataset.go===navKey(v)) });
    arm(); focusMain();
  }
  /* full-bleed bands measure against the viewport minus the reserved
@@ -6074,7 +6113,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={devQClear:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -6139,6 +6178,8 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
  /* ── nav per portal, per state ─────────────────────────────────── */
  /* a sidebar count is a count of things that need the reader, never a total */
  function ct(n){ return n?String(n):'' }
+ /* a list read aloud: two joined by and, more than two with the last one joined */
+ function listWords(a){ return a.length<2 ? (a[0]||'') : a.slice(0,-1).join(', ')+' and '+a[a.length-1] }
  function nn(n, one, many){ return n+' '+(n===1?one:(many||one+'s')) }
  /* a track's extra pages sit inside their own group, after the last entry of it, so the sidebar shows one label per group */
  function agNavPlace(base){ var extra=(typeof AGENT_NAV_EXTRA!=='undefined')?AGENT_NAV_EXTRA:[]; if(!extra.length) return base;
@@ -6258,7 +6299,7 @@ var READ_ACTS={noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, 
      var label = n[3] && !(nav[i-1] && nav[i-1][3]===n[3]) ? '<span class="ng">'+esc(typeof locT==='function'?locT(n[3]):n[3])+'</span>' : '';
      return label+'<a data-go="'+n[0]+'" title="'+esc(n[1])+'" role="link" tabindex="0"'+(first?' class="grp"':'')+'><svg class="i" viewBox="0 0 24 24">'+(ICON[n[0]]||ICON[{keys:'creds',cases:'discover'}[n[0]]]||ICON.docs)+'</svg><span class="lb">'+'<span class="nl">'+esc(typeof locT==='function'?locT(n[1]):n[1])+'</span>'+'</span>'
        +(n[2]?'<span class="ct">'+n[2]+'</span>':'')+'</a>' }).join('');
-   var onKey = VIEW==='frames' ? frameNav(SEAT) : VIEW;
+   var onKey = navKey(VIEW);
    $$('#nav a').forEach(function(a){ a.addEventListener('click',function(){ SEATS=[SEAT]; go(a.dataset.go) });
      a.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); a.click() } });
      navOn(a, a.dataset.go===onKey) });
@@ -7160,6 +7201,13 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  /* ══ PARTNER PORTAL, Dana ═══════════════════════════════════════ */
  var PARTNER={};
  PARTNER.overview=function(sk,c){
+   /* panel 9. Getting started retires at go-live, so the reading panel 7 opened
+      arrives here instead: the same instrument, on the home that replaced its page. */
+   if(live() && !c && tab('gs','mine')==='all'){
+     return ph('Where it landed', 'Both tracks, at go-live.')
+      + wholeProcess(stepState(), true)
+      + '<p class="para">'+goLink('Open the home','data-act="gsMine"')+'</p>';
+   }
    if(live()){
      var last=DAILY[DAILY.length-1], prev=DAILY[DAILY.length-2];
      var needs=[]; var nr=DISPUTE_CASES.filter(function(c){return dspStatus(c)==='needs_response'}); if(nr.length) needs.push(['Disputes', nn(nr.length,'dispute')+' need'+(nr.length===1?'s':'')+' a response', 'next due '+nr.map(function(c){return c.due}).sort()[0], 'disputes']);
@@ -7412,12 +7460,52 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
     +(G.active&&G.cur?'<div class="gc-next"><span>Next</span><b>'+esc(G.cur.t)+'</b></div>':'')
     +'<button class="gn-btn gn-btn--sm'+(lead?' gn-btn--primary':'')+'" data-act="group" data-g="'+g.k+'">'+(G.done?'Continue':'Get started')+'</button></div></article>';
  }
+ /* ── the whole process, from the partner's seat ──────────────────────────
+    Panels 7 and 9 are the same screen at two moments — mid-flight, and at go-live —
+    so it is written once. Priya's phases are visible and her steps are not: this is
+    Dana's reading of the technical track, not a second developer portal, and Marcus
+    does not appear in it at all. */
+ function ftPhases(){
+   var F=ftState(), order=[], seen={};
+   FT_STEPS.forEach(function(x){ if(!seen[x.ph]){ seen[x.ph]=1; order.push(x.ph) } });
+   return order.map(function(ph){
+     var xs=FT_STEPS.filter(function(x){ return x.ph===ph });
+     var d=xs.filter(function(x){ return F.st[x.k]==='done' }).length;
+     return {t:ph, done:d, total:xs.length, complete:d===xs.length, active:xs.some(function(x){ return F.st[x.k]==='now' })};
+   });
+ }
+ function trackBars(rows){
+   var firstOpen=-1; rows.forEach(function(r,i){ if(firstOpen<0 && !r.complete) firstOpen=i });
+   return '<div class="p5">'+rows.map(function(r,i){
+     var w = r.complete ? word('Done') : i===firstOpen ? sw('Now','') : sw('Later','');
+     return '<div class="p5-r"><span class="p5-t">'+(i+1)+'. '+esc(r.t)+'</span><div class="p5-bar"><i style="--w:'+Math.round(100*r.done/r.total)+'%"></i></div><span class="gn-num">'+r.done+' of '+r.total+'</span>'+w+'</div>' }).join('')+'</div>';
+ }
+ function wholeProcess(S, landed){
+   var F=ftState(), ph=ftPhases();
+   var doneAll=S.done+F.done, totAll=STEPS.length+FT_STEPS.length, left=totAll-doneAll;
+   var next = S.cur ? {t:S.cur.t, who:'yours'} : F.cur ? {t:F.cur.t, who:'Priya'} : null;
+   var read = landed
+     ? '<div class="gn-open"><b>Both tracks finished.</b><span>'+doneAll+' of '+totAll+' done, and the last of them on '+esc(LAUNCH.target)+'. Nothing was carried over.</span></div>'
+     : '<div class="gn-open"><b>'+doneAll+' of '+totAll+' done across both tracks.</b><span>'
+       +(next ? nn(left,'thing')+' left. Next '+(next.who==='yours'?'on yours':'on Priya\u2019s')+': '+esc(next.t)+'.' : 'Nothing is waiting.')
+       +' Go-live '+esc(LAUNCH.target)+'.</span></div>';
+   return read
+     + secH('Yours', S.done+' of '+STEPS.length+' steps') + partsBars(S, !landed)
+     + secH('Priya\u2019s', F.done+' of '+FT_STEPS.length+' steps') + trackBars(ph);
+ }
  PARTNER.start=function(sk,c){
    var S=stepState();
    if(c){
      var cx=S.cur, gx=cx?GROUPS.filter(function(g){return g.k===cx.g})[0]:null, xs=gx?STEPS.filter(function(x){return x.g===gx.k}):[];
      return '<div class="rec-h"><b>'+S.done+' of '+STEPS.length+'</b><span>steps done</span></div>'
       +(cx ? '<div class="gc-k">'+esc(gx.t)+'</div>'+stepCard(cx, S, true, xs.indexOf(cx), xs.length) : '');
+   }
+   /* the switch: her own steps, or the whole process. Panel 7 and panel 9 arrive on the second. */
+   var gsAll = tab('gs','mine')==='all';
+   if(gsAll && !SCENE.group){
+     return ph(live()?'Where it landed':'Getting started', live()?'Both tracks, at go-live.':'Your steps and your engineer\u2019s, in one place.')
+      + tabs('gs', [['mine','Your steps'],['all','Everything']], 'mine')
+      + wholeProcess(S);
    }
    var g=PEOPLE[GUIDE.k], gl=GUIDE.lines[(S.cur&&S.cur.k)] || GUIDE.lines[S.cur?'team':'done'] || GUIDE.lines.done;
    var guide='<div class="guide">'+av(GUIDE.k,'a40')+'<div><p>'+esc(gl)+'</p><span>'+esc(g.n)+', '+esc(g.r)+', Discover <span class="gn-link" data-go2="discover">Message Marcus</span></span></div></div>';
@@ -7435,16 +7523,39 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
       +(done.length?secH('Done', done.length+' of '+G.total)+stepGrid(done.map(function(x){ return {n:String(xs.indexOf(x)+1), t:esc(x.t), d:esc(x.short), r:(x.when?'<span class="gn-num due">'+esc(x.when)+'</span>':'')+word('Done'), cls:'is-done', go:x.go!=='start'?x.go:null} })):'')
       +(later.length?secH('Coming up')+stepGrid(later.map(function(x){ var st=S.st[x.k], prev=xs[xs.indexOf(x)-1]; return {n:String(xs.indexOf(x)+1), t:esc(x.t), d:esc(x.short), r:sw(st==='dgn'?'In review':st==='eng'?'Your engineer':prev?'After step '+(xs.indexOf(prev)+1):'Later',''), go:st==='dgn'?x.go:null} })):'');
    }
+   /* panel 6. The signature opens the hub, and the script asks for four things to be
+      seen carrying forward. This is the only screen where they arrive, and panel 17's
+      payoff — that the answers are already on file — is a promise made here. Every
+      figure is read from the record, so none of it can drift from the pages it links to. */
+   var carried='';
+   if(STAGE===4 && !pre() && !SCENE.group){
+     var prods=PRODUCTS.filter(function(p){ return p.st[4] }).map(function(p){ return p.t });
+     var ackNow=RULES.filter(function(r){ return r.when==='now' });
+     var wv=WAIVERS.filter(function(w){ return w.k==='brightline' });
+     var nc=Object.keys(CERT_CASES).length, kn=known().length, cfg=CONFIG.length;
+     carried=secH('What carried forward','Nothing was asked for twice')
+      +doc([
+        ['Contract', esc(AGREEMENT.title)+' '+esc(AGREEMENT.ref)+', signed '+esc(AGREEMENT.signed)+'. Schedule A lists '+esc(listWords(prods))+'. '+goLink('Agreements','data-go2="agreement"'),
+         'From the deal you confirmed '+esc(LAUNCH.set.replace(/^From the deal, /,''))],
+        ['Account and configuration', nn(kn,'fact')+' on file, '+cfg+' of them set by the agreement. '+goLink('Company','data-go2="company"'),
+         'From Schedule A and what you gave'],
+        ['Milestones and test requirements', 'Certification '+esc(CERT.window)+', booked '+esc(CERT.booked)+'. '+nn(nc,'case')+' generated from your configuration. '+goLink('Integrations','data-go2="integrations"'),
+         'From what you are building'],
+        ['Policy commitments', nn(ackNow.length,'operating rule')+' acknowledged'+(wv.length?', '+nn(wv.length,'waiver')+' on file':'. No waivers on file')+'. '+goLink('Notices','data-go2="notices"'),
+         'From the rules you acknowledged']
+      ]);
+   }
    /* the hub: five journeys, and what is finished kept below for review */
    var inc=GROUPS.filter(function(x){return !groupState(x,S).complete}), com=GROUPS.filter(function(x){return groupState(x,S).complete});
-   var head=ph('Getting started', 'The five parts of going live.');
+   var head=ph('Getting started', 'The five parts of going live.')
+     + tabs('gs', [['mine','Your steps'],['all','Everything']], 'mine');
    var leadG=(S.cur&&inc.filter(function(x){ return x.k===S.cur.g })[0])||inc.filter(function(x){ return groupState(x,S).active })[0]||inc[0]; var grid=inc.length ? '<div class="gc-grid">'+inc.map(function(x){ return groupCard(x,S,GROUPS.indexOf(x), x===leadG) }).join('')+'</div>'
                        : '<div class="done"><b>Every part is done.</b><span>Brightline Bank is live on the network.</span></div>';
    var doneSec = com.length ? secH('Completed', com.length+' of '+GROUPS.length)+'<div class="gc-grid">'+com.map(function(x){ return groupCard(x,S,GROUPS.indexOf(x)) }).join('')+'</div>' : '';
    var launch='<div class="launch"><div class="launch-d"><span class="gn-eyebrow">Target go-live</span><b>'+esc(LAUNCH.target)+'</b><span>'+esc(LAUNCH.set)+'</span></div>'
      +'<div class="launch-g">'+LAUNCH.governs.map(function(g){ return '<div><span class="gn-eyebrow">'+esc(g[0])+'</span><p>'+esc(g[1])+'</p></div>' }).join('')+'</div>'
      +'<div class="launch-a">'+goLink('Launch plan','data-go2="plan"')+'</div></div>';
-   return head+guide+after+grid+launch+doneSec;
+   return head+guide+after+carried+grid+launch+doneSec;
  };
  /* the five parts as bars. Same function from both seats: that is panel 6's point. */
  function partsBars(S, link, plan){
@@ -8145,7 +8256,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      return secH(esc(ph), xs.filter(function(x){return F.st[x.k]==='done'}).length+' of '+xs.length)+'<div class="fts'+(isCur?' cur':'')+'">'+xs.map(function(x){ var st=F.st[x.k];
        /* one phase carries the solid buttons; open steps elsewhere are links */
        var right = st==='done' ? word('Done') : st==='now' ? (isCur ? (x.k==='feas' ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="feasible">Confirm to Dana Iverson</button>' : x.go ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="ftGo" data-k="'+x.k+'">'+esc(x.act)+'</button>' : sw('Now','')) : (x.go ? goLink(x.act||'Open','data-act="ftGo" data-k="'+x.k+'"') : sw('Open',''))) : st==='dgn' ? sw('Discover’s turn','') : x.go ? goLink('Open','data-go2="'+x.go+'"') : sw('Later','');
-       return '<div class="ft'+(st==='done'?' is-done':st==='now'?' is-now':'')+'"><i>'+(st==='done'?'<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>':'')+'</i><div class="ft-b"><b>'+esc(x.t)+'</b><span>'+esc(x.d)+'</span></div><div class="ft-r">'+right+'</div></div>' }).join('')+'</div>' }).join('');
+       /* the step she is on carries its guidance on the page, with the reference a link
+          away rather than the page itself. Steps she is not on stay one line. */
+       var gd = (st==='now' && isCur && x.g) ? '<span class="ft-g">'+x.g.map(function(l){ return '<i>'+esc(l)+'</i>' }).join('')
+          +(x.ref?'<em>'+goLink(x.ref[0],'data-go2="'+x.ref[1]+'"')+'</em>':'')+'</span>' : '';
+       return '<div class="ft'+(st==='done'?' is-done':st==='now'?' is-now':'')+'"><i>'+(st==='done'?'<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>':'')+'</i><div class="ft-b"><b>'+esc(x.t)+'</b><span>'+esc(x.d)+'</span>'+gd+'</div><div class="ft-r">'+right+'</div></div>' }).join('')+'</div>' }).join('');
    var health = a.sandbox ? secH('Health', ENVN[envSel()])+healthFigs() : '';
    return head+bars+steps+health;
  };
@@ -8508,6 +8623,16 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    return head+caught+table+win;
  };
  DEV.support=function(){
+   /* panel 10: the answer arrives here, the way the latency report arrives on Overview.
+      What it read comes before what it says, because that is why it can confirm. */
+   if(SCENE.devQ){
+     var Q=DEVQ;
+     return ph('Support', 'Environment status and how to reach support.')
+      + askInsight({q:Q.q, tone:'good', head:Q.head, st:['Compatible','ok'], p:Q.p, acts:Q.acts,
+                    clear:'devQClear', clearLabel:'Back to Support'})
+      + secH('What the answer read', nn(Q.read.length,'value')+' from your own configuration')
+      + doc(Q.read.map(function(r){ return [r[0], esc(r[1]), r[2]] }));
+   }
    var head=ph('Support', 'Environment status and how to reach support.');
    var status=secH('Environments')+envTiles();
    var ppl=secH('Discover contacts')+'<div class="pp-grid">'+[['theo','Integration questions: message shapes, the reference, what changes for your platform.'],['ana','Certification: books your window and reads your runs.'],['marcus','Environments and activation.']].map(function(x){ return person(x[0], esc(x[1]), '<a class="gn-link" href="mailto:'+x[0]+'@discover.example">Email</a>') }).join('')+'</div>';
@@ -9053,6 +9178,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    groups:function(){ SCENE.group=null; drawApp(VIEW, true); arm(); },
    journey:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
    group2:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
+   devQClear:function(){ delete SCENE.devQ; repaint() },
+   /* leaves the go-live reading for the ordinary home underneath it */
+   gsMine:function(){ SCENE.gs='mine'; repaint() },
    back:function(){ SEATS=[SEAT]; SCENE.group='plan'; go('start') },
    tog:function(b){ SCENE.prod=SCENE.prod||{}; var k=b.dataset.k, on=SCENE.prod[k]!==false; SCENE.prod[k]=!on; var f=DEAL.fit.filter(function(x){return x.k===k})[0]; drawApp(VIEW); toast((f?f.t:'Product')+(on?' removed from the deal':' added to the deal')); },
    openSbx:function(){ location.href=devHref()+'docs/testing.html'+devQ()+'#console' }, /* the public sandbox console, where Try it out goes (Rich, September 7) */
@@ -10002,6 +10130,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    ['dana','March 6, 9:20 AM','Priya says the integration is straightforward from her side. Before I take this any further I want to understand what the network expects from us and what it costs.']
   ]
  };
+ /* the two work addresses on the record. Both come from the same place the domain did:
+    Priya typed hers to create the account, and gave Dana's when she asked us to connect. */
+ function inDomain(){ var d=INBOUND.known.filter(function(r){ return r[0]==='Domain' })[0]; return d?d[1]:'' }
+ function inEmail(k){ var n=PEOPLE[k].n.toLowerCase().split(' '); return n[0]+'.'+n[n.length-1]+'@'+inDomain() }
  function inTaken(){ return SCENE.inTaken!==undefined }
  function inWaiting(){ return inTaken()?0:1 }
 
@@ -10013,13 +10145,13 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
   /* 1 · what is next, and the one action: the same Next card the partner page uses */
   var next = taken
-   ? '<div class="just ok"><b>Taken.</b><span>'+esc(I.co)+' is in your book with everything '+esc(sharer.n)+' sent.</span></div>'
+   ? '<div class="just ok"><b>Replied to '+esc(signer.n)+'.</b><span>'+esc(I.co)+' is in your book with everything '+esc(sharer.n)+' sent.</span></div>'
      +'<div class="gn-actions inset">'+goLink(I.co, 'data-act="agPartner" data-k="'+I.k+'"')+'</div>'
    : secH('Next')+'<article class="gn-notice" id="inNext"><div class="gn-notice-h">'+sw('Needs you','wa')+'<span>'+esc(I.co)+'</span></div>'
-     +'<h3>'+esc(signer.n)+' asked what joining involves</h3>'
-     +'<p>Take it to open a record for '+esc(I.co)+' and assign '+esc(signer.n)+'\u2019s question to you.</p>'
+     +'<h3>Reach out to '+esc(signer.n)+'</h3>'
+     +'<p>'+esc(sharer.n)+' named her and asked us to get in touch. Replying opens a record for '+esc(I.co)+' and puts it in your book.</p>'
      +'<div class="gn-notice-f"><span>Waiting since '+esc(I.asked)+'</span>'
-     +agGate('<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="inTake">Take the opportunity</button>')+'</div></article>';
+     +agGate('<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="inTake">Reply to '+esc(signer.n)+'</button>')+'</div></article>';
 
   /* 2 · the four figures that argue: everything she did before anyone spoke to her */
   var f=figs([
@@ -10033,8 +10165,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
   var who=secH('The opportunity')+doc([
    ['Company', esc(I.co), 'What she typed when she created the account'],
    ['Account created', esc(I.account), 'A preview developer account, sandbox only'],
-   ['Named by', esc(sharer.n), esc(sharer.r)+', herself'],
-   ['Shared with', esc(signer.n), esc(signer.r)+', named by '+esc(sharer.n)],
+   ['Named by', esc(sharer.n)+' <span class="gn-mono">'+esc(inEmail(I.by))+'</span>', esc(sharer.r)+'. The address she created the account with'],
+   ['Decides this', esc(signer.n)+' <span class="gn-mono">'+esc(inEmail(I.to))+'</span>', esc(signer.r)+'. Named by '+esc(sharer.n)+', who asked us to reach out'],
    ['Shared', esc(I.sent), 'From the sandbox console on the public site'],
    ['Reached us', esc(I.asked), esc(signer.n)+' asked to know more'],
    ['On the network', taken?'Taken into your book':'No record and no agreement', taken?'Opened by you':'Nothing was ever sent to this company']
@@ -10576,16 +10708,31 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
     +'</form>';
  }
 
- /* the two tracks, each against the same track the first time */
- function xpNext(){
-   return secH('What happens next', 'Two steps each side')
-    +'<div class="xp-tracks">'+XP_TRACK.map(function(t){
+ /* the two tracks. Panel 16 draws them against the same tracks the first time, which is
+    the saving the act exists to prove; the request itself only needs what is ahead, so it
+    does not make the argument a second time. */
+ function xpNow(){ var n=0; XP_TRACK.forEach(function(t){ n+=t.now.length }); return n }
+ function xpWas(){ var n=0; XP_TRACK.forEach(function(t){ n+=t.was.length }); return n }
+ function xpTracks(against){
+   return '<div class="xp-tracks">'+XP_TRACK.map(function(t){
       return '<section class="xp-t"><div class="gn-section gn-section--h3"><h3>'+esc(t.t)+'</h3><span>'+nn(t.now.length,'step')+'</span></div>'
        +'<div class="xp-steps">'+t.now.map(function(s){ return '<div class="xp-step"><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div>'
-       +'<div class="xp-was"><span class="gn-eyebrow">The first time, '+nn(t.was.length,'step')+'</span>'
-       +t.was.map(function(s){ return '<div class="xp-step"><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div></section>' }).join('')
-    +'</div>';
+       +(against?'<div class="xp-was"><span class="gn-eyebrow">The first time, '+nn(t.was.length,'step')+'</span>'
+       +t.was.map(function(s){ return '<div class="xp-step"><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>' }).join('')+'</div>':'')
+       +'</section>' }).join('')+'</div>';
  }
+ function xpNext(){ return secH('What happens next', nn(XP_TRACK[0].now.length,'step')+' each side')+xpTracks(false) }
+
+ /* ── panel 16 · what adding a product costs now, against what joining cost ── */
+ PARTNER.relearn=function(){
+   var now=xpNow(), was=xpWas(), prod=(typeof XP!=='undefined'&&XP.t)?XP.t:'Wallets';
+   var head=ph('Adding '+esc(prod), 'The same two tracks as joining, against what joining took.');
+   var read='<div class="gn-open"><b>'+now+' steps, against '+was+' the first time.</b>'
+     +'<span>Both sides move at once, the way they did before. Nothing either of you already gave is asked for again. '
+     +goLink('Start the request','data-go2="expand"')+'</span></div>';
+   return head+read+secH('Both tracks', 'This time, against the first time')+xpTracks(true);
+ };
+ PARTNER_NAV_EXTRA;
 
  /* send: one solid button, and a plain sentence for whatever is still open */
  function xpSendBlock(rows){
@@ -10769,9 +10916,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    if(typeof closePanel==='function') closePanel();
    var p=PANELS.filter(function(x){return x.n===n})[0]; if(!p) return;
    PANEL=n; seen[n]=1; STAGE=p.stage; SEAT=p.seat; SEATS=p.seats||[p.seat]; VIEW=p.view;
-   SCENE={}; showCap=true; sitePage='home';
-   /* panel 3 lands on Getting started; the lead tile continues the flow (Rich, September 7) */
-   if(n===10){ VIEW='products' } /* the request the narration promises, thirty-two answers already in it */
+   SCENE=p.scene?JSON.parse(JSON.stringify(p.scene)):{}; showCap=true; sitePage='home'; /* a panel may declare the state it opens in */
+   /* a stale override from the earlier numbering sent panel 10 to a partner view that
+      does not exist in the Developer Portal, so it fell through to Overview. Panels
+      declare their own view and scene now. */
    var tt=$('#toast'); if(tt){ tt.classList.remove('is-on'); tt.innerHTML='' }
    repaint(); paintRail();
    window.scrollTo(0,0);
