@@ -3505,6 +3505,28 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .pg-read p{max-width:none} .pg-scope{color:var(--gn-text-caption)} .pg-links{display:inline-flex; gap:16px; margin-left:12px; white-space:nowrap}
 .pg-hl{margin-top:16px}
 
+/* ── compact density, for the pages that are scanned (Rich, September 11) ──────────────────────────────
+   Token and spacing overrides only, scoped to #mn[data-density="compact"] and the slide-over. The
+   design-system components are untouched; promoting this to gn.css is review.md item 19.
+   Floors: body text stays 15px, labels stay 13px. */
+#mn[data-density="compact"], #pnl{--gn-row:44px}
+#mn[data-density="compact"] .gn-table td, #pnl .gn-table td{padding-top:10px; padding-bottom:10px; height:44px}
+#mn[data-density="compact"] .gn-table td em, #pnl .gn-table td em{display:inline; margin:0 0 0 8px}
+#mn[data-density="compact"] .gn-page-head{padding-top:24px}
+#mn[data-density="compact"] .gn-section{margin-top:24px; padding-bottom:8px}
+#mn[data-density="compact"] .gn-figs{margin-top:16px}
+#mn[data-density="compact"] .gn-figs--cards .gn-fig{padding:16px 20px}
+#mn[data-density="compact"] .gn-fig b, #mn[data-density="compact"] .gn-fig b.gn-status{font-size:var(--gn-type-subhead)}
+#mn[data-density="compact"] .gn-doc{gap:12px 32px; padding-top:8px; padding-bottom:4px}
+#mn[data-density="compact"] .gn-doc-r{display:block}
+#mn[data-density="compact"] .gn-doc-l{display:block; margin-bottom:2px}
+#mn[data-density="compact"] .gn-doc-v{display:inline}
+#mn[data-density="compact"] .gn-doc-p{display:inline; margin-left:8px}
+#mn[data-density="compact"] .gn-hl{padding:10px 0; margin-top:12px} #mn[data-density="compact"] .gn-hl b{margin-top:2px}
+#mn[data-density="compact"] .gn-figs--cards{gap:12px}
+#mn[data-density="compact"] .gn-figs--cards .gn-fig{padding:12px 16px}
+#mn[data-density="compact"] .gn-hl small{display:inline; margin:0 0 0 6px}
+
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
 .hdr-res .ask-home{border-bottom:0; margin-bottom:0; padding-bottom:0}
@@ -7186,6 +7208,8 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    $$('[data-chart]', root).forEach(function(el){ var o=JSON.parse(el.getAttribute('data-o')||'{}'); ['fmt','xfmt','yfmt'].forEach(function(k){ if(typeof o[k]==='string') o[k]=FMT[o[k]] }); var fn=GNChart[el.getAttribute('data-chart')]; if(fn) fn(el, o) });
  }
  function badge(t, tone){ return '<span class="gn-badge'+(tone?' is-'+tone:'')+'">'+esc(String(t))+'</span>' }
+ /* density (Rich, September 11): the pages that are scanned run compact, the pages that are read run comfortable */
+ var DENSE={transactions:1,transaction:1,merchants:1,merchant:1,disputes:1,dispute:1,notices:1,notice:1,products:1,product:1,team:1,keys:1,webhooks:1,changelog:1,logs:1,book:1,certs:1,golives:1,releases:1,ptx:1,alerts:1,alert:1,cases:1,turn:1,reporting:1,insights:1,settlement:1,cycle:1,fraud:1,bookrep:1,pperf:1,partner:1,profile:1,inbound:1,company:1,agreement:1,discover:1,cert:1};
  function drawApp(v, top){
    SETUP_PRI=false;
    var h=$('#mn'); if(!h) return;
@@ -7193,6 +7217,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    requestAnimationFrame(function(){ var t=$('.dtop'); document.documentElement.style.setProperty('--dtop', (t?t.offsetHeight:0)+'px') });
    if(v==='frames'){ h.innerHTML=frames(); }
    else { if(SEAT==='ruth') v='agreement'; if(v==='overview' && portalOf()==='partner' && STAGE<4) v='start'; var P=portalOf(), f=SCREENS[P][v] || SCREENS[P].overview || SCREENS[P].turn || SCREENS[P].start; h.innerHTML = f ? f(SEAT,false) : ''; } /* a portal without an overview falls back to its own first page, not a missing one */
+   h.setAttribute('data-density', DENSE[v]?'compact':'comfortable');
    if(!canAct(v)) readOnly(h);
    if(portalOf()==='agent' && (SCENE.agRole||'impl')!=='impl') agentGate(h);
    wireApp(h);
