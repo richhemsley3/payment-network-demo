@@ -3476,6 +3476,24 @@ tr.is-link:focus-visible{outline:2px solid var(--navy); outline-offset:-2px}
 .ft-g i::before{content:'\00b7\00a0'; color:var(--gn-text-quiet)}
 .ft-g em{display:block; font-style:normal; margin-top:8px}
 
+/* the head with a state: the H1 is the name, the state leads the line beneath in weight */
+.gn-open-h p b{font-weight:600; color:var(--gn-text)}
+/* the areas of the business on a home */
+.ov-tiles{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:12px}
+.ov-tile{padding:16px 20px; border:1px solid var(--gn-rule); border-radius:8px}
+.ov-tile.is-link{cursor:pointer} .ov-tile.is-link:hover{background:var(--gn-bg-hover, #FAFAF8)}
+.ov-tile-h{display:flex; justify-content:space-between; align-items:baseline} .ov-tile-h b{font-weight:600} .ov-tile-h .gn-num{color:var(--gn-text-caption); font-size:13px}
+.ov-tile-s{display:block; margin-top:4px} .ov-tile-d{display:block; font-size:13px; color:var(--gn-text-secondary); margin-top:8px; line-height:1.45} .ov-tile-a{display:block; margin-top:12px; font-size:13px}
+/* a toolbar row of selects and search */
+.tb3{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-top:12px; padding:8px 0; border-top:1px solid var(--gn-rule); border-bottom:1px solid var(--gn-rule); font-size:13px}
+.tb3 .inl{display:inline-flex} .tb3-r{margin-left:auto; display:flex; gap:16px} .tb3-q{flex:1 1 200px; min-width:160px; padding:4px 12px; border:1px solid var(--gn-rule); border-radius:999px; color:var(--gn-text-quiet)}
+/* a record's highlights: facts at body size, six across */
+.gn-hl{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px 20px; margin-top:20px; padding:16px 0; border-top:1px solid var(--gn-rule); border-bottom:1px solid var(--gn-rule)}
+.gn-hl span{display:block; font-size:13px; color:var(--gn-text-caption)} .gn-hl b{display:block; font-weight:600; margin-top:4px} .gn-hl small{display:block; font-size:13px; color:var(--gn-text-caption); margin-top:2px}
+/* the outline, folded */
+.st-fold{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:16px; padding:12px 0; border-top:1px solid var(--gn-rule); border-bottom:1px solid var(--gn-rule)} .st-fold b{font-weight:600} .st-fold-r{font-size:13px; color:var(--gn-text-caption)}
+@media (max-width:1000px){ .ov-tiles{grid-template-columns:1fr} .gn-hl{grid-template-columns:repeat(3,minmax(0,1fr))} }
+
 /* Ask: the header search panel. Owned by the search track; appended after base.css. */
 .hdr-res .ask{padding:4px 0 8px; border-bottom:1px solid var(--g150); margin-bottom:6px}
 .hdr-res .ask-home{border-bottom:0; margin-bottom:0; padding-bottom:0}
@@ -6113,7 +6131,7 @@ window.GNChart=(function(){
    if(r==='Finance') return a==='money';
    return true }
  /* acts that read: open, filter, search, page, download, the person's own session. Every other act changes the record. */
-var READ_ACTS={devQClear:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
+var READ_ACTS={devQClear:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
  var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
@@ -6991,9 +7009,14 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    largest type on it a third time gives the most weight to the least useful thing on the screen. The
    name becomes an eyebrow and the state of the day becomes the headline. Used where a page has a state
    worth leading with; every other page keeps ph(). */
+/* the head with a state. The H1 is always the page name, so the first part of the eyebrow becomes the
+   H1 and the rest its eyebrow; the state leads the line beneath in weight. One rule for every page.
+   The wrapper keeps gn-open-h so the page-ins know this page has already made its reading. */
  function openHead(eyebrow, headline, sub, acts){
-   return '<div class="gn-open"><div class="gn-eyebrow">'+esc(eyebrow)+'</div><h1>'+esc(headline)+'</h1>'
-     +(sub?'<p>'+sub+'</p>':'')+(acts?'<div class="gn-actions">'+acts+'</div>':'')+'</div>' }
+   var parts=String(eyebrow).split(' \u00b7 '), name=parts[0], ctx=parts.slice(1).join(' \u00b7 ');
+   var h=String(headline||''); if(h && !/[.!?]$/.test(h)) h+='.';
+   return '<div class="gn-page-head gn-open-h"><div>'+(ctx?'<div class="gn-eyebrow">'+esc(ctx)+'</div>':'')+'<h1>'+esc(name)+'</h1>'
+     +'<p>'+(h?'<b>'+esc(h)+'</b>':'')+(sub?' '+sub:'')+'</p></div>'+(acts?'<div class="gn-page-head-act">'+acts+'</div>':'')+'</div>' }
 /* the filter sentence: every condition on a list in one line the reader can read straight through.
    The native select is still the control — it keeps the keyboard, the mobile picker and the wiring —
    but it is laid transparently over its own selected text, so the line sizes to what is chosen rather
@@ -7024,7 +7047,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
       +'<div class="gn-row-t"><b>'+r.t+'</b>'+(r.d?'<span>'+r.d+'</span>':'')+'</div>'
       +(r.mid?'<div class="gn-row-m">'+r.mid+'</div>':'')
       +(r.r!==undefined?'<div class="gn-row-r">'+r.r+'</div>':'')
-      +(r.act?'<div class="gn-row-a">'+r.act+'</div>':'')+'</div>' }).join('')+'</div>'+(total>lim?'<div class="gn-table-foot"><span class="gn-link" data-act="more" data-k="'+esc(key)+'">Show '+Math.min(50,total-lim)+' more</span><span>'+lim+' of '+total+'</span></div>':'');
+      +(r.act?'<div class="gn-row-a">'+r.act+'</div>':'')+'</div>' }).join('')+'</div>'+(total>lim?'<div class="gn-table-foot"><span class="gn-link" data-act="more" data-k="'+esc(key)+'">Show '+Math.min(25,total-lim)+' more</span><span>'+lim+' of '+total+'</span></div>':'');
  }
  /* a document: label, value, and where the value came from */
  function doc(pairs){
@@ -7034,6 +7057,17 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  function secH(t, r){ if(r && /^[a-z]/.test(r) && !/^v\d/.test(r) && r.charAt(0)!=='<') r=r.charAt(0).toUpperCase()+r.slice(1); return '<div class="gn-section"><h2>'+t+'</h2>'+(r?'<span>'+r+'</span>':'')+'</div>' }
  function figs(list, cls){ /* every figure row is a row of cards; compact only sets the smaller value size */ return '<div class="gn-figs gn-figs--cards'+(cls?' '+cls:'')+'">'+list.map(function(f){ return '<div class="gn-fig"><b>'+esc(f[1])+'</b><span>'+esc(f[0])+'</span>'+(f[2]?'<small>'+esc(f[2])+'</small>':'')+'</div>' }).join('')+'</div>' }
  function ink(code, cls){ return '<pre class="gn-code gn-code--ink '+(cls||'')+'">'+esc(code)+'</pre>' }
+/* page tabs: different content areas of one page, underlined, each a place of its own. A segment
+    control (tabs) is for subsets or representations of one data set. */
+ function ptabs(key, list, def, right){
+   var cur=tab(key,def);
+   return '<div class="gn-tabs" role="tablist">'+list.map(function(t){ return '<a data-tab="'+key+':'+t[0]+'" role="tab" tabindex="0" class="'+(cur===t[0]?'is-on':'')+'" aria-selected="'+(cur===t[0])+'">'+esc(t[1])+(t[2]?'<span class="gn-count">'+t[2]+'</span>':'')+'</a>' }).join('')+(right?'<div class="gn-tabs-r">'+right+'</div>':'')+'</div>';
+ }
+ /* the areas of the business on a home: a count, a state word, the nearest item, a link in */
+ function tiles(list){
+   return '<div class="ov-tiles">'+list.map(function(t){ return '<div class="ov-tile'+(t.go?' is-link" data-go2="'+t.go:'')+'"><div class="ov-tile-h"><b>'+esc(t.t)+'</b>'+(t.n!==undefined?'<span class="gn-num">'+esc(String(t.n))+'</span>':'')+'</div><span class="ov-tile-s">'+t.s+'</span><span class="ov-tile-d">'+esc(t.d)+'</span>'+(t.a?'<span class="ov-tile-a">'+goLink(t.a,'data-go2="'+t.go+'"')+'</span>':'')+'</div>' }).join('')+'</div>';
+ }
+ function tbrow(parts, right){ return '<div class="tb3">'+parts.filter(Boolean).join('')+(right?'<span class="tb3-r">'+right+'</span>':'')+'</div>' }
  function tabs(key, list, def){
    var cur=tab(key,def);
    return '<div class="gn-seg" role="tablist">'+list.map(function(t){ return '<button data-tab="'+key+':'+t[0]+'" role="tab" aria-pressed="'+(cur===t[0])+'" aria-selected="'+(cur===t[0])+'">'+esc(t[1])+(t[2]?'<span class="gn-count">'+t[2]+'</span>':'')+'</button>' }).join('')+'</div>';
@@ -7054,7 +7088,7 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  function sortList(list, spec, get){ var f=get[spec.on]; if(!f) return list; var d=spec.dir==='asc'?1:-1; return list.slice().sort(function(a,b){ var x=f(a), y=f(b); return (x<y?-1:x>y?1:0)*d }) }
  function tbl2(cols, data, cls){
    /* wide content scrolls inside its own box; the page never scrolls sideways. Past fifty rows the table shows fifty and offers the next fifty. */
-   var key='t|'+(cls||'')+'|'+cols.map(function(c){return c[0]}).join(','), lim=50+((SCENE.more||{})[key]||0), total=data.length; if(total>lim) data=data.slice(0,lim);
+   var key='t|'+(cls||'')+'|'+cols.map(function(c){return c[0]}).join(','), lim=25+((SCENE.more||{})[key]||0), total=data.length; if(total>lim) data=data.slice(0,lim);
    var linked=data.some(function(r){ return !Array.isArray(r) && (r.go||r.act) });
    var sort=arguments[3];
    return '<div class="gn-table-wrap"><table class="gn-table '+(cls||'')+'"><thead><tr>'+cols.map(function(c){ var sortable=sort&&c[2], on=sortable&&sort.on===c[2]; return '<th scope="col" class="'+(c[1]?'is-num ':'')+(sortable?'is-sortable':'')+(on?' is-sorted'+(sort.dir==='asc'?' is-asc':''):'')+'"'+(sortable?' data-act="sortBy" data-k="'+esc(sort.key)+'|'+esc(c[2])+'" tabindex="0" role="button" aria-sort="'+(on?(sort.dir==='asc'?'ascending':'descending'):'none')+'"':'')+'>'+esc(c[0])+'</th>' }).join('')+(linked?'<th scope="col"></th>':'')+'</tr></thead><tbody>'
@@ -7238,14 +7272,20 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      /* one instrument, not three of equal size: three charts side by side means none of them is the point.
         Approvals is the number the rest of the page hangs on, so it gets the width; the other two are a
         click away in Reporting. */
-     var ch=secH('Approvals, fourteen days', goLink('Reporting','data-go2="reporting"'))
-       +chart('line',{labels:L, series:[{values:DAILY.map(function(d){return d[2]})}], fmt:'pct1', min:95, max:98, h:220, label:true});
-     var prods=secH('Products', goLink('All products','data-go2="products"'))+'<div class="pc-grid">'+CAT.filter(function(p){return p.st&&p.st[STAGE]==='Live'}).map(function(p){ var m=PMETRIC[p.k]||[];
-       return '<article class="pc is-link" data-act="product" data-k="'+p.k+'"><div class="pc-h"><h2>'+esc(p.t)+'</h2>'+word('Live')+'</div><div class="pc-m">'+m.slice(0,2).map(function(x){ return '<div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div>' }).join('')+'</div></article>' }).join('')+'</div>';
-     var openA=ALERTS.filter(function(a){return a.st!=='resolved'});
-     var att = secH('Alerts', goLink('All alerts','data-go2="alerts"'))+'<div class="nt-grid">'+openA.map(function(a){ return '<article class="gn-notice is-link" data-act="alert" data-k="'+a.k+'"><div class="gn-notice-h">'+(a.st==='inhand'?sw('In hand','wa'):sw('Coming',''))+'<span>'+esc(a.product)+'</span></div><h3>'+esc(a.t)+'</h3><div class="gn-notice-f">'+av(a.owner,'a24')+'<span>'+esc(PEOPLE[a.owner].n)+', '+esc(a.when)+'</span></div></article>' }).join('')+'</div>';
-     var settle=secH('Settlement', goLink('Reporting','data-go2="reporting"'))+tbl2([['Cycle'],['Posted'],['Net',1]], LIVE.cycles.map(function(c){ return {c:[esc(c[0]), esc(c[2].replace('posted ','')), '<b class="gn-num">'+c[1]+'</b>'], act:'cycle', k:c[0]} }));
-     return head+secH('Yesterday', esc(last[0]))+f+ch+desk+prods+att+settle;
+     /* the areas of the business, each with a state. Rich, September 11: a home is categories of
+        information with a state on each, not lists by time, and no chart between them. */
+     var liveP=CAT.filter(function(p){return p.st&&p.st[STAGE]==='Live'});
+     var openA=ALERTS.filter(function(a){return a.st!=='resolved'&&!(SCENE.resolved||{})[a.k]});
+     var lastCyc=LIVE.cycles[0];
+     var areas=tiles([
+       {t:'Disputes', n:DISPUTE_CASES.filter(function(c){return dspStatus(c)!=='closed'}).length, s:nr.length?sw(nn(nr.length,'need')+(nr.length===1?'s':'')+' you','wa'):sw('Nothing due',''), d:nr.length?'The nearest is due '+nr.map(function(c){return c.due}).sort()[0]+'.':'No case needs a response.', a:'Open disputes', go:'disputes'},
+       {t:'Notices', n:noticesOpen().length, s:na?sw(na===1?'Needs you':nn(na,'need')+' you','wa'):sw('Nothing to acknowledge',''), d:na?noticesOpen().filter(function(n){return ntKind(n)==='action'&&!(SCENE.ntAck||{})[n.k]}).map(function(n){return n.t}).slice(0,1).join('')+'.':'Everything acknowledged.', a:'Open notices', go:'notices'},
+       {t:'Alerts', n:openA.length, s:openA.length?sw(oa?'In hand at Discover':'Open',''):sw('None open','ok'), d:openA.length?esc(openA[0].t)+'.':'Nothing on your traffic.', a:'Open alerts', go:'alerts'},
+       {t:'Settlement', s:sw('Landed','ok'), d:(lastCyc?lastCyc[0]+' cycle, $'+lastCyc[3]+' net':'Daily')+'.', a:'Open the cycle', go:'settlement'},
+       {t:'Products', n:liveP.length, s:sw('Live','ok'), d:liveP.map(function(p){return p.t}).join(', ')+'. Nothing changed this week.', a:'Open products', go:'products'},
+       {t:'Certification', s:sw('Valid','ok'), d:'Passed May 8. Production certificate expires April 2, 2027.', a:'Open integrations', go:'integrations'}
+     ]);
+     return head+f+secH('By area')+areas;
    }
    var yours=[], theirs=[];
    if(STAGE===1){ if(!SCENE.confirmed) yours.push({t:'Sonia has sent Brightline Bank’s deal', d:'The network run against your own book, March 6', r:goLink('Read it','data-go2="deal"')});
@@ -7418,6 +7458,9 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
  }
  function stepper(xs, S){
    var cur=xs.filter(function(x){return S.st[x.k]==='now'})[0] || xs.filter(function(x){return S.st[x.k]!=='done'})[0];
+   /* Rich, September 11: the full list of steps is not always visible. One line says which step this is and what is next; the outline opens on request. */
+   if(!SCENE.stepsOpen){ var dn=xs.filter(function(x){return S.st[x.k]==='done'}).length, ci=cur?xs.indexOf(cur):xs.length-1, nx=xs[ci+1];
+     return '<div class="st-fold"><span><b>Step '+(ci+1)+' of '+xs.length+'</b>'+(cur?' \u00b7 '+esc(cur.t):'')+'</span><span class="st-fold-r">'+dn+' done'+(nx?' \u00b7 next, '+esc(nx.t):'')+' \u00b7 <span class="gn-link" data-act="stepsOpen">Show all steps</span></span></div>'; }
    return '<ol class="stp n'+xs.length+'">'+xs.map(function(x,i){ var st=S.st[x.k], cls=st==='done'?'s-done':x===cur?'s-cur':'';
      return '<li class="'+cls+'"><i>'+(st==='done'?'<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>':(i+1))+'</i><span>'+esc(x.t)+'</span></li>' }).join('')+'</ol>';
  }
@@ -7667,9 +7710,10 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    if(cmp && prevS.length===series.length) opts.prev=prevS.map(function(d){return d[idx]});
    var canCmp = prevS.length===series.length;
    var sumS=function(list){ return list.reduce(function(a,d){return a+d[1]},0) }, tot1=sumS(series), tot0=sumS(prevS);
-   var seg=toolbar(tabs('rep',[['auth','Authorizations'],['appr','Approval rate'],['settle','Settlement']],'auth')+tabs('repd',[['7','7 days'],['14','14 days'],['30','30 days']],'14'), canCmp?'<label class="gn-check-l cmp"><input type="checkbox" data-act="repCmp"'+(cmp?' checked':'')+'> <span>Compare with previous period</span></label>':'<span class="l2-mode">Not enough history to compare 30 days</span>');
+   var seg=tbrow([fsel('rep', m, [['auth','Authorizations'],['appr','Approval rate'],['settle','Settlement']], 'Measure'), fsel('repd', String(days), [['7','7 days'],['14','14 days'],['30','30 days']], 'Period')], canCmp?'<label class="gn-check-l cmp"><input type="checkbox" data-act="repCmp"'+(cmp?' checked':'')+'> <span>Compare with previous period</span></label>':'<span class="l2-mode">Not enough history to compare 30 days</span>');
    var f=figs([['Authorizations', tot1.toLocaleString('en-US'), cmp&&canCmp&&tot0?((tot1-tot0)/tot0*100).toFixed(1)+'% on the previous period':'last '+days+' days'],['Approval rate', (series.reduce(function(a,d){return a+d[2]},0)/series.length).toFixed(1)+'%', ''],['Card not present', (series.reduce(function(a,d){return a+d[3]},0)/series.length).toFixed(1)+'%', 'of volume'],['Settled', '$'+series.reduce(function(a,d){return a+d[4]},0).toFixed(1)+'M', '']]);
-   var ch = f+chart('line',{labels:series.map(function(d){return d[0]}), series:[{values:series.map(function(d){return d[idx]})}], prev:opts.prev, min:opts.min, max:opts.max, fmt:m==='auth'?'k':m==='appr'?'pct1':'moneyM'})+(cmp&&canCmp?'<p class="para chart-key"><span class="key-l"></span>This period <span class="key-p"></span>Previous period</p>':'');
+   var repView=tab('repView','visual');
+   var ch = f+secH((m==='auth'?'Authorizations':m==='appr'?'Approval rate':'Settlement')+' by day', tabs('repView',[['visual','Visual'],['table','Table']],'visual'))+(repView==='table' ? '' : chart('line',{labels:series.map(function(d){return d[0]}), series:[{values:series.map(function(d){return d[idx]})}], prev:opts.prev, min:opts.min, max:opts.max, fmt:m==='auth'?'k':m==='appr'?'pct1':'moneyM'}))+(cmp&&canCmp?'<p class="para chart-key"><span class="key-l"></span>This period <span class="key-p"></span>Previous period</p>':'');
    var tot=DECLINES.reduce(function(a,x){return a+x[1]},0);
    var dec=secH('Declines by reason', yday()+', '+tot.toLocaleString('en-US')+' of 48,211')+'<div class="rank">'+DECLINES.map(function(x){ return '<div class="rank-r is-link" data-act="txCode" data-k="'+esc(x[0].split(' ')[0])+'"><span>'+esc(x[0])+'</span><div class="rank-bar"><i style="--w:'+Math.round(100*x[1]/DECLINES[0][1])+'%"></i></div><b class="gn-num">'+x[1].toLocaleString('en-US')+'</b><span class="gn-num">'+(100*x[1]/tot).toFixed(0)+'%</span></div>' }).join('')+'</div>';
    var t=tbl2([['Day'],['Authorizations',1],['Approved',1],['Card not present',1],['Settled',1],['']], series.slice().reverse().map(function(d){ var c=[esc(d[0]), d[1].toLocaleString('en-US'), d[2]+'%', d[3]+'%', '$'+d[4].toFixed(2)+'M', (CYCLES[d[0]]?'<a class="gn-link" data-act="cycle" data-k="'+esc(d[0])+'">Cycle</a> ':'')]; return {c:c, act:'txDay', k:d[0]} }));
@@ -7677,13 +7721,13 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
    var exps=EXPORTS.concat(SCENE.exports||[]).filter(function(e){ return !(SCENE.expDel||{})[e.id] });
    var exf = SCENE.expForm ? '<section class="gn-setup"><div class="gn-setup-h"><div><h3>Schedule an export</h3><p>Sends the report to an inbox on a schedule.</p></div></div><form class="gn-setup-f" onsubmit="return false"><label class="gn-field"><span class="gn-field-l">Report</span><select class="gn-in" id="exRep">'+REPORTS.map(function(r){ return '<option>'+esc(r.t)+'</option>' }).join('')+'<option>By day (this table)</option></select></label><label class="gn-field"><span class="gn-field-l">Cadence</span><select class="gn-in" id="exCad"><option>Every day, 6:15 AM ET</option><option>Every Monday</option><option>First business day of the month</option></select></label><label class="gn-field"><span class="gn-field-l">Send to</span><input class="gn-in" id="exTo" placeholder="finance@brightline.example"></label><label class="gn-field"><span class="gn-field-l">Format</span><select class="gn-in" id="exFmt"><option>CSV</option><option>Excel</option><option>JSON</option></select></label><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="expSave">Schedule</button><span class="gn-link cancel" data-act="expClose">Cancel</span></div></form></section>' : '';
    var ex=secH('Scheduled exports', SCENE.expForm?'':'<button class="gn-btn gn-btn--sm" data-act="expOpen">Schedule an export</button>')+exf+(exps.length?tbl2([['Report'],['Cadence'],['Send to'],['Format'],['Since'],['']], exps.map(function(e){ return [esc(e.report), esc(e.cadence), '<span class="gn-mono">'+esc(e.to)+'</span>', esc(e.format), esc(e.since), '<span class="gn-link" data-act="expDel" data-k="'+e.id+'">Remove</span>'] })):'<p class="para">None yet.</p>');
-   return head+seg+ch+hist+dec+secH('By day', '<span class="gn-link" data-act="dl">Download CSV</span>')+t+ex+cat+secH('Recipients')+setup('report');
+   return head+seg+ch+(repView==='table'?t:'')+hist+dec+ex+cat+secH('Recipients')+setup('report');
  };
  /* transaction history across dimensions: the same period read by merchant, channel, response, hour and credential. Counts are the period's, shares come from the record. Each row opens Transactions filtered to it. */
  function txHistory(series){
    var by=tab('repBy','merchant'), tot=series.reduce(function(a,d){return a+d[1]},0), days=series.length, N=TXNS.filter(function(t){return parseDay(t.day)>=parseDay(series[0][0])});
    var appr=function(f){ var l=N.filter(f), a=l.filter(function(t){return t.st==='approved'}).length; return l.length?100*a/l.length:0 }, avg=function(f){ var l=N.filter(f); return l.length?l.reduce(function(s,t){return s+t.amt},0)/l.length/100:0 };
-   var segs=toolbar(tabs('repBy',[['merchant','By merchant'],['channel','By channel'],['code','By response'],['hour','By hour'],['cred','By credential']],'merchant'), nn(days,'day')+', '+tot.toLocaleString('en-US')+' authorizations');
+   var segs=tbrow([fsel('repBy', by, [['merchant','By merchant'],['channel','By channel'],['code','By response'],['hour','By hour'],['cred','By credential']], 'Cut')], nn(days,'day')+', '+tot.toLocaleString('en-US')+' authorizations');
    var body='';
    if(by==='merchant'){ var mA=MERCHANTS.reduce(function(a,m){return a+m.auths},0), rows=MERCHANTS.slice().sort(function(a,b){return b.auths-a.auths}).map(function(m){ var n=Math.round(tot*m.auths/mA); return {m:m, n:n, ap:m.appr, avg:avg(function(t){return t.m===m.n})} });
      body=chart('bar',{horizontal:true, items:rows.map(function(r){ return {name:r.m.n, value:r.n} }), fmt:'k', left:180})+tbl2([['Merchant'],['Authorizations',1],['Share',1],['Approved',1],['Card not present',1],['Average amount',1],['Risk']], rows.map(function(r){ return {c:[esc(r.m.n), r.n.toLocaleString('en-US'), (100*r.n/tot).toFixed(0)+'%', r.ap.toFixed(1)+'%', r.m.cnp+'%', '$'+r.avg.toFixed(2), riskWord(mRisk(r.m))], act:'txByMerchant', k:r.m.n} })) }
@@ -7845,7 +7889,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var sort=sortSpec('txSort','when|desc'); list=sortList(list, sort, {when:function(t){ return (parseDay(t.day)||0)*1440+t.h*60+t.mn }, amt:function(t){return t.amt}, m:function(t){return t.m}, code:function(t){return t.code}, st:function(t){return t.dispute?'disputed':t.st}, ms:function(t){return t.ms}});
    var days14=[]; TXNS.forEach(function(t){ if(days14.indexOf(t.day)<0) days14.push(t.day) });
    var sel=function(key, cur, opts, label){ return '<select class="gn-in gn-in--sm" data-sel="'+key+'" aria-label="'+esc(label)+'">'+opts.map(function(o){ return '<option value="'+esc(o[0])+'"'+(cur===o[0]?' selected':'')+'>'+esc(o[1])+'</option>' }).join('')+'</select>' };
-   var picks=filterLine([
+   var viewSel=fsel('txs', st, [['all','All transactions'],['approved','Approved'],['declined','Declined'],['other','Partial and stand-in'],['disputed','Disputed']], 'View');
+   var picks=tbrow([viewSel,
+       '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="txQ" value="'+esc(SCENE.txQ||'')+'" placeholder="Search by id or merchant" aria-label="Search"></form>',
        fsel('txMerchant', mF, [['','Every merchant']].concat(MERCHANTS.map(function(m){return [m.n,m.n]})), 'Merchant'),
        fsel('txCode', codeF, [['','any response'],['00','00 approved'],['51','51 insufficient funds'],['05','05 do not honor'],['14','14 invalid card'],['54','54 expired card'],['10','10 partial approval']], 'Response code'),
        fsel('txAmt', amtF, [['','any amount'],['lt50','under $50'],['50to250','$50 to $250'],['250to1000','$250 to $1,000'],['gt1000','over $1,000']], 'Amount'),
@@ -7855,11 +7901,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
        fsel('txDay', day, [['','fourteen days']].concat(days14.map(function(d){return [d, d==='June 2'?'yesterday, June 2':d]})), 'Day'),
        (SCENE.txMin||SCENE.txMax?esc((SCENE.txMin?'over $'+(SCENE.txMin/100).toFixed(0):'')+(SCENE.txMin&&SCENE.txMax?', ':'')+(SCENE.txMax?'under $'+(SCENE.txMax/100).toFixed(0):''))+' <span class="gn-link" data-act="txAmtClear">Clear</span>':''),
        (SCENE.txDays?'last '+esc(String(SCENE.txDays))+' days <span class="gn-link" data-act="txDaysClear">Clear</span>':'')
-     ], (mF||day||codeF||amtF||hrF||tokF||q||st!=='all'||prod!=='all'||SCENE.txMin||SCENE.txMax||SCENE.txDays)?'<span class="gn-link" data-act="txClear">Clear filters</span>':'');
+     ], ((mF||day||codeF||amtF||hrF||tokF||q||st!=='all'||prod!=='all'||SCENE.txMin||SCENE.txMax||SCENE.txDays)?'<span class="gn-link" data-act="txClear">Clear filters</span>':'')+'<span class="gn-link" data-act="noop">Columns</span>');
    var head=ph('Transactions', 'Every authorization from the last 14 days.', '<span class="gn-link" data-act="dl">Export</span>');
    var fromQ = SCENE.txFrom ? txInsight(list, mF, day, prod) : '';
-   var tb=toolbar(tabs('txs',[['all','All',String(TXNS.length)],['approved','Approved',String(TXNS.filter(function(t){return t.st==='approved'&&!t.dispute}).length)],['declined','Declined',String(TXNS.filter(function(t){return t.st==='declined'}).length)],['other','Partial and stand-in',String(TXNS.filter(function(t){return t.st==='partial'||t.st==='stand_in'}).length)],['disputed','Disputed',String(TXNS.filter(function(t){return t.dispute}).length)]],'all'),
-     '<form class="inl" onsubmit="return false"><input class="gn-in gn-in--sm" id="txQ" value="'+esc(SCENE.txQ||'')+'" placeholder="Authorization id or merchant"><button class="gn-btn gn-btn--sm" data-act="txSearch">Search</button>'+(SCENE.txQ?'<span class="gn-link" data-act="txClear">Clear</span>':'')+'</form>');
+   var tb='';
    var t=tbl2([['When',0,'when'],['Authorization'],['Merchant',0,'m'],['Amount',1,'amt'],['Channel'],['Code',0,'code'],['Issuer answer',1,'ms'],['Status',0,'st']], list.map(function(x){ return {open:(SCENE.txRow===x.id?txInline(x):''), cls:(SCENE.txRow===x.id?'is-sel':''), c:['<span class="nw">'+esc(x.t)+'</span>', '<span class="gn-mono">'+esc(x.id)+'</span>', '<span class="nw">'+esc(x.m)+'</span>', '$'+(x.amt/100).toFixed(2), '<span class="nw">'+esc(x.mode==='ecommerce'?'Card not present':x.mode.charAt(0).toUpperCase()+x.mode.slice(1))+'</span>', '<span class="gn-mono">'+esc(x.code)+'</span>', x.ms+' ms', txnWord(x)], act:'txOpen', k:x.id} }), '', sort);
    var filtered=!!(q||codeF||mF||day||amtF||hrF||tokF||st!=='all'||prod!=='all'||SCENE.txMin||SCENE.txMax||SCENE.txDays);
    var foot=list.length?'<div class="gn-table-foot">'+(filtered?nn(list.length,'match','matches')+' of 635,121 in 14 days':'Newest '+list.length+' of 635,121 in 14 days. Search by id or merchant, or export.')+'</div>':'';
@@ -8549,7 +8594,10 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var have=function(n){ return signed||known[n]||(SCENE.cfg||{})[n]!==undefined };
    var total=CONFIG.length, got=CONFIG.filter(function(r){return have(r[0])}).length;
    var head=ph('Configuration', 'Configuration the network needs before go-live.')+toolbar('<span class="l2-mode">'+(ok?'Confirmed. Certification cases are generated from this set.':got+' of '+total+' values set. '+(signed?'Confirm to generate certification cases.':'The rest arrive from Schedules A and B at signature.'))+'</span>', ok?word('Confirmed'):signed?'<button class="gn-btn gn-btn--primary" data-act="cfgOk">Confirm configuration</button>':'');
-   return head+CFG_SECTIONS.map(function(sec){ var editing=SCENE.cfgEdit===sec[0];
+   /* Rich, September 11: a page tab per group, and the group as a form */
+   var cfgTab=tab('cfgTab', CFG_SECTIONS[0][0]);
+   var cfgTabs=ptabs('cfgTab', CFG_SECTIONS.map(function(sec){ return [sec[0], sec[0]] }), CFG_SECTIONS[0][0]);
+   return head+cfgTabs+CFG_SECTIONS.filter(function(sec){ return sec[0]===cfgTab }).map(function(sec){ var editing=SCENE.cfgEdit===sec[0];
      var body = editing
        ? '<form class="gn-setup-f" onsubmit="return false">'+sec[1].map(function(n){ var r=cfgVal(n); return '<label class="gn-field"><span class="gn-field-l">'+esc(n)+'</span><input class="gn-in cfgIn" data-n="'+esc(n)+'" value="'+esc(have(n)?r[1]:'')+'" placeholder="'+esc(n==='Callback endpoint'?'https://…':'')+'"></label>' }).join('')+'<div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="cfgSave" data-k="'+esc(sec[0])+'">Save</button><span class="gn-link cancel" data-act="cfgCancel">Cancel</span></div></form>'
        : doc(sec[1].map(function(n){ var r=cfgVal(n); return [n, have(n)?'<span class="gn-mono">'+esc(r[1])+'</span>':'<span class="gn-doc-x">'+esc(n==='Callback endpoint'?'Set in Webhooks':'At signature')+'</span>', have(n)?r[2]:''] }));
@@ -8701,34 +8749,24 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
              + nn(cases.length,'reply','replies')+' due in Cases, '+theirs.length+' waiting on partners.';
    var agAct = first ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-go2="cases">Open Cases</button>' : '';
    var head=openHead('Your turn · Discover Global Network', agLead, agSub, agAct);
-   var todayF=figs([['Due today',String(dueToday),''],['Overdue',String(overdue),overdue?'oldest first below':''],['Replies due',String(cases.length),cases.filter(function(c){return c.sev==='High'}).length?nn(cases.filter(function(c){return c.sev==='High'}).length,'high'):''],['Waiting on partners',String(theirs.length),theirs[0]?'longest '+daysWord(theirs[0].d):'']], 'gn-figs--compact');
+   /* Rich, September 11: pages by state of the work, a sortable table in each, and watch items are
+      alerts. Assignment is a filter, never a segment. */
+   var done=Object.keys(SCENE.agDone||{}).map(function(kk){ var p=kk.split('|'), b=BOOK.filter(function(x){return x.k===p[0]})[0], x=STEPS.filter(function(z){return z.k===p[1]})[0]; return b&&x?{p:b.n, t:x.t, k:b.k}:null }).filter(Boolean);
+   var tt=tab('turnTab','ready');
+   var ptab=ptabs('turnTab',[['ready','Ready for you',String(mine.length+cases.length)],['waiting','Waiting on a partner',String(theirs.length)],['done','Completed',done.length?String(done.length):'']],'ready');
    var byDue=mine.slice().sort(function(a,b){ return (a.due===undefined?99:a.due)-(b.due===undefined?99:b.due) });
-   var yours = mine.length ? secH('Yours', 'By what is due')+tbl2([['Partner'],['What'],['Kind'],['Since',1],['Due'],['']], byDue.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(x.kind||'Step'), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act||''], act:'agPartner', k:x.k} })) : secH('Yours')+'<p class="para">Nothing waiting on you.</p>';
-   var replies = cases.length ? secH('Replies due', goLink('Cases','data-go2="cases"'))+tbl2([['Case'],['From'],['Owner'],['Due']], cases.slice(0,4).map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return {c:[esc(c.t), esc((b?b.n+', ':'')+c.by), c.owner?esc(personName(c.owner)):'<span class="gn-doc-x">Unassigned</span>', caseDueWord(c)], act:'agCase', k:c.id} })) : '';
-   var mx=Math.max(1, theirs.reduce(function(a,x){return Math.max(a,x.d)},0)), shown=theirs.slice(0,10);
-   var wait = secH('Waiting on a partner', 'Longest first')+tbl2([['Partner'],['On'],['Waiting',1],['']], shown.map(function(x){ var lead=((BOOKX[x.k]||{}).lead||'').split(', ')[0];
-     return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'agPartner', k:x.k} }))+(theirs.length>10?'<div class="gn-table-foot"><span></span><span>'+goLink('All '+theirs.length+' in Partners','data-go2="book"')+'</span></div>':'');
-   /* the week as seven days, from the clock: windows, go-lives, replies due, attestations, the alert's next step */
-   var dow=(NOW+4)%7, mon=NOW-((dow+6)%7), days=[]; for(var di=0;di<7;di++) days.push(mon+di);
-   var ev=[];
-   calWeeks().forEach(function(w){ var s=parseDay(w[0].replace(/ to .*$/,'')); if(s!==null) w[1].forEach(function(it){ ev.push({day:s, t:'Window opens: '+it[0], go2:'certs'}) }) });
-   GOLIVES.forEach(function(g){ var s=parseDay(g[1]); if(s!==null) ev.push({day:s, t:'Go-live: '+g[0], go2:'golives'}) });
-   cases.forEach(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; ev.push({day:NOW+caseDue(c), t:'Reply due: '+(b?b.n:''), act:'agCase', k:c.id, tone:caseDue(c)<0?'no':''}) });
-   ATTEST.forEach(function(a){ var s=parseDay(a.due); if(s!==null && a.st!=='received') ev.push({day:s, t:'Attestation due: '+(BOOK.filter(function(x){return x.k===a.k})[0]||{}).n, go2:'releases'}) });
-   if(STAGE>=6 && !(SCENE.resolved||{}).cnp) ev.push({day:DAY0, t:'Gateway call, 11:00 AM: Brightline Bank', act:'agAlert', k:'cnp'});
-   mine.forEach(function(x){ if(x.due!==undefined && x.kind!=='Alert') ev.push({day:NOW+x.due, t:x.kind+' due: '+x.p, act:'agPartner', k:x.k, tone:x.due<0?'no':''}) });
-   var DN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-   var week=secH('This week', dayName(days[0])+' to '+dayName(days[6]))+'<div class="wk">'+days.map(function(dd,di){ var items=ev.filter(function(e){ return e.day===dd });
-     return '<div class="wk-d'+(dd===NOW?' is-today':'')+'"><div class="wk-h"><b>'+DN[di]+'</b><span>'+esc(dayName(dd).replace(/^(\w+) /,''))+'</span></div>'+(items.length?items.map(function(e){ var lk=e.go2?' data-go2="'+e.go2+'"':' data-act="'+e.act+'" data-k="'+e.k+'"'; return '<div class="wk-i is-link'+(e.tone?' is-'+e.tone:'')+'"'+lk+'>'+esc(e.t)+'</div>' }).join(''):'<div class="wk-e">Nothing scheduled</div>')+'</div>' }).join('')+'</div>';
-   /* partners to watch: the ones not good, with the first thing wrong */
-   var watchList=BOOK.filter(function(b){ return BOOKX[b.k].health!=='good' });
-   var watch = watchList.length ? secH('Watch', nn(watchList.length,'partner'))+'<div class="nt-grid">'+watchList.map(function(b){ var x=BOOKX[b.k]; return '<article class="gn-notice is-link" data-act="agPartner" data-k="'+b.k+'"><div class="gn-notice-h">'+healthWord(x.health)+'<span>'+esc(bookStage(b))+'</span></div><h3>'+esc(b.n)+'</h3><p>'+esc(healthWhy(b)||'Nothing waiting')+'</p></article>' }).join('')+'</div>' : '';
-   /* across the book: the latest six things that happened, from every partner's log */
-   var logs=[]; BOOK.forEach(function(b){ var x=BOOKX[b.k]; if(b.k==='brightline'){ AG_ACT.filter(function(a){ return a.at<=STAGE }).slice(0,3).forEach(function(a){ logs.push({day:parseDay(a.day), dayS:a.day, t:a.t, title:b.n+': '+a.title, d:a.d, k:b.k}) }) } else (x.log||[]).forEach(function(l){ logs.push({day:parseDay(l.day), dayS:l.day, t:l.t, title:b.n+': '+l.title, d:l.d, k:b.k}) }) });
-   logs=logs.filter(function(l){ return l.day!==null }).sort(function(a,b){ return b.day-a.day }).slice(0,6);
-   var byDay={}; logs.forEach(function(l){ (byDay[l.dayS]=byDay[l.dayS]||[]).push({t:l.t, title:esc(l.title), d:esc(l.d), act:'agPartner', k:l.k}) });
-   var across=secH('Across the book', 'Latest')+timeline(Object.keys(byDay).map(function(k){ return {day:k, items:byDay[k]} }));
-   return head+todayF+yours+replies+wait+week+watch+across;
+   var body='';
+   if(tt==='ready'){
+     var readyRows=byDue.map(function(x){ return {c:[esc(x.p), esc(x.t), esc(x.kind||'Step'), esc(cap(x.since)), x.due!==undefined?slaWord(x.due):'', x.act], act:'agPartner', k:x.k} })
+       .concat(cases.map(function(c){ var b=BOOK.filter(function(x){return x.k===c.k})[0]; return {c:[esc(b?b.n:''), esc(c.t), 'Reply', esc(c.since||''), slaWord(caseDue(c)), '<span class="gn-link" data-act="agCase" data-k="'+c.id+'">Reply</span>'], act:'agCase', k:c.id} }));
+     body=readyRows.length ? tbrow([ '<span class="tb3-q">Search by partner or item</span>' ]) + tbl2([['Partner'],['What'],['Kind'],['Since',1],['Due'],['']], readyRows) : empty('Nothing is ready for you.');
+   } else if(tt==='waiting'){
+     body=theirs.length ? tbl2([['Partner'],['On'],['Waiting',1],['']], theirs.map(function(x){ var lead=((BOOKX[x.k]||{}).lead||'').split(', ')[0];
+       return {c:[esc(x.p), esc(x.t.replace(/\.$/,'')), x.d?daysWord(x.d):esc(cap(x.since)), lead&&agCanDo('agRemind')?'<span class="gn-link" data-act="agRemind" data-k="'+x.k+'">Remind</span>':''], act:'agPartner', k:x.k} })) : empty('Nothing is waiting on a partner.');
+   } else {
+     body=done.length ? tbl2([['Partner'],['What'],['']], done.map(function(d){ return {c:[esc(d.p), esc(d.t), word('Done')], act:'agPartner', k:d.k} })) : empty('Nothing completed yet today.');
+   }
+   return head+ptab+body;
  };
  /* every step of the shared plan, with its state, for any partner in the book:
     Brightline Bank's from live state, the others' from the plan counts */
@@ -8939,7 +8977,12 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      : secH('Handoff to operations', allDone?'Ready':(hoItems.filter(function(it){return it[2]}).length+' of 4'))+checklist+(allDone?'<div class="sc-a inset">'+agGate('<button class="gn-btn gn-btn--primary" data-act="handoff" data-k="'+b.k+'">Hand off to operations</button>')+'</div>':'');
    var cs=agCases().filter(function(c){ return c.k===b.k });
    var cases = cs.length ? secH('Cases', goLink('Inbox','data-go2="cases"'))+tbl2([['Case'],['Area'],['Opened'],['Reply'],['Status']], cs.map(function(c){ return {c:[esc(c.t), esc(c.area), esc(c.opened), c.st==='open'?slaWord(caseDue(c)):'—', c.st==='open'?sw('Open','wa'):word('Resolved')], act:'agCase', k:c.id} })) : '';
-   return head+next+running+health+intime+plan+env+docs+wvSection(b.k)+reqs+cases+team+act+note+handoff;
+   /* Rich, September 11: a record is a highlights row and page tabs, never a scroll of sections */
+   var hlRow='<div class="gn-hl">'+[['Kind',esc(b.kind),''],['Stage',esc(st),bookSince(b)?'since '+esc(bookSince(b)):''],['Standing',healthWord(x.health),''],['Cases open',String(agCases().filter(function(c){return c.k===b.k&&c.st==='open'}).length),''],['Whose turn',esc(b.turn&&b.turn!=='\u2014'?b.turn:'Nobody'),d?daysWord(d)+' waiting':''],['Lead',esc((x.lead||'').split(', ')[0]||'\u2014'),esc((x.lead||'').split(', ')[1]||'')]].map(function(f){ return '<div><span>'+f[0]+'</span><b>'+f[1]+'</b>'+(f[2]?'<small>'+f[2]+'</small>':'')+'</div>' }).join('')+'</div>';
+   var pt=tab('agTab_'+b.k,'over');
+   var tabsRow=ptabs('agTab_'+b.k,[['over','Overview'],['plan','Plan'],['env','Environments'],['docs','Documents'],['people','People'],['activity','Activity']],'over');
+   var bodyT = pt==='plan' ? intime+plan : pt==='env' ? env : pt==='docs' ? docs+reqs : pt==='people' ? team : pt==='activity' ? act+note+running+wvSection(b.k)+cases+handoff : next+health;
+   return head+hlRow+tabsRow+bodyT;
  };
  /* ── a quarterly review, run from the queue ── */
  AGENT.review=function(){
@@ -9185,6 +9228,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    groups:function(){ SCENE.group=null; drawApp(VIEW, true); arm(); },
    journey:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
    group2:function(b){ SEATS=[SEAT]; SCENE.group=b.dataset.g; go('start') },
+   stepsOpen:function(){ SCENE.stepsOpen=!SCENE.stepsOpen; repaint() },
    devQClear:function(){ delete SCENE.devQ; repaint() },
    /* leaves the go-live reading for the ordinary home underneath it */
    gsMine:function(){ SCENE.gs='mine'; repaint() },
@@ -10065,7 +10109,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var old=$('.pgin', mn); if(old) old.remove();
    if(pgAsked()) return;
    var o=pgFor(); if(!o) return;
-   if(mn.querySelector('.gn-open')) return;
+   if(mn.querySelector('.gn-open, .gn-open-h')) return;
    var head=$('.gn-page-head', mn); if(!head) return;
    var d=document.createElement('div'); d.innerHTML=pgRender(o);
    var el=d.firstChild; head.parentNode.insertBefore(el, head.nextSibling); pgTrimFigs(el, mn); wireApp(el);
