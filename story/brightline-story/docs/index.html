@@ -3796,14 +3796,12 @@ body.mode-prep #prepbar{display:flex}
  };
 
  /* Brightline Bank's team at Discover: who is on the network side, what each one
-    is for, and how to reach them. Sonia first; she sent the deal. */
+    is for, and how to reach them. Marcus first; he reached out and sent the deal (Rich, September 11: one person makes first contact). */
  var DGN_TEAM = [
-  {k:'sonia',  lead:true, what:'Your commercial contact. Owns the deal, the agreement, and the schedule.',
-   email:'sonia.vega@discover.example', phone:'(224) 555-0146', where:'Riverwoods, IL, 8 AM–6 PM CT', book:'Book 30 minutes'},
+  {k:'marcus', lead:true, what:'Your contact at Discover. Reached out, sent the deal, and runs onboarding from sandbox to activation.',
+   email:'marcus.bell@discover.example', phone:'(224) 555-0171', where:'Riverwoods, IL, 8 AM–6 PM CT', book:'Book 30 minutes'},
   {k:'theo',   short:'Technical questions during your engineer’s review.', what:'Technical questions during your engineer’s review: message shapes, the specification, what changes for your platform.',
    email:'theo.marchetti@discover.example', phone:'(224) 555-0192', where:'Riverwoods, IL, 9 AM–5 PM CT'},
-  {k:'marcus', short:'Manages onboarding after you confirm.', what:'Runs onboarding from sandbox to activation.',
-   email:'marcus.bell@discover.example', phone:'(224) 555-0171', where:'Riverwoods, IL, 8 AM–6 PM CT'},
   {k:'ana',    short:'Schedules and reviews certification.', what:'Books your certification window and reads your runs.',
    email:'ana.okafor@discover.example', phone:'(224) 555-0163', where:'Riverwoods, IL, 9 AM–5 PM CT'}
  ];
@@ -4136,9 +4134,9 @@ body.mode-prep #prepbar{display:flex}
   {g:'The business', l:'Legal name',              v:'Brightline Bank Payments LLC',                      at:2, by:'Dana', on:'March 9', how:'four fields, once'},
   {g:'The business', l:'Registered',              v:'Delaware, 2013',                               at:2, by:'Dana', on:'March 9', how:'four fields, once'},
   {g:'The business', l:'Annual card volume',      v:'$1.9B',                                        at:2, by:'Dana', on:'March 9', how:'four fields, once'},
-  {g:'The business', l:'Average ticket',          v:'$61',                                          at:2, by:'Dana', on:'March 6', how:'the call with Sonia Vega'},
-  {g:'The business', l:'Card present, share',     v:'68%',                                          at:2, by:'Dana', on:'March 6', how:'the call with Sonia Vega'},
-  {g:'The business', l:'Discover today',          v:'Through a third-party gateway since 2019',     at:2, by:'Dana', on:'March 6', how:'the call with Sonia Vega'},
+  {g:'The business', l:'Average ticket',          v:'$61',                                          at:2, by:'Dana', on:'March 6', how:'the call with Marcus Vega'},
+  {g:'The business', l:'Card present, share',     v:'68%',                                          at:2, by:'Dana', on:'March 6', how:'the call with Marcus Vega'},
+  {g:'The business', l:'Discover today',          v:'Through a third-party gateway since 2019',     at:2, by:'Dana', on:'March 6', how:'the call with Marcus Vega'},
   {g:'People',       l:'Who signs',               v:'Dana Iverson and Ruth Calloway, CFO',            at:2, by:'Dana', on:'March 9', how:'four fields, once'},
   {g:'People',       l:'Technical contact',       v:'Priya Raghavan, lead integration engineer',    at:2, by:'Dana', on:'March 9', how:'invited from this page'},
 
@@ -4242,9 +4240,9 @@ body.mode-prep #prepbar{display:flex}
   {n:3,  act:1, t:'Built Around Her',             seat:'dana',  stage:1, view:'deal', press:{t:'Confirm the deal'},
    emo:'Surprised, then flattered.',
    d:'Dana opens a page built for Brightline Bank: the products that fit, what the network needs, nothing to fill in yet. The same page she will still be using years from now.'},
-  {n:4,  act:1, t:'The Go-Ahead',                 seat:'priya', stage:2, view:'start',
+  {n:4,  act:1, t:'The Go-Ahead',                 seat:'priya', stage:2, view:'start', start:{sandbox:1, ran:1}, press:{sel:'[data-act="evalRun"]', t:'Run the evaluation'},
    emo:'Validated.',
-   d:'Dana says Brightline Bank is serious, and Priya’s own session opens further: the sandbox, the requirements, the configuration she could not see before. Nothing restarts.'},
+   d:'Dana says Brightline Bank is serious, and Priya\u2019s own session opens further: the request she sent from the public site is already counted, the requirements and the configuration from the deal are hers to read, and an evaluation built from its three products waits on the sandbox. Nothing restarts.'},
   {n:5,  act:1, t:'Her Own Time, Her Own Terms',  seat:'priya', stage:3, view:'start', press:{t:'Open the reference'},
    emo:'Empowered.',
    d:'A technical environment already shaped around Brightline Bank, with the path in view: how many steps, which are required and which are not, before she spends real time.'},
@@ -4257,7 +4255,7 @@ body.mode-prep #prepbar{display:flex}
   {n:8,  act:2, t:'Never Stuck for Long',         seat:'priya', stage:4, view:'cert', press:{t:'Upload chain'},
    emo:'Frustration, then confidence.',
    d:'A step fails mid-configuration. The logs are already open, the cause is already named, and it is settled in the same session rather than becoming a ticket.'},
-  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', start:{gs:'all'}, press:{sel:'[data-act="gsMine"]', t:'Open the home'},
+  {n:9,  act:2, t:'Go Live, Together',            seat:'dana',  stage:5, view:'overview', start:{gs:'all'}, press:{sel:'[data-act="gsMine"]', t:'Open the home'}, then:[{seat:'marcus', sel:'[data-act="hoTick"][data-k="live"]', t:'Clear live operation'}],
    emo:'Quiet, shared pride.',
    d:'The reading panel 7 opened, at the moment both tracks finish. Getting started has retired, so it arrives on the home that replaced it. Nobody calls a meeting.'},
   {n:10, act:3, t:'Never the First to Ask',       seat:'priya', stage:6, view:'support', start:{devDraft:1}, press:{sel:'[data-act="devAsk"]', t:'Ask'},
@@ -4266,24 +4264,24 @@ body.mode-prep #prepbar{display:flex}
   {n:11, act:3, t:'The Search That Knows Where to Look', seat:'aiko', stage:6, view:'jsearch', start:{jsDraft:1}, press:{sel:'[data-act="jsGo"]', t:'検索'},
    emo:'Surprised, then impressed.',
    d:'In Tokyo, Aiko Mori asks in Japanese about a requirement inside a policy update. One search answers across the operating rules, the release material and the implementation manuals, in her language, with the English beside it.'},
-  {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases', start:{relDraft:'v9'}, press:{sel:'[data-act="relPub"]', t:'Publish'},
+  {n:12, act:4, t:'A Policy Change, Tracked Not Buried', seat:'marcus', stage:6, view:'releases', start:{relDraft:'v9'}, press:{sel:'[data-act="relPub"]', t:'Publish'}, then:[{seat:'dana', sel:'.ov-tile [data-go2="notices"]', t:'Open notices'}],
    emo:'Informed, not blindsided.',
    d:'A release carries a policy change. It reaches Brightline Bank’s record as a dated, versioned item the moment Marcus publishes it, rather than an attachment that can be missed.'},
-  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notice', start:{nk:'v9'}, press:{sel:'[data-act="wvAsk"]', t:'Request a waiver'},
+  {n:13, act:4, t:'The Waiver, Visible to Both',  seat:'dana',  stage:6, view:'notice', start:{nk:'v9'}, press:{sel:'[data-act="wvAsk"]', t:'Request a waiver'}, then:[{seat:'marcus', view:'releases', sel:'[data-act="wvApprove"]', t:'Approve the waiver'},{seat:'dana', view:'notice', nk:'v9', t:'Read the decision'}],
    emo:'A formal process, not a favour.',
    d:'Brightline Bank cannot meet one clause yet, so Dana asks for a waiver on the same record. Marcus decides, and the reasoning sits where both sides read it.'},
-  {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert', start:{certRerun:1}, press:{sel:'[data-act="certRun"]', t:'Run the cases'},
+  {n:14, act:4, t:'Proof You Can Check Yourself', seat:'priya', stage:6, view:'cert', start:{certRerun:1, wv:{wv_113:{id:'wv_113', k:'brightline', rel:'v9', clause:'dsp20', reason:'Card-present disputes route through a processor whose evidence cycle runs 25 days.', term:'Until June 30, 2027', st:'approved', by:'Marcus Bell', on:'June 3', at:1, until:'June 30, 2027', note:'The processor cycle is documented and the term is the longest the network grants. Certification tests against 30 days until then.'}}}, press:{sel:'[data-act="certRun"]', t:'Run the cases'},
    emo:'Confidence, on both sides.',
    d:'The tests say what they are testing against: the contracts and the waivers on file. The transaction log underneath is searchable from both seats, so neither takes the other’s word.'},
   {n:15, act:5, t:'The Platform, with Insights',  seat:'dana',  stage:6, view:'insights', press:{t:'Ask about decisioning'},
    emo:'Genuine interest.',
    d:'Unasked, Dana is shown how Brightline Bank compares with participants like it, and what a capability they have not taken would be worth. The numbers underneath open. On the same page, the one thing that moved in her traffic this morning is already in hand at Discover, caught before she looked.'},
-  {n:16, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products', press:{sel:'#nav [data-go="expand"], nav [data-go="expand"]', t:'Add a product'},
+  {n:16, act:6, t:'Nothing Left to Relearn',      seat:'dana',  stage:6, view:'products', press:{sel:'[data-act="product"][data-k="wallet"]', t:'Open Wallets'}, then:[{seat:'dana', sel:'[data-go2="expand"].gn-btn--primary', t:'Add to Brightline Bank'},{seat:'dana', sel:'[data-act="xpStart"]', t:'Start the request'}],
    emo:'Familiar ease.',
-   d:'Dana asks for a new product from the same place the relationship started. Business and technical run side by side again, and both are far shorter this time.'},
-  {n:17, act:6, t:'Nothing to Start Over',        seat:'dana',  stage:6, view:'expand', start:{xpStarted:1}, press:{t:'Confirm and send'},
+   d:'Dana asks for a new product from the same place the relationship started. Business and technical run side by side again, both far shorter this time, and she starts the request. Marcus builds the plan.'},
+  {n:17, act:6, t:'Nothing to Start Over',        seat:'marcus', stage:6, view:'turn', start:{xpStarted:1}, press:{sel:'[data-act="xpPlanOpen"]', t:'Build the plan'}, then:[{seat:'marcus', sel:'[data-act="xpPlanSend"]', t:'Send the plan to Dana Iverson'},{seat:'dana', view:'expand', sel:'[data-act="xpSend"]', t:'Confirm and send'}],
    emo:'Ease, and loyalty.',
-   d:'The request arrives filled in from what Brightline Bank already established, down to the technical contacts, with what the product is expected to be worth beside it. She confirms rather than supplies.'}
+   d:'Marcus builds the plan to add Wallets from what the record already holds and sends it to Dana. It arrives filled in from what Brightline Bank already established, down to the technical contacts, with what the product is expected to be worth beside it. She reviews what is known, answers the two things the network cannot know, and confirms.'},
  ];
  var ACTS = [
   {n:1, t:'Getting to yes',            d:'Deciding to start, before anything has been asked for.'},
@@ -4317,7 +4315,7 @@ body.mode-prep #prepbar{display:flex}
 
  /* the deal the network sends before anyone is a customer. Dana confirms it. */
  var DEAL = {
-  sent:'March 6', by:'sonia', ref:'DGN-2026-0311',
+  sent:'March 6', by:'marcus', ref:'DGN-2026-0311',
   note:'Good to talk Thursday. I ran the network against your numbers: volume, merchant count, and card-not-present share. Review the results below. No signature is required. When ready, confirm the deal. I will open contracting the same day and set up your engineer’s sandbox.',
   /* the three figures the page lands on, each with what produces it */
   yours:[['$144k a year','Gateway fees eliminated','Today: 0.09% of volume plus $0.02 per transaction. Direct: $0.'],
@@ -4340,7 +4338,7 @@ body.mode-prep #prepbar{display:flex}
   title:'Participation agreement', ref:'PA-2026-0341',
   signed:'March 20', signers:[['Dana Iverson','VP of Partnerships, Brightline Bank','March 20, 9:14 AM'],
                                ['Ruth Calloway','CFO, Brightline Bank','March 20, 11:02 AM'],
-                               ['Sonia Vega','Network development, Discover','March 20, 11:40 AM']],
+                               ['Marcus Bell','Operations lead, Discover','March 20, 11:40 AM']],
   sections:[['1','Participation','What every participant signs. Unchanged.'],
             ['2','Operating regulations','By reference, the current edition. Unchanged.'],
             ['3','Fees','The published schedule. Unchanged.'],
@@ -4449,7 +4447,7 @@ body.mode-prep #prepbar{display:flex}
   {k:'nda',   g:'approve', t:'Confidentiality agreement', short:'Signed with the deal',
    why:'Covers access to the specification and operating rules.',
    need:['Signed with the deal. Nothing more required.','Each third party that will see network material signs its own.'],
-   people:['dana','sonia'], who:'you', act:'Add a third party', go:'third', when:'Signed March 9'},
+   people:['dana','marcus'], who:'you', act:'Add a third party', go:'third', when:'Signed March 9'},
   {k:'rules', g:'approve', t:'Rules and specifications', short:'Acknowledge the rules and clear the review',
    why:'Required before the agreement is issued.',
    need:['Legal acknowledges the operating rules.','Your engineer confirms feasibility from the sandbox.'],
@@ -4457,11 +4455,11 @@ body.mode-prep #prepbar{display:flex}
   {k:'risk',  g:'approve', t:'Risk review', short:'Three documents Discover reviews',
    why:'Required before the agreement is issued.',
    need:['Three years of audited financial statements.','Most recent PCI attestation of compliance.','Controls questionnaire. Company details are pre-filled.'],
-   people:['dana','sonia'], who:'you', act:'Start the review', go:'risk'},
+   people:['dana','marcus'], who:'you', act:'Start the review', go:'risk'},
   {k:'agr',   g:'approve', t:'Participation agreement', short:'One document, two signatures',
    why:'Standard participant agreement. Schedule A lists your products and pricing.',
    need:['Signatures from Dana Iverson and Ruth Calloway.','Issued after risk review.'],
-   people:['dana','sonia'], who:'you', act:'Review and sign', go:'agreement'},
+   people:['dana','marcus'], who:'you', act:'Review and sign', go:'agreement'},
   /* Plan your launch */
   {k:'team',  g:'plan', t:'Your team', short:'Who does what on your side',
    why:'Each person gets portal access for their role.',
@@ -4478,7 +4476,7 @@ body.mode-prep #prepbar{display:flex}
   /* Set up payments */
   {k:'bank',  g:'pay', t:'Settlement account', short:'Account for daily settlement',
    why:'Verified by bank letter and two micro-deposits.',
-   need:['Account details and authorized signatories.','Bank letter on letterhead.'], people:['dana','sonia'], who:'you', act:'Add account', go:'settlement'},
+   need:['Account details and authorized signatories.','Bank letter on letterhead.'], people:['dana','marcus'], who:'you', act:'Add account', go:'settlement'},
   {k:'ids',   g:'pay', t:'Identifiers and ranges', short:'Issued by the network',
    why:'Allocated by the network for routing, clearing, and disputes.',
    need:['Settlement currencies.'], people:['priya','marcus'], who:'dgn', act:'', go:'integrations'},
@@ -4695,7 +4693,7 @@ body.mode-prep #prepbar{display:flex}
     what is already on file filled in. f: label, value on file, source, placeholder */
  var SETUP = {
   bank:  {t:'Settlement account', d:'Account for daily settlement.', who:'you',
-          f:[['Bank','Northgate Bank','Your call with Sonia, March 5'],['Account','···· 4471','Your call with Sonia, March 5'],['Currency','USD','Schedule B'],['Signatories','Ruth Calloway, Dana Iverson','The agreement'],['Bank letter','','', 'A letter on letterhead confirming the account']],
+          f:[['Bank','Northgate Bank','Your call with Marcus, March 5'],['Account','···· 4471','Your call with Marcus, March 5'],['Currency','USD','Schedule B'],['Signatories','Ruth Calloway, Dana Iverson','The agreement'],['Bank letter','','', 'A letter on letterhead confirming the account']],
           done:'Verified April 28 by a one-cent credit'},
   bal:   {t:'Daily balancing', d:'Who reconciles daily totals, and by when.', who:'you',
           f:[['Who balances','','', 'Name, or a team inbox'],['By','','', '11:00 AM ET is typical'],['Tolerance','$0.00','Network default'],['If it does not balance','Settlement operations paged. Cycle held.','Network rule']],
@@ -4704,10 +4702,10 @@ body.mode-prep #prepbar{display:flex}
           f:[['Daily settlement report to','','', 'Two people minimum'],['Authorization summary to','Dana Iverson','You'],['Currency','USD','Schedule B'],['Timezone','America/New_York','Your company address'],['Format','Portal and CSV by email','Default']],
           done:'Dana Iverson, Owen Reyes, finance@brightline.example'},
   disp:  {t:'Disputes handling', d:'Case inbox and contact.', who:'you',
-          f:[['Dispute contact','','', 'Name and email'],['Case inbox','disputes@brightline.example','Your call with Sonia, March 5'],['Deadline reminders','7, 3 and 1 day before','Network default'],['Monthly cases','About 90','Your call with Sonia, March 5']],
+          f:[['Dispute contact','','', 'Name and email'],['Case inbox','disputes@brightline.example','Your call with Marcus, March 5'],['Deadline reminders','7, 3 and 1 day before','Network default'],['Monthly cases','About 90','Your call with Marcus, March 5']],
           done:'Mara Lindqvist, disputes@brightline.example'},
   term:  {t:'Terminals and e-commerce', d:'Acceptance channels and markets.', who:'you',
-          f:[['Channels','Card present and card not present','The form on the site, March 4'],['Markets','United States','The form on the site, March 4'],['Terminal inventory','','', 'Makes and models, or a file'],['Gateway','Meridian, being replaced by the direct connection','Your call with Sonia, March 5']],
+          f:[['Channels','Card present and card not present','The form on the site, March 4'],['Markets','United States','The form on the site, March 4'],['Terminal inventory','','', 'Makes and models, or a file'],['Gateway','Meridian, being replaced by the direct connection','Your call with Marcus, March 5']],
           done:'Verifone and Ingenico, 3,100 terminals. Two e-commerce platforms.'},
   ids:   {t:'Identifiers and ranges', d:'Issued by the network.', who:'dgn', turn:'Issued by the network',
           f:[['Acquirer identifier','','', 'Issued at signature'],['Institution range','601186 0000 – 601186 9999','Schedule A'],['Settlement currencies','USD','Schedule B']],
@@ -4722,7 +4720,7 @@ body.mode-prep #prepbar{display:flex}
   {k:'part', kind:'action', t:'Acknowledge the network participation rules', v:'v8.2', eff:'Before risk review', d:'Required before risk review. One acknowledgement per version.', what:'Required before risk review.', go:'rules', pre:true},
   {k:'data', kind:'action', t:'Acknowledge the data protection standard', v:'v3.1', eff:'Before risk review', d:'Cardholder data handling. Aligned to PCI DSS 4.0 with two stricter clauses.', what:'Required before risk review.', go:'rules', pre:true},
   {k:'maint', kind:'info', t:'Sandbox maintenance', v:'', eff:'Sunday, March 15, 2:00 to 4:00 AM ET', d:'sandbox.api.dgn.com returns 503 during the window. Certification and production are unaffected.', what:'Sandbox unavailable for two hours. No action needed.', pre:true},
-  {k:'v9', kind:'info', t:'Participation rules v9.0 published for comment', v:'v9.0', eff:'Effective January 1, 2027', d:'Dispute response window: 30 to 20 days. Incident notice window: 24 to 12 hours. Comment period ends October 15.', what:'Dispute response window shortens by 10 days from January 2027. Acknowledgement due December 2026.', due:'December 2026'},
+  {k:'v9', kind:'info', t:'Participation rules v9.0', v:'v9.0', eff:'Effective January 1, 2027', d:'Dispute response window: 30 to 20 days. Incident notice window: 24 to 12 hours. Acknowledge by December 31, 2026.', what:'Dispute response window shortens by 10 days from January 2027. Acknowledgement due December 2026.', due:'December 2026'},
   {k:'ids8', kind:'action', t:'Eight-digit institution identifiers', v:'', eff:'By April 1, 2027', d:'The network moves from six- to eight-digit institution identifiers. Your range 601186 becomes 60118600 to 60118699.', what:'Confirm the identifier mapping in Configuration, in the Developer Portal. No merchant or terminal change.', liveOnly:true, due:'April 1, 2027'},
   {k:'fee27', kind:'info', t:'2027 fee schedule', v:'', eff:'January 1, 2027', d:'Assessment unchanged at 0.11%. Per-authorization moves from $0.0035 to $0.0034. Dispute fee unchanged at $4.50.', what:'Approximately $1,600 less per year at current volume.', liveOnly:true}
  ];
@@ -4784,13 +4782,13 @@ body.mode-prep #prepbar{display:flex}
   {at:5, day:'May 14', t:'6:00 AM', title:'Activated', d:'First authorization 6:04 AM. First settlement May 15.'},
   {at:4, day:'May 8',  t:'4:40 PM', title:'Certification passed', d:'21 of 21. Ana Okafor validated end to end.'},
   {at:4, day:'April 12', t:'10:15 AM', title:'Certification window booked', d:'May 4 to 8. Configuration confirmed by Priya Raghavan.'},
-  {at:4, day:'March 20', t:'11:40 AM', title:'Participation agreement signed', d:'Dana Iverson, Ruth Calloway, Sonia Vega.'},
+  {at:4, day:'March 20', t:'11:40 AM', title:'Participation agreement signed', d:'Dana Iverson, Ruth Calloway, Marcus Bell.'},
   {at:3, day:'March 18', t:'3:02 PM', title:'Feasibility confirmed', d:'Priya Raghavan, after 19 sandbox runs.'},
   {at:4, day:'March 12', t:'9:30 AM', title:'Risk review cleared', d:'Six areas. Agreement issued the same day.'},
   {at:2.5, day:'March 9', t:'2:06 PM', title:'Sandbox opened', d:'By you. Credentials issued to Priya Raghavan.'},
   {at:2.2, day:'March 9', t:'2:02 PM', title:'Team named', d:'Dana Iverson named Priya Raghavan as engineer. Four details landed.'},
   {at:2, day:'March 9', t:'9:40 AM', title:'Deal confirmed', d:'Dana Iverson. Confidentiality agreement executed.'},
-  {at:1, day:'March 6', t:'4:15 PM', title:'Deal sent', d:'Sonia Vega, DGN-2026-0311.'}
+  {at:1, day:'March 6', t:'4:15 PM', title:'Deal sent', d:'Marcus Bell, DGN-2026-0311.'}
  ];
 
  /* the network's part of each step of the shared plan, one sentence each, and
@@ -4965,6 +4963,7 @@ body.mode-prep #prepbar{display:flex}
 
  var FT_STEPS = [
   {k:'call',   ph:'Evaluate', t:'Send your first request', d:'Use a test card from the console.', act:'Open Test cards', go:'sandbox', g:['The console sends on your own sandbox key. There is nothing to install.','The card number picks the answer. The amount does not.'], ref:['Test cards','sandbox']},
+  {k:'eval',   ph:'Evaluate', t:'Run the evaluation', d:'Nine cases built from your deal, on the sandbox.', act:'Run the evaluation', go:'', g:['The cases come from the three products in your deal, so they test what you will build and nothing else.','Each answer is the one certification will expect. A miss here is fixed before anyone books a window.'], ref:['Test cards','sandbox']},
   {k:'spec',   ph:'Evaluate', t:'Read the reference', d:'Seven endpoints. Start with Acceptance.', act:'Open the reference', go:'spec', g:['Acceptance is the endpoint everything else hangs off. Start there.','Every response carries a request id and a round trip in milliseconds.'], ref:['API reference','spec']},
   {k:'feas',   ph:'Evaluate', t:'Confirm feasibility', d:'Closes the technical review.', act:'Confirm', go:'', g:['Says whether the integration fits from your side.','Closes the technical half of the review. Dana signs the other half.'], ref:['Configuration','config']},
   {k:'key',    ph:'Build',    t:'Create a key for your service', d:'One key per service, with only the permissions it needs.', act:'Create key', go:'keys', g:['One key per service, carrying only the permissions that service needs.','A sandbox key never reaches certification or production.'], ref:['API keys','keys']},
@@ -5613,7 +5612,7 @@ window.GNChart=(function(){
  /* which sidebar item a view belongs to. Some jobs are more than one screen — adding a
     product is what it costs and then the request — and the sidebar shows one item for
     the job. Both painters read this, or the second one undoes the first. */
- function navKey(v){ return v==='frames' ? frameNav(SEAT) : v==='relearn' ? 'expand' : v==='notice' ? 'notices' : v==='alert' ? 'alerts' : v==='product' ? 'products' : v }
+ function navKey(v){ return v==='frames' ? frameNav(SEAT) : v==='relearn' ? 'expand' : v==='notice' ? 'notices' : v==='alert' ? 'alerts' : v==='product' ? 'products' : v==='xplan' ? 'turn' : v }
  function go(v){
    if(typeof closePanel==='function') closePanel(); /* a navigation closes the slide-over: the record it showed belongs to the list it came from */
    VIEW=v;
@@ -6139,7 +6138,7 @@ window.GNChart=(function(){
 var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next:1, frames:1, frameOpen:1, group:1, groups:1, journey:1, group2:1, back:1, openSbx:1, catalog:1, product:1, reqStatus:1, notice:1, ruleOpen:1, ruleClose:1, alert:1, cycle:1, txOpen:1, txDay:1, txDayClear:1, txCode:1, txCodeClear:1, txPage:1, pnlClose:1, txCase:1, sortBy:1, txAmtClear:1, txDaysClear:1, logClearAll:1, logByEp:1, txByMerchant:1, txByChannel:1, txByCode:1, txByHour:1, txByTok:1, txMerchant:1, txMerchantClear:1, txSearch:1, txClear:1, mOpen:1, mSearch:1, mClear:1, more:1, dspOpen:1, rqSel:1, caseOpen:1, menu:1, repCmp:1, certGroup:1, alOpen:1, testlog:1, signout:1, go2:1, agPartner:1, agAlert:1, bookClear:1, bookFromClear:1, caseFromClear:1, agRepClear:1, askBook:1, askCases:1, askRep:1}; /* the agent's reads: a row that opens a partner or an alert, a cleared search, a row that navigates */
  function canDo(act){ if(portalOf()==='agent') return agCanDo(act); return canAct() || !!READ_ACTS[act] }
  function agSeat(){ return AG_SEATS.filter(function(s){return s.k===(SCENE.agRole||'impl')})[0]||AG_SEATS[0] }
- var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
+ var AG_READ={agPartner:1, agAlert:1, bookClear:1, go2:1, xpPlanOpen:1, xpPlanSend:1}; /* the agent's own reads: opening a partner or an alert, clearing the search */
  /* an act may be held whole ("agStep") or for one step of the plan ("agStep:agr") */
  function agCanDo(act){ if(READ_ACTS[act] || AG_READ[act]) return true; var a=agSeat().acts; return a.indexOf(act)>=0 || (act.indexOf(':')>0 && a.indexOf(act.split(':')[0])>=0) }
  function agActOf(el){ var a=el.dataset.act; return a==='agStep'&&el.dataset.s ? a+':'+el.dataset.s : a }
@@ -6386,7 +6385,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next
        do:[askDo('Open the report', function(){ SCENE.repFocus='cnp'; SCENE.repFocusQ=raw; go('reporting') }), askDo('Card-not-present declines, yesterday', function(){ SCENE.txp='cnp'; SCENE.txs='declined'; SCENE.txDay='June 2'; SCENE.txFrom=raw; go('transactions') }), ['The alert','alerts']]} },
      next:[['Which merchant?','Which merchants fell on card not present?'],['Show yesterday’s declines','Show card-not-present declines yesterday'],['Who is handling it?','Who is handling the card-not-present alert?']], live:true},
    /* who has the alert */
-   {m:/\bwho\b.*(handl|own|on it|working|looking)|in hand/, q:['Who is handling the card-not-present alert?'], a:function(){ return {a:'Marcus Bell has the gateway on a call at 11:00 AM and the alert is in hand. Sonia Vega runs your relationship and sees the same alert.', do:[askDo('The alert', function(){ ACT.alert({dataset:{k:'cnp'}}) }), ['Your Discover team','discover']], next:['Why did card-not-present approvals fall?','Who should I call?']} }, live:true},
+   {m:/\bwho\b.*(handl|own|on it|working|looking)|in hand/, q:['Who is handling the card-not-present alert?'], a:function(){ return {a:'Marcus Bell has the gateway on a call at 11:00 AM and the alert is in hand. Marcus Bell runs your relationship and sees the same alert.', do:[askDo('The alert', function(){ ACT.alert({dataset:{k:'cnp'}}) }), ['Your Discover team','discover']], next:['Why did card-not-present approvals fall?','Who should I call?']} }, live:true},
    /* merchants ranked the way the question asks */
    {m:/which merchant|most disputes|by disputes|lowest approval|worst|riskiest|elevated|by volume|largest merchant|biggest merchant|top \d+ merchants|top (three|five) merchants/, q:['Which merchants have the most disputes?','Which merchant approves lowest?','Top 3 merchants by volume'], a:function(){ var q=this.q, raw=this.raw, o=this.o, byD=MERCHANTS.slice().sort(function(a,b){return b.disputes-a.disputes}), byA=MERCHANTS.slice().sort(function(a,b){return a.appr-b.appr}), byV=MERCHANTS.slice().sort(function(a,b){return b.auths-a.auths}), disp=/disput/.test(q), risk=/risk|elevated/.test(q), vol=/volume|largest|biggest/.test(q), cnp=/card.?not.?present|cnp/.test(q), n=o.top||0;
      if(cnp){ var byC=MERCHANTS.slice().sort(function(a,b){ var x=CNP_MERCH[a.k], y=CNP_MERCH[b.k]; return (x.y-x.w)-(y.y-y.w) }), f=byC[0], fc=CNP_MERCH[f.k];
@@ -6410,7 +6409,7 @@ var READ_ACTS={devQClear:1, devAsk:1, stepsOpen:1, noop:1, noopRow:1, dl:1, next
    {m:/dispute|chargeback|counter|represent/, q:['How do I counter a dispute?'], a:function(){ var n=dspNeed(); return {a:n.length?nn(n.length,'dispute')+' need'+(n.length===1?'s':'')+' a response. '+n[0].id+' from '+n[0].merchant+' is due '+n[0].due+', '+daysWord(daysLeft(n[0].due))+' from now.':'No dispute needs a response. '+DISPUTE_CASES.length+' cases on file.', do:[['Disputes','disputes']], how:['Open Disputes and choose the case marked Needs response.','Choose Counter dispute. Pick the product type and the reason the claim is in error.','Attach the evidence the reason asks for and confirm the statement is final.','Submit. The issuer has 30 days to answer. the case shows In review.']} }, next:['Which disputes are due this week?','Which merchants have the most disputes?'], live:true},
    {m:/wire|settle|paid|payout|net|cycle/, q:['When is the next wire?'], a:function(){ var c=CYCLES['June 2']; return {a:'Yesterday’s cycle settled '+money0(c.net)+' net on '+c.auths.toLocaleString('en-US')+' authorizations, wired '+c.posted+' to '+c.bank+', reference '+c.wire+'. The next cycle wires tomorrow at 6:00 AM ET.', do:[['Settlement and fees','settlement']]} }, next:['What was settlement for June 1?','How do I schedule an export?'], live:true},
    {m:/wallet|add .*product|new product|decision|e-?commerce|3-?d/, q:['How do I add Wallets?'], a:function(){ return {a:'Products shows what your traffic says to add next: Wallets, Decisioning and E-commerce, each with the figure from your own record. Opening one shows what changes and what the request needs.', do:[['Products','products']], how:['Open Products and choose the product.','Read what changes for your integration and what the request needs.','Choose Add to Brightline Bank. Enter the details not on your account and send.','The request shows In review on Products until Discover decides, usually within a day.']} }},
-   {m:/who.*(contact|help|call)|partner manager|discover team|sonia/, q:['Who should I call?'], a:function(){ return {a:'Sonia Vega runs your relationship and Marcus Bell runs your onboarding and live operations. Open a case for anything on your traffic, or book 30 minutes with Sonia.', do:[['Your Discover team','discover']]} }},
+   {m:/who.*(contact|help|call)|partner manager|discover team|sonia/, q:['Who should I call?'], a:function(){ return {a:'Marcus Bell runs your relationship and Marcus Bell runs your onboarding and live operations. Open a case for anything on your traffic, or book 30 minutes with Sonia.', do:[['Your Discover team','discover']]} }},
    {m:/certif|window|cases? (seen|pass)/, q:['Where does certification stand?'], a:function(){ return {a:STAGE>=5?'Certification passed May 8, validated end to end by Discover. '+certTotal()+' cases from your configuration.':STAGE>=4?certPassing()+' of '+certTotal()+' cases seen and passing in the window May 4 to 8. Your engineer runs them from the Developer Portal.':'Certification opens at signature. The cases come from your configuration and your engineer runs them from the Developer Portal.', do:[['Integrations','integrations']]} }, next:['What is next?','Who should I call?']},
    {m:/invite|add (someone|a person|user)|role|access|team/, q:['How do I invite someone?'], a:function(){ return {a:'Team shows who has access and to what. An invitation grants access when it is accepted. A role decides what a person may change.', do:[['Team','team']], how:['Open Team and choose Invite someone.','Enter their name, email and role.','Send. They get access when they accept. The role changes from their row.']} }},
    {m:/refund|reverse/, q:['How do I refund a transaction?'], a:function(){ return {a:'A refund is made from the transaction: open it from Transactions, choose Refund, and enter the full or partial amount. It reaches the cardholder in 3 to 5 days.', do:[['Transactions','transactions']], how:['Open Transactions and find the authorization by id or merchant.','Open it and choose Refund.','Enter the amount, up to the amount settled, and confirm.']} }, live:true},
@@ -6550,7 +6549,7 @@ function askMatch(n, one, many){ return nn(n, one, many)+(n===1?' matches':' mat
  /* three things to do from an empty field, in alphabetical order, each running an act or opening a page */
  function askActs(P){ var a=[];
    if(P==='partner'){ if(live()){ a.push(['Export yesterday’s transactions', function(){ SCENE.txDay='June 2'; SCENE.txFrom=''; go('transactions'); ACT.dl() }]); if(canAct('team')) a.push(['Invite someone', function(){ go('team'); ACT.inviteOpen() }]); if(canAct('reporting')) a.push(['Schedule an export', function(){ go('reporting'); ACT.expOpen() }]) }
-     else { var nav=navFor(); var has=function(v){ return nav.some(function(x){return x[0]===v}) }; if(has('discover')) a.push(['Book time with Sonia Vega', function(){ go('discover') }]); if(has('discover')) a.push(['Open a case', function(){ ACT.caseNew({dataset:{k:''}}) }]); if(has('deal')) a.push(['Read the deal', function(){ go('deal') }]); else if(has('start')) a.push(['See what is next', function(){ go('start') }]); else if(has('agreement')) a.push(['Read the agreement', function(){ go('agreement') }]) } }
+     else { var nav=navFor(); var has=function(v){ return nav.some(function(x){return x[0]===v}) }; if(has('discover')) a.push(['Book time with Marcus Bell', function(){ go('discover') }]); if(has('discover')) a.push(['Open a case', function(){ ACT.caseNew({dataset:{k:''}}) }]); if(has('deal')) a.push(['Read the deal', function(){ go('deal') }]); else if(has('start')) a.push(['See what is next', function(){ go('start') }]); else if(has('agreement')) a.push(['Read the agreement', function(){ go('agreement') }]) } }
    else if(P==='developer'){ a.push(['Add an endpoint', function(){ go('webhooks'); ACT.epNew() }]); a.push(['Create a key', function(){ go('keys'); ACT.keyNew() }]);
      if(live()){ var rot=(SCENE.grace||{})['bl_prd_2a90c4']; a.push(rot?['Open API keys', function(){ SCENE.env='prod'; go('keys') }]:['Rotate the production key', function(){ SCENE.env='prod'; go('keys'); ACT.keyRotate({dataset:{k:'bl_prd_2a90c4'}}) }]) } else a.push(['Run a sandbox call', function(){ go('sandbox') }]) }
    else { if(!SCENE.agBooked && canDo('agBook')) a.push(['Book a window for Halcyon Acquiring', function(){ go('certs'); ACT.agBook() }]); else a.push(['Open Windows', function(){ go('certs') }]);
@@ -7288,16 +7287,16 @@ function askMatchNote(n, one, many){ return askMatch(n, one, many) } /* the acti
      var lastCyc=LIVE.cycles[0];
      var areas=tiles([
        {t:'Disputes', n:DISPUTE_CASES.filter(function(c){return dspStatus(c)!=='closed'}).length, s:nr.length?sw(nn(nr.length,'need')+(nr.length===1?'s':'')+' you','wa'):sw('Nothing due',''), d:nr.length?'The nearest is due '+nr.map(function(c){return c.due}).sort()[0]+'.':'No case needs a response.', a:'Open disputes', go:'disputes'},
-       {t:'Notices', n:noticesOpen().length, s:na?sw(na===1?'Needs you':nn(na,'need')+' you','wa'):sw('Nothing to acknowledge',''), d:na?noticesOpen().filter(function(n){return ntKind(n)==='action'&&!(SCENE.ntAck||{})[n.k]}).map(function(n){return n.t}).slice(0,1).join('')+'.':'Everything acknowledged.', a:'Open notices', go:'notices'},
+       {t:'Notices', n:noticesOpen().length, s:(function(){ var pk=Object.keys(SCENE.relPub||{}).filter(function(k){ return NOTICES.some(function(x){return x.k===k}) })[0]; return pk?sw('New today','wa'):na?sw(na===1?'Needs you':nn(na,'need')+' you','wa'):sw('Nothing to acknowledge','') })(), d:(function(){ var pk=Object.keys(SCENE.relPub||{}).filter(function(k){ return NOTICES.some(function(x){return x.k===k}) })[0]; if(pk){ var nt=NOTICES.filter(function(x){return x.k===pk})[0]; return nt.t+', published today.' } return null })()||(na?noticesOpen().filter(function(n){return ntKind(n)==='action'&&!(SCENE.ntAck||{})[n.k]}).map(function(n){return n.t}).slice(0,1).join('')+'.':'Everything acknowledged.'), a:'Open notices', go:'notices'},
        {t:'Alerts', n:openA.length, s:openA.length?sw(oa?'In hand at Discover':'Open',''):sw('None open','ok'), d:openA.length?esc(openA[0].t)+'.':'Nothing on your traffic.', a:'Open alerts', go:'alerts'},
-       {t:'Settlement', s:sw('Landed','ok'), d:(lastCyc?lastCyc[0]+' cycle, $'+lastCyc[3]+' net':'Daily')+'.', a:'Open the cycle', go:'settlement'},
+       {t:'Settlement', s:sw('Landed','ok'), d:(lastCyc?lastCyc[0]+' cycle, '+lastCyc[1]+' net, '+lastCyc[2]:'Daily')+'.', a:'Open the cycle', go:'settlement'},
        {t:'Products', n:liveP.length, s:sw('Live','ok'), d:liveP.map(function(p){return p.t}).join(', ')+'. Nothing changed this week.', a:'Open products', go:'products'},
        {t:'Certification', s:sw('Valid','ok'), d:'Passed May 8. Production certificate expires April 2, 2027.', a:'Open integrations', go:'integrations'}
      ]);
      return head+f+secH('By area')+areas;
    }
    var yours=[], theirs=[];
-   if(STAGE===1){ if(!SCENE.confirmed) yours.push({t:'Sonia has sent Brightline Bank’s deal', d:'The network run against your own book, March 6', r:goLink('Read it','data-go2="deal"')});
+   if(STAGE===1){ if(!SCENE.confirmed) yours.push({t:'Marcus has sent Brightline Bank’s deal', d:'The network run against your own book, March 6', r:goLink('Read it','data-go2="deal"')});
                   else theirs.push({t:'Contracting opens', d:'The network prepares the participation agreement from the deal you confirmed', r:word('now')}); }
    if(STAGE===2){ if(!SCENE.submitted) yours.push({t:'Name your team', d:'Who is your engineer, your project lead, your security contact and your settlement operations.', r:goLink('Open','data-go2="start"')});
                   else theirs.push({t:'Sandbox for Priya', d:SCENE.sandbox?'Opened March 9, 2:06 PM':'Marcus Bell, Discover', r:word(SCENE.sandbox?'done':'now')}); }
@@ -7799,11 +7798,11 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  };
  PARTNER.notice=function(){
    var n=NOTICES.filter(function(x){return x.k===SCENE.nk})[0]||NOTICES[3]; var acted = n.go==='rules' && ((SCENE.acked||{})[n.k]||STAGE>=3);
-   var head=backTo('Notices','data-go2="notices"')+ph(esc(n.t)+(n.v?' <span class="gn-num">'+esc(n.v)+'</span>':''), esc(n.d), ntWord(n, acted));
+   var head=backTo('Notices','data-go2="notices"')+ph(esc(n.t)+(n.v&&n.t.indexOf(n.v)<0?' <span class="gn-num">'+esc(n.v)+'</span>':''), esc(n.d), ntWord(n, acted));
    var nd=ntDue(n), ack=n.due?[['Acknowledge by', esc(dayName(parseDay(n.due))), nd===null?'Acknowledged':nd<0?'<span class="gn-status is-bad">Passed '+agoWord(-nd)+'</span>':nd===0?'Today':daysWord(nd)+' left']]:[];
    var d=doc([['Effective', esc(n.eff), '']].concat(ack).concat([['Applies to', n.k==='maint'?'Sandbox only':'Every acquirer on the network', ''],['What it means for Brightline Bank', esc(n.what), ''],['Who has it', n.k==='ids8'||n.k==='maint'?'Priya Raghavan':n.go==='rules'?'Legal at Brightline Bank':'Dana Iverson', '']]));
    var ntAck=(SCENE.ntAck||{})[n.k];
-   var pol=POLICY[n.k]||[], polT=pol.length?secH('Policy changes in this release', nn(pol.length,'clause'))+tbl2([['Clause'],['Today'],['From '+esc(n.eff.replace(/^Effective /,''))],['Waiver'],['']], pol.map(function(c){ var w=wvFor('brightline', n.k, c.k)[0]; return {c:[esc(c.t), esc(c.from), esc(c.to), w?wvWord(w)+' <span class="gn-mute">'+esc(w.st==='approved'?w.term.replace(/^Up to |^Until /,'until '):w.on)+'</span>':'<span class="gn-mute">'+esc(c.term)+'</span>', w?'':'<span class="gn-link" data-act="wvAsk" data-k="'+n.k+'|'+c.k+'">Request a waiver</span>'], act:'noopRow'} }))+'<p class="para">A waiver sets one clause aside for Brightline Bank until a date, and the network answers within five business days.</p>':'';
+   var pol=POLICY[n.k]||[], polT=pol.length?secH('Policy changes in this release', nn(pol.length,'clause'))+tbl2([['Clause'],['Today'],['From '+esc(n.eff.replace(/^Effective /,''))],['Waiver'],['']], pol.map(function(c){ var w=wvFor('brightline', n.k, c.k)[0]; return {c:[esc(c.t), esc(c.from), esc(c.to), w?wvWord(w)+' <span class="gn-mute">'+esc(w.st==='approved'?w.term.replace(/^Up to |^Until /,'until ')+(w.by?', '+w.by:''):w.on)+(w.note?'. '+esc(w.note):'')+'</span>':'<span class="gn-mute">'+esc(c.term)+'</span>', w?'':'<span class="gn-link" data-act="wvAsk" data-k="'+n.k+'|'+c.k+'">Request a waiver</span>'], act:'noopRow'} }))+'<p class="para">A waiver sets one clause aside for Brightline Bank until a date, and the network answers within five business days.</p>':'';
    var a = n.go==='rules' && !acted ? '<div class="para-act"><button class="gn-btn gn-btn--primary" data-act="ackRule" data-k="'+n.k+'">Acknowledge '+esc(n.v)+'</button><span class="gn-link" data-go2="rules">Read it first</span></div>'
          : n.k==='ids8' ? '<div class="para-act">'+(ntAck?sw('Acknowledged','ok'):'<button class="gn-btn gn-btn--primary" data-act="ntAck" data-k="'+n.k+'">Acknowledge</button>')+goLink('Integrations','data-go2="integrations"')+'</div>'
          : n.kind==='info' ? '<div class="para-act">'+(ntAck?sw('Acknowledged','ok'):'<button class="gn-btn" data-act="ntAck" data-k="'+n.k+'">Acknowledge</button>')+'</div>' : '';
@@ -8168,7 +8167,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      return head+f+ch+where+settings+conf+cases+life+changes+read;
    }
    var onfile=KNOW.filter(function(f){return f.at<=STAGE}).length, need=(p.k==='wallet'?GAPS.length:(p.need||[]).length);
-   var head=backTo('Products','data-go2="products"')+ph(esc(p.t), esc(p.line), SCENE.sent&&p.k==='wallet'?sw('Requested','wa'):'<button class="gn-btn gn-btn--primary" data-act="request" data-k="'+p.k+'">Add to Brightline Bank</button>');
+   var head=backTo('Products','data-go2="products"')+ph(esc(p.t), esc(p.line), SCENE.sent&&p.k==='wallet'?sw('Requested','wa'):p.k==='wallet'?'<button class="gn-btn gn-btn--primary" data-go2="expand">Add to Brightline Bank</button>':'<button class="gn-btn gn-btn--primary" data-act="request" data-k="'+p.k+'">Add to Brightline Bank</button>');
    var what='<div class="pdt"><div><div class="sc-l">What it is</div><p>'+esc(p.what||p.line)+'</p></div><div><div class="sc-l">What changes for you</div><p>'+esc(p.changes||'Nothing in your integration.')+'</p></div>'+(p.merch?'<div><div class="sc-l">For your merchants</div><p>'+esc(p.merch)+'</p></div>':'')+'</div>';
    var reqs=secH('Request details')+'<div class="sc-g pdt-g"><div><div class="sc-l">From your account</div><p class="pd-n">Company, volume, products, contacts and configuration.</p></div>'
      +'<div><div class="sc-l">To enter</div>'+(need?'<ul class="sc-n">'+(p.k==='wallet'?GAPS.map(function(g){return '<li>'+esc(g.l)+'</li>'}):p.need.map(function(n){return '<li>'+esc(n)+'</li>'})).join('')+'</ul>':'<p class="pd-n">Nothing to enter.</p>')+'</div></div>';
@@ -8288,6 +8287,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
  function ftState(){
    var S=devState(), st={}, a=envAvail();
    st.call=S.st.call; st.spec=S.st.spec; st.feas=S.st.feas;
+   /* the evaluation: nine cases built from the deal, run on the sandbox, before the reference and feasibility (Rich, September 11) */
+   st.eval = STAGE>=3 || SCENE.evalRan ? 'done' : (st.call==='done' && a.sandbox) ? 'now' : 'wait';
+   if(st.eval!=='done'){ if(st.spec==='now') st.spec='wait'; if(st.feas==='now') st.feas='wait' }
    var signed=STAGE>=4;
    st.key = STAGE>=4 || (SCENE.keys||[]).length ? 'done' : a.sandbox ? 'now' : 'wait';
    st.ep  = STAGE>=4 || devEndpoints().length ? 'done' : a.sandbox ? 'now' : 'wait';
@@ -8323,14 +8325,18 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var steps=phases.map(function(ph){ var xs=FT_STEPS.filter(function(x){return x.ph===ph}); var isCur=ph===F.phase;
      return secH(esc(ph), xs.filter(function(x){return F.st[x.k]==='done'}).length+' of '+xs.length)+'<div class="fts'+(isCur?' cur':'')+'">'+xs.map(function(x){ var st=F.st[x.k];
        /* one phase carries the solid buttons; open steps elsewhere are links */
-       var right = st==='done' ? word('Done') : st==='now' ? (isCur ? (x.k==='feas' ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="feasible">Confirm to Dana Iverson</button>' : x.go ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="ftGo" data-k="'+x.k+'">'+esc(x.act)+'</button>' : sw('Now','')) : (x.go ? goLink(x.act||'Open','data-act="ftGo" data-k="'+x.k+'"') : sw('Open',''))) : st==='dgn' ? sw('Discover’s turn','') : x.go ? goLink('Open','data-go2="'+x.go+'"') : sw('Later','');
+       var right = st==='done' ? word('Done') : st==='now' ? (isCur ? (x.k==='feas' ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="feasible">Confirm to Dana Iverson</button>' : x.k==='eval' ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="evalRun">Run the evaluation</button>' : x.go ? '<button class="gn-btn gn-btn--primary gn-btn--sm" data-act="ftGo" data-k="'+x.k+'">'+esc(x.act)+'</button>' : sw('Now','')) : (x.go ? goLink(x.act||'Open','data-act="ftGo" data-k="'+x.k+'"') : sw('Open',''))) : st==='dgn' ? sw('Discover’s turn','') : x.go ? goLink('Open','data-go2="'+x.go+'"') : sw('Later','');
        /* the step she is on carries its guidance on the page, with the reference a link
           away rather than the page itself. Steps she is not on stay one line. */
        var gd = (st==='now' && isCur && x.g) ? '<span class="ft-g">'+x.g.map(function(l){ return '<i>'+esc(l)+'</i>' }).join('')
           +(x.ref?'<em>'+goLink(x.ref[0],'data-go2="'+x.ref[1]+'"')+'</em>':'')+'</span>' : '';
+       /* the evaluation, once run, keeps its result on the step */
+       if(x.k==='eval' && st==='done' && SCENE.evalRan) gd='<span class="ft-g"><i>Acceptance 4 of 4, Disputes 3 of 3, Tokens 2 of 2. Every answer as certification will expect it, 41 to 58 ms.</i><em>'+goLink('The nine cases','data-go2="sandbox"')+'</em></span>';
        return '<div class="ft'+(st==='done'?' is-done':st==='now'?' is-now':'')+'"><i>'+(st==='done'?'<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>':'')+'</i><div class="ft-b"><b>'+esc(x.t)+'</b><span>'+esc(x.d)+'</span>'+gd+'</div><div class="ft-r">'+right+'</div></div>' }).join('')+'</div>' }).join('');
    var health = a.sandbox ? secH('Health', ENVN[envSel()])+healthFigs() : '';
-   return head+bars+steps+health;
+   /* panel 4: what the go-ahead opened, said once, on the day it opens */
+   var opened = (STAGE===2 && SCENE.sandbox) ? '<div class="just"><b>Opened with the go-ahead.</b><span>Brightline Bank’s requirements, the configuration from the deal, and an evaluation built from its three products. The request you sent from the public site is already counted.</span></div>' : '';
+   return head+opened+bars+steps+health;
  };
  function healthFigs(cls){ var e=envSel(), log=reqLog(), errs=log.filter(function(r){return r.st===0||r.st>=400});
    return figs([['Requests, 24 hours', e==='prod'?'48,211':String(log.length), ''],['Errors', e==='prod'?'1,543':String(errs.length), e==='prod'?'3.2%':log.length?Math.round(100*errs.length/log.length)+'%':''],['p50 latency', (e==='prod'?44:(log.length?log.map(function(r){return r.ms}).sort(function(a,b){return a-b})[Math.floor(log.length/2)]:0))+' ms', e==='prod'?'p99 210 ms':''],['Webhook deliveries', e==='prod'?'48,402':STAGE>=4?'12':String((SCENE.tests||[]).length), e==='prod'?'1 failed':'']], cls) }
@@ -8646,7 +8652,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      return {id:x[0], t:x[1], send:d.send||'', expect:d.expect||'', by:d.by||'you', seen:seen, res:res} }) } });
  }
  /* what the cases test against: the contracts and the waivers on file for this participant */
- function certBasis(){ var w=wvFor('brightline').filter(function(x){return x.st==='approved'}); return '<article class="gn-notice"><div class="gn-notice-h">'+sw('For information','')+'<span>Contracts</span></div><h3>Cases follow the contracts on file</h3><p>Testing reflects the requirements in your contracts and the waivers on file'+(w.length?', '+nn(w.length,'waiver')+' on file: '+w.map(function(x){return wvClause(x).t.toLowerCase()+' '+x.term.replace(/^Up to |^Until /,'until ')}).join(', '):', none on file today')+'.</p></article>' }
+ function certBasis(){ var w=wvFor('brightline').filter(function(x){return x.st==='approved'}); return '<article class="gn-notice"><div class="gn-notice-h">'+sw('For information','')+'<span>Contracts</span></div><h3>Cases follow the contracts on file</h3><p>Testing reflects the requirements in your contracts and the waivers on file'+(w.length?', '+nn(w.length,'waiver')+' on file: '+w.map(function(x){return wvClause(x).t.toLowerCase()+' '+x.term.replace(/^Up to |^Until /,'until ')}).join(', '):'')+'.</p></article>' }
  DEV.cert=function(sk,c){
    var groups=certCases(), all=[]; groups.forEach(function(g){ all=all.concat(g.cases) });
    var total=all.length, seen=all.filter(function(x){return x.seen}).length, pass=all.filter(function(x){return x.res==='pass'}).length;
@@ -8743,6 +8749,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
                                      : {k:'brightline', p:'Brightline Bank', t:'Live, handoff to operations '+hoN+' of '+ho5.length+' done.', turn:'You', mine:true, since:waitWord(waited(0)), d:waited(0), act:'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="brightline">Open</button>'}); }
    else if(STAGE===6) r.push({k:'brightline', p:'Brightline Bank', t:'Card-not-present approvals fell 1.4 points at one merchant on one gateway.', kind:'Alert', turn:'You', mine:true, since:NOW===DAY0?'6:20 AM':agoWord(NOW-DAY0), d:NOW-DAY0, due:DAY0-NOW, act:'<button class="gn-btn gn-btn--sm" data-act="agAlert" data-k="cnp">Open</button>'});
    if(STAGE>=5){ waivers().filter(function(w){return w.st==='requested'}).forEach(function(w){ var b=BOOK.filter(function(x){return x.k===w.k})[0]; r.push({k:w.k, p:b?b.n:w.k, t:'Waiver requested on '+wvClause(w).t.toLowerCase()+', '+wvRel(w).t+'.', kind:'Waiver', turn:'You', mine:true, since:waitWord(NOW-(DAY0+(w.at||0))), d:NOW-(DAY0+(w.at||0)), due:(DAY0+(w.at||0)+5)-NOW, act:'<span class="gn-link" data-go2="releases">Compliance</span>'}) }) }
+   if(SCENE.xpStarted && !SCENE.xpPlan && !SCENE.sent) r.push({k:'brightline', p:'Brightline Bank', t:'Wallets: Dana Iverson started a request. The plan is yours to build from the record.', kind:'Request', turn:'You', mine:true, since:'Just now', d:0, due:1, act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="xpPlanOpen">Build the plan</button>'});
    if(SCENE.sent && !SCENE.reqBl) r.push({k:'brightline', p:'Brightline Bank', t:'Wallets requested by Dana Iverson.', kind:'Request', turn:'You', mine:true, since:agoDay((SCENE.at||{}).sent), d:daysAt('sent'), due:1-daysAt('sent'), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-go2="request">Review the request</button>'});
    AG_ALERTS.forEach(function(a){ if((SCENE.taken||{})[a.k] && !(SCENE.resolved||{})[a.k]) r.push({k:a.k, p:a.p, t:agAlertT(a)+'.', turn:'You', mine:true, since:agoDay((SCENE.at||{})['ag:'+a.k]), d:daysAt('ag:'+a.k), act:'<button class="gn-btn gn-btn--sm gn-btn--primary" data-act="agResolve" data-k="'+a.k+'">Resolve</button>'}) });
    BOOK.slice(1).forEach(function(b){ var x=BOOKX[b.k]; if(b.turn==='You'){ if(b.k==='northbank'&&SCENE.reviewDone) return; if(b.k==='ostrand'&&SCENE.reqSt) return; var go=b.k==='northbank'?'review':b.k==='ostrand'?'request':null; r.push({k:b.k, p:b.n, t:b.next+'.', kind:b.k==='northbank'?'Review':b.k==='ostrand'?'Request':'Step', turn:'You', mine:true, since:waitWord(waited(x.days)), d:waited(x.days), due:b.k==='northbank'?daysLeft('June 30'):b.k==='ostrand'?1-waited(x.days):undefined, act:go?'<button class="gn-btn gn-btn--sm" data-go2="'+go+'">'+esc(x.act||'Open')+'</button>':'<button class="gn-btn gn-btn--sm" data-act="agPartner" data-k="'+b.k+'">'+esc(x.act||'Open')+'</button>'}) } });
@@ -9175,7 +9182,8 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    var draft = SCENE.relDraft===r.k && !(SCENE.relPub||{})[r.k], justPub=(SCENE.relPub||{})[r.k];
    var f=figs([['Mandates open', String(mand), 'need acknowledgement'],['Acknowledged', draft?'0 of '+BOOK.length:(BOOK.length-open_.length)+' of '+BOOK.length, draft?'not yet published':r.t],['Effective', r.eff, r.by?(late?'acknowledgement was due '+r.by:'acknowledge by '+r.by):'no acknowledgement needed']], 'gn-figs--compact');
    var pubRow = draft ? '<div class="just"><b>Drafted, not yet published.</b><span>'+esc(r.t)+' carries '+nn((POLICY[r.k]||[]).length,'policy change')+'. Publishing puts it on all '+BOOK.length+' partner records as a dated, versioned item, and opens the acknowledgement.</span><div class="gn-form-act"><button class="gn-btn gn-btn--primary" data-act="relPub" data-k="'+esc(r.k)+'">Publish to '+BOOK.length+' partners</button></div></div>'
-     : justPub ? '<div class="just ok"><b>Published '+esc(justPub===true?'just now':justPub)+'.</b><span>On all '+BOOK.length+' partner records, version '+esc(r.t.replace(/^.*?v?(\d+(\.\d+)?).*$/,'$1'))+', effective '+esc(r.eff)+'. Each partner sees it in Notices.</span></div>' : '';
+     : justPub ? (function(){ var ak=BOOK.filter(function(b){ return relAcked(r,b) }).map(function(b){ return b.n }), wq=waivers().filter(function(w){ return w.rel===r.k && w.st==='requested' }).length, unread=BOOK.length-ak.length;
+         return '<div class="just ok"><b>Published.</b><span>On all '+BOOK.length+' partner records as version '+esc(r.t.replace(/^.*?v?(\d+(\.\d+)?).*$/,'$1'))+', effective '+esc(r.eff)+(r.by?', acknowledge by '+esc(r.by):'')+'. '+(ak.length?listWords(ak)+(ak.length===1?' has':' have')+' acknowledged. ':'')+(wq?nn(wq,'partner')+(wq===1?' has':' have')+' asked to set a clause aside. ':'')+(unread?nn(unread,'partner')+(unread===1?' has':' have')+' not read it yet.':'')+'</span></div>' })() : '';
    var segs=tabs('agRel', RELEASES.map(function(x){ var n=BOOK.filter(function(b){return !relAcked(x,b)}).length; return [x.k, x.t.split(',')[0], ct(n)] }), RELEASES[0].k);
    var rowsT=tbl2([['Partner'],['Stage'],['Acknowledged'],['']], BOOK.map(function(b){ var ok=relAcked(r,b), rem=(SCENE.reminded||{})[r.k+'|'+b.k];
      return {c:[esc(b.n), esc(bookStage(b)), ok?word('Done'):late?sw('Overdue','no'):r.by?sw('Not yet','wa'):sw('Not yet',''), ok||!r.by?'':rem!==undefined?'<span class="gn-mute">Reminded '+esc(agoWord(NOW-rem))+'</span>':'<span class="gn-link" data-act="agRemind" data-k="'+b.k+'" data-rel="'+r.k+'" aria-label="Remind '+esc(b.n)+'">Remind</span>'], act:'agPartner', k:b.k} }));
@@ -9275,7 +9283,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
   signout:function(){ askDialog({t:'Signed out', p:'Your session ended. Sign in again to pick up where you left off. What you typed is kept.', ok:'Sign in', only:true, go:function(){ toast('Signed in as '+seat().n) }}) },
    next:function(){ setPanel(Math.min(PANELS.length, PANEL+1)) },
    focusReply:function(){ var t=$('#replyBox'); if(t){ t.scrollIntoView({block:'center', behavior:'smooth'}); t.focus() } else toast('Message sent') },
-   reply:function(){ var t=$('#replyBox'); dropDraft('replyBox'); var v=(t&&t.value.trim())||'Thanks Sonia — the numbers look right. Can we talk Thursday about the dispute volume? Ruth will want to see the schedule before I confirm.';
+   reply:function(){ var t=$('#replyBox'); dropDraft('replyBox'); var v=(t&&t.value.trim())||'Thanks Marcus — the numbers look right. Can we talk Thursday about the dispute volume? Ruth will want to see the schedule before I confirm.';
      SCENE.replied=v; drawApp(VIEW); toast('Message sent') },
    confirmDeal:function(){ askDialog({t:'Confirm the deal?', p:DEAL.confirm, ok:'Confirm the deal', go:function(){ SCENE.confirmed=true; repaint(); toast('Deal confirmed') }}) },
    send4:function(){ SCENE.submitted=true; repaint(); },
@@ -9287,6 +9295,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    sign:function(){ askDialog({t:'Sign the participation agreement?', p:'PA-2026-0341 binds Brightline Bank Payments LLC to the schedule as issued. Two signatures on your side, one on ours. Contracting opens the same day.', ok:'Sign for Brightline Bank', go:function(){ SCENE.signed=true; SCENE.group=null; /* the part is complete, so Getting started returns to the hub */ repaint(); toast('Signed. Contracting opens today.') }}) },
    certCheck:function(){ SCENE.certOk=true; drawApp(VIEW); toast('CONN-02 passed. 21 of 21.') },
    certRun:function(){ SCENE.certRan=true; drawApp(VIEW); toast('Run complete against the contracts and waivers on file') },
+   evalRun:function(){ SCENE.evalRan=true; drawApp(VIEW); toast('9 of 9 answered as the deal expects') },
    certSubmit:function(){ SCENE.certSubmitted=true; drawApp(VIEW); toast('Submitted for validation') },
    catalog:function(){ go('catalog') },
    ruleOpen:function(b){ SCENE.rule=b.dataset.k; drawApp(VIEW); },
@@ -9498,7 +9507,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
      askDialog({t:'Request a waiver on '+c.t.toLowerCase()+'?', p:r.t+' moves '+c.t.toLowerCase()+' from '+c.from+' to '+c.to+'. A waiver keeps '+c.from+' for Brightline Bank until the date you ask for, '+c.term.toLowerCase()+'.', ok:'Request the waiver', body:'<label class="gn-field"><span class="gn-field-l">Why Brightline Bank needs it</span><textarea class="gn-in" id="wvReason" rows="3" placeholder="What in your operation the clause does not fit"></textarea></label><label class="gn-field"><span class="gn-field-l">Until</span><select class="gn-in" id="wvTerm"><option>Until June 30, 2027</option><option>Until December 31, 2027</option><option>Until the next release</option></select></label>',
        go:function(){ var re=$('#wvReason'), te=$('#wvTerm'), n=Object.keys(SCENE.wv||{}).length+110; wvSet('wv_'+n, {id:'wv_'+n, k:'brightline', rel:rel, clause:ck, reason:(re&&re.value.trim())||'Not stated.', term:te?te.value:'Until June 30, 2027', st:'requested', on:dayName(NOW), at:NOW-DAY0}); paintShell(); drawApp(VIEW); focusMain(); toast('Waiver requested') }}) },
    wvApprove:function(b){ var w=waivers().filter(function(x){return x.id===b.dataset.k})[0]; if(!w) return; var bk=BOOK.filter(function(x){return x.k===w.k})[0], c=wvClause(w);
-     askDialog({t:'Approve the waiver for '+(bk?bk.n:w.k)+'?', p:c.t+' stays at '+c.from+' for '+(bk?bk.n:w.k)+' '+w.term.charAt(0).toLowerCase()+w.term.slice(1)+'. The partner sees it in Agreements and certification tests against it.', ok:'Approve', go:function(){ wvSet(w.id, {st:'approved', by:agSeat().who==='marcus'?'Marcus Bell':PEOPLE[agSeat().who].n, on:dayName(NOW), until:w.term.replace(/^Until /,'')}); paintShell(); drawApp(VIEW); focusMain(); toast('Waiver approved') }}) },
+     askDialog({t:'Approve the waiver for '+(bk?bk.n:w.k)+'?', p:c.t+' stays at '+c.from+' for '+(bk?bk.n:w.k)+' '+w.term.charAt(0).toLowerCase()+w.term.slice(1)+'. The partner sees the decision and your reasoning on the clause, and certification tests against it.', ok:'Approve',
+       body:'<label class="gn-field"><span class="gn-field-l">Why the network grants it</span><textarea class="gn-in" id="wvWhy" rows="3" placeholder="What in the request carries the decision"></textarea><span class="gn-help">The partner reads this beside the decision.</span></label>',
+       go:function(){ var f=$('#wvWhy'); var note=(f&&f.value.trim())||'The reason given is documented and the term asked is within what the network grants for this clause.'; wvSet(w.id, {st:'approved', by:agSeat().who==='marcus'?'Marcus Bell':PEOPLE[agSeat().who].n, on:dayName(NOW), until:w.term.replace(/^Until /,''), note:note}); paintShell(); drawApp(VIEW); focusMain(); toast('Waiver approved') }}) },
    wvDecline:function(b){ var w=waivers().filter(function(x){return x.id===b.dataset.k})[0]; if(!w) return; var bk=BOOK.filter(function(x){return x.k===w.k})[0];
      declineAsk('Decline the waiver for '+(bk?bk.n:w.k)+'?', wvClause(w).t+' moves to '+wvClause(w).to+' for '+(bk?bk.n:w.k)+' on the effective date.', (BOOKX[w.k]||{}).lead?BOOKX[w.k].lead.split(', ')[0]:'the partner', function(n){ wvSet(w.id, {st:'declined', by:agSeat().who==='marcus'?'Marcus Bell':PEOPLE[agSeat().who].n, on:dayName(NOW), note:n||''}); paintShell(); drawApp(VIEW); focusMain(); toast('Waiver declined') }) },
    cycFromClear:function(){ SCENE.cycFrom=null; go('settlement') },
@@ -10722,12 +10733,17 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    /* panel 17: Add a product opens on what it will take this time, against the first time. The
       request itself starts from there. */
    if(!sent && !SCENE.xpStarted) return PARTNER.relearn();
+   /* panel 16 ends here: the request is started and Marcus builds the plan from the record. Panel 17 opens
+      on his side and comes back to this page with the plan on it (Rich, September 11). */
+   if(!sent && !SCENE.xpPlan) return ph('Add Wallets', '<b>Request started '+esc(dayName(NOW))+'.</b> Marcus Bell builds the plan from your record and sends it here. Nothing to answer yet.')
+     + secH('Both tracks', 'This time, against the first time')+xpTracks(true);
+   var planLine = (!sent && SCENE.xpPlan) ? '<div class="just"><b>Plan from Marcus Bell, sent just now.</b><span>'+n+' answers are on file from your record. '+nn(xpNew().length,'answer')+' the network cannot know '+(xpNew().length===1?'is':'are')+' yours to enter below.</span></div>' : '';
    var head=ph('Add Wallets',
      sent ? 'Sent to Discover with '+n+' answers carried from your record.'
           : 'Confirm what the network already holds and answer what it cannot know.',
      sent ? xpSentWord() : '');
    return sent ? head + xpSentBody(rows, n) + xpWorth() + xpNext()
-               : head + xpWorth() + xpConfirm(rows, n, done) + xpAsk() + xpNext() + (canAct('expand') ? xpSendBlock(rows) : '');
+               : head + planLine + xpWorth() + xpConfirm(rows, n, done) + xpAsk() + xpNext() + (canAct('expand') ? xpSendBlock(rows) : '');
  };
  function xpSentWord(){ var rs=SCENE.reqBl||'review'; return rs==='approved'?word('Approved'):rs==='declined'?sw('Declined','no'):sw('In review','wa') }
 
@@ -10739,7 +10755,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
            ['Merchants that can take a wallet', '4,200', 'No new merchant certification'],
            ['New certification cases', '0', 'The token arrives in the message you send today']], 'gn-figs--3')
     +'<div class="xp-work">'+doc([['Authorizations yesterday', '48,211', 'Your record, June 2'],
-          ['Card not present', '32% of your book', 'The call with Sonia Vega, March 6, 2026'],
+          ['Card not present', '32% of your book', 'The call with Marcus Bell, March 6, 2026'],
           ['Assumed wallet share', '6 in every 100 card-not-present authorizations', 'Nothing on your record measures this yet'],
           ['What it costs', '$0.0035 per authorization', 'The same rate as every other authorization. There is no per-token fee.']])+'</div>';
  }
@@ -10871,7 +10887,18 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
 
  /* ── acts ─────────────────────────────────────────────────────────────────── */
  function xpSet(k){ SCENE.xpOk=SCENE.xpOk||{}; SCENE.xpOk[k]=1 }
- Object.assign(ACT, { xpStart:function(){ SCENE.xpStarted=1; go('expand') },
+ /* panel 17, Marcus's half: the plan built from the record, sent to Dana */
+ AGENT.xplan=function(){ var rows=xpRows(), n=rows.length, gaps=xpNew(), sent=!!SCENE.xpPlan, groups=xpGroups();
+   var head=backTo('Your turn','data-go2="turn"')+openHead('Brightline Bank: Wallets \u00b7 Request', sent?'Plan sent to Dana Iverson':'Dana Iverson started the request. The plan is yours to build',
+     sent?'She reviews what is on file and answers what the network cannot know. You decide within a business day once it is back.':'Built from what the record already holds. Nothing Brightline Bank gave once is asked for again.',
+     sent?'':'<button class="gn-btn gn-btn--primary" data-act="xpPlanSend">Send the plan to Dana Iverson</button>');
+   var held=secH('What the record already holds', n+' answers')+doc(groups.map(function(g){ var ls=g.rows.map(function(r){return r.l}); return [g.t, g.rows.length+' answers', ls.slice(0,3).join(', ')+(ls.length>3?', and '+(ls.length-3)+' more':'')] }));
+   var ask=secH('What Brightline Bank must supply', nn(gaps.length,'answer'))+doc(gaps.map(function(f){ return [f.l, 'For Dana Iverson', f.why] }));
+   var plan=secH('The plan', xpNow()+' steps, both sides')+xpTracks(false);
+   return head+held+ask+plan;
+ };
+ Object.assign(ACT, { xpPlanOpen:function(){ go('xplan') }, xpPlanSend:function(){ SCENE.xpPlan=1; drawApp(VIEW); toast('Plan sent to Dana Iverson') },
+   xpStart:function(){ SCENE.xpStarted=1; go('expand') },
    xpRow:function(b){ var k=b.dataset.k; SCENE.xpOpen = SCENE.xpOpen===k ? null : k; SCENE.xpEdit=null; SCENE.xpFixErr=null; drawApp(VIEW); keep('[data-act="xpRow"][data-k="'+k+'"]') },
    xpOne:function(b){ var k=b.dataset.k; xpSet(k); drawApp(VIEW); keep('[data-act="xpRow"][data-k="'+k+'"]'); toast('Answer confirmed') },
    xpGrp:function(b){ var g=b.dataset.k, gr=xpGroups().filter(function(x){return x.k===g})[0]; if(!gr) return;
@@ -11037,6 +11064,9 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
     +(n?'<span class="gn-link" id="clkJ" title="'+esc(n.what+', '+dayName(n.day))+'">Skip to '+esc(dayName(n.at))+'</span>':'')
     +(NOW!==DAY0?'<span class="gn-link" id="clk0">Back to '+esc(dayName(DAY0))+'</span>':'')+'</span>';
  }
+ /* a panel's steps on another seat, cued in the narration: "As Marcus: approve the waiver →". A step that
+    names a view opens it after the switch. Steps on the same seat are not cued; the screen leads. */
+ function capThen(p){ var out='', prev=p.seat; (p.then||[]).forEach(function(st,i){ if(st.seat!==prev){ out+=' <span class="cap-go" data-then="'+i+'" role="button" tabindex="0" style="color:#fff; text-decoration:underline; cursor:pointer">As '+esc(PEOPLE[st.seat].n.split(' ')[0])+': '+esc(st.t.charAt(0).toLowerCase()+st.t.slice(1))+' \u2192</span>' } prev=st.seat }); return out }
  function paintRail(){
    var p=PANELS.filter(function(x){return x.n===PANEL})[0]||PANELS[0];
    var can=seatsAt(STAGE);
@@ -11050,7 +11080,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
         return '<span class="p '+(x.n===PANEL?'on':seen[x.n]?'seen':'')+'" data-panel="'+x.n+'" title="'+esc(x.t)+'" role="button" aria-label="Panel '+x.n+', '+esc(x.t)+'"'+(x.n===PANEL?' aria-current="step"':'')+'>'+x.n+'</span>' }).join('')+'</span>';
    }).join('');
    $('#rail').innerHTML=(showCap
-     ? '<div class="cap"><span class="t">'+p.n+' · '+esc(p.t)+'</span><span class="d">'+esc(p.d)+' <b style="font-weight:400; color:#fff">'+esc(p.emo)+'</b>'+(PANEL_GO[p.n]?' <a class="cap-go" href="'+esc(PANEL_GO[p.n]().href)+'" style="color:#fff; text-decoration:underline">'+esc(PANEL_GO[p.n]().t)+'</a>':'')+'</span></div>'
+     ? '<div class="cap"><span class="t">'+p.n+' · '+esc(p.t)+'</span><span class="d">'+esc(p.d)+' <b style="font-weight:400; color:#fff">'+esc(p.emo)+'</b>'+(PANEL_GO[p.n]?' <a class="cap-go" href="'+esc(PANEL_GO[p.n]().href)+'" style="color:#fff; text-decoration:underline">'+esc(PANEL_GO[p.n]().t)+'</a>':'')+capThen(p)+'</span></div>'
      : '')
     +'<div class="who">'+seats+'<div class="n">'+esc(PEOPLE[SEAT].n)+'<span>'+esc(PEOPLE[SEAT].org)+'</span></div></div>'
     +'<div class="acts">'+acts+'</div>'
@@ -11059,6 +11089,7 @@ function ntWord(n, acted){ return acted?word('Done'):(SCENE.ntAck||{})[n.k]?sw('
    /* the clock control left the rail on September 7 (Rich). setNow(), nextDeadline() and DAY0 stay: tools/_r27.js drives them from the console. */
    $$('#rail [data-panel]').forEach(function(a){ a.onclick=function(){ setPanel(+a.dataset.panel) } });
    $$('#rail [data-seat]').forEach(function(a){ a.onclick=function(){ setSeat(a.dataset.seat) } });
+   $$('#rail [data-then]').forEach(function(a){ a.onclick=function(){ var st=(p.then||[])[+a.dataset.then]; if(!st) return; setSeat(st.seat); if(st.nk) SCENE.nk=st.nk; if(st.view){ VIEW=st.view; repaint(); paintRail() } } });
    $('#capT').onclick=function(){ showCap=!showCap; paintRail(); measure(); };
    $('#pPrev').onclick=function(){ setPanel(Math.max(1, PANEL-1)) };
    $('#pNext').onclick=function(){ setPanel(Math.min(PANELS.length, PANEL+1)) };
